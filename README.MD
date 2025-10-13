@@ -2,40 +2,53 @@
 
 Ce projet regroupe trois environnements distincts :
 
-- **App mobile** : React Native (frontend mobile)
-- **App web** : React.js (frontend web)
+- **Application mobile** : React Native (frontend mobile)
+- **Application web** : React.js (frontend web)
 - **Backend** : Node.js (API REST)
 
-Le tout est orchestré avec **Docker** (sauf React Native, qui reste local pour l’instant).
+L'ensemble est assemblé avec **Docker**, à l'exception de l'application mobile qui reste exécutée localement.
 
 ---
 
 ## Prérequis
 
-- [Node.js](https://nodejs.org/) (v22.20 (LTS))
+Avant de lancer le projet, assurez-vous d’avoir installé les éléments suivants :
+
+- [Node.js](https://nodejs.org/) version 22.20 (LTS)
 - [Docker](https://www.docker.com/) et Docker Compose
-- [Android Studio](pour l’émulateur mobile)
+- [Android Studio](https://developer.android.com/studio) pour l’émulateur mobile
+- [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)  
+  > Pensez à modifier la variable d’environnement système `Path` si une autre version est déjà installée.  
+  > Par défaut, le chemin de la version 17 est : `C:/Program Files/Java/jdk-17/bin`.
+- Variable d’environnement `ANDROID_HOME` à définir  
+  > La valeur se trouve dans Android Studio : **Tools > SDK Manager > Android SDK Location**
+- [Android SDK] version 35 (Android 15.0 "VanillaIceCream")
+  >  Cette version n'est pas a installer. Elle est à indiquer au meme emplacement que la valeur d'`ANDROID_HOME`.
 
 ---
 
 ## Lancement du projet
 
-### Lancer les services web et backend avec Docker
+### Démarrer les services web et backend avec Docker
+
+À la racine du projet :
 
 ```bash
 docker-compose up --build
 ```
-Services disponibles:
 
-- Frontend Web : http://localhost:3000
-- Backend : http://localhost:5000
+Les services seront accessibles aux adresses suivantes :
 
-### Lancer l’app mobile React Native
+- Frontend Web : [http://localhost:3000](http://localhost:3000)
+- Backend API : [http://localhost:5000](http://localhost:5000)
 
-1. Lancer l’émulateur Android
-- Ouvrir un émulateur
+---
 
-2. Lancer l’app mobile
+### Démarrer l’application mobile React Native
+
+1. Ouvrir un émulateur Android via Android Studio
+
+2. Dans le dossier de l’application mobile :
 
 ```bash
 cd react-native
@@ -43,4 +56,10 @@ npm install
 npx react-native run-android
 ```
 
-Ici, force à vous pour la suite, en théorie, j'ai deja mis une version des dependances ok entre elles mais vous aurez sans doute qlq variables d'envrionnement système à remettre. 
+---
+
+## Remarques
+
+Les dépendances sont normalement compatibles entre elles.
+
+LES PREREQUIS SONT TOUS PRIMORDIAUX POUR LE FONCTIONNEMENT DE L'ENVIRONNEMENT.
