@@ -34,7 +34,7 @@ Avant de lancer le projet, assurez-vous d’avoir installé les éléments suiva
 À la racine du projet :
 
 ```bash
-docker-compose up --build
+docker-compose up --build -d
 ```
 
 Les services seront accessibles aux adresses suivantes :
