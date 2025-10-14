@@ -17,13 +17,13 @@ Avant de lancer le projet, assurez-vous d’avoir installé les éléments suiva
 - [Node.js](https://nodejs.org/) version 22.20 (LTS)
 - [Docker](https://www.docker.com/) et Docker Compose
 - [Android Studio](https://developer.android.com/studio) pour l’émulateur mobile
-- [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)  
+<!-- - [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)  
   > Pensez à modifier la variable d’environnement système `Path` si une autre version est déjà installée.  
   > Par défaut, le chemin de la version 17 est : `C:/Program Files/Java/jdk-17/bin`.
 - Variable d’environnement `ANDROID_HOME` à définir  
   > La valeur se trouve dans Android Studio : **Tools > SDK Manager > Android SDK Location**
 - [Android SDK] version 35 (Android 15.0 "VanillaIceCream")
-  >  Cette version n'est pas a installer. Elle est à indiquer au meme emplacement que la valeur d'`ANDROID_HOME`.
+  >  Cette version n'est pas a installer. Elle est à indiquer au meme emplacement que la valeur d'`ANDROID_HOME`. -->
 
 ---
 
@@ -53,7 +53,7 @@ Les services seront accessibles aux adresses suivantes :
 ```bash
 cd frontendMobile
 npm install
-npx react-native run-android
+npx expo start
 ```
 
 En cas de probleme, il est possible de débug l'état de l'environnement afin de détecter le manquement d'un prérequis avec:
