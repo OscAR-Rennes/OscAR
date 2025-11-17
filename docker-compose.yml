@@ -9,8 +9,8 @@ services:
     environment:
       - NODE_ENV=development
 
-  frontend-desktop:
-    build: ./frontend-desktop
+  frontendDesktop:
+    build: ./frontendDesktop
     ports:
       - "3000:3000"
     environment:
