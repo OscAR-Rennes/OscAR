@@ -49,5 +49,5 @@ jobs:
         run: |
           cd frontend-desktop
           # Generate .vercel/output locally so Vercel doesn't run builders server-side
-          npx vercel build --debug --token "$VERCEL_TOKEN"
-          npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes --confirm
+          npx vc --cwd build --prod --debug --token "$VERCEL_TOKEN"
+          npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
