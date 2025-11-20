@@ -46,20 +46,12 @@ Les services seront accessibles aux adresses suivantes :
 
 ### Démarrer l’application mobile React Native
 
-1. Ouvrir un émulateur Android via Android Studio
-
-2. Dans le dossier de l’application mobile :
+1. Dans le dossier de l’application mobile :
 
 ```bash
 cd frontendMobile
 npm install
 npx expo start
-```
-
-En cas de probleme, il est possible de débug l'état de l'environnement afin de détecter le manquement d'un prérequis avec:
-
-```bash
-npx react-native doctor
 ```
 
 ---
