@@ -1,0 +1,55 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Lint
+        run: |
+          cd backend
+          npm run lint
+
+      - name: Run tests
+        run: |
+          cd backend
+          npm test -- --watch=false
+
+      - name: Build TypeScript (if tsconfig.json exists)
+        run: |
+          if [ -f backend/tsconfig.json ]; then
+            cd backend
+            npm run build
+          else
+            echo "No tsconfig.json found, skipping build"
+          fi
+
+      - name: Build Docker image (if Dockerfile exists)
+        run: |
+          if [ -f backend/Dockerfile ]; then
+            cd backend
+            docker build -t backend-app .
+          else
+            echo "No Dockerfile found, skipping Docker build"
+          fi

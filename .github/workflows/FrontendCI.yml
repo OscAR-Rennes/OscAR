@@ -1,0 +1,66 @@
+name: Frontends CI
+
+on:
+  push:
+    paths:
+      - 'frontend-desktop/**'
+      - 'frontendMobile/**'
+  pull_request:
+    paths:
+      - 'frontend-desktop/**'
+      - 'frontendMobile/**'
+
+jobs:
+  desktop:
+    name: Desktop (React + Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          cd frontend-desktop
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd frontend-desktop
+          npm test -- --watch=false
+
+      - name: Build Docker image
+        run: |
+          cd frontend-desktop
+          docker build -t react-desktop .
+
+  mobile:
+    name: Mobile (React Native + Metro)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          cd frontendMobile
+          npm ci
+
+      - name: Lint
+        run: |
+          cd frontendMobile
+          npm run lint
+
+      - name: Run Jest tests
+        run: |
+          cd frontendMobile
+          npm test -- --watch=false
