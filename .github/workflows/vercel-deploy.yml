@@ -41,10 +41,13 @@ jobs:
           cd frontend-desktop
           npm install -D vercel
 
-      - name: Deploy to Vercel (deploy build directory)
+      - name: Create prebuilt output and deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          # Deploy the static build output directory directly
-          npx vercel deploy --prod --token "$VERCEL_TOKEN" --yes --cwd build
+          # Generate .vercel/output locally so Vercel doesn't run builders server-side
+          npx vercel build --debug --token "$VERCEL_TOKEN"
+          npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes --confirm
