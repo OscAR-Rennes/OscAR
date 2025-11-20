@@ -1,5 +1,5 @@
 function App() {
-  return <h1>Hello from React frontend</h1>;
+  return <h1>Test de clément pour le CICD</h1>;
 }
 
 export default App;
