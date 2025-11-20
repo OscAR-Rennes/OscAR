@@ -1,0 +1,56 @@
+name: Checkstyle CI
+
+on:
+  push:
+    paths:
+      - 'frontend-desktop/**'
+      - 'frontendMobile/**'
+      - 'backend/**'
+  pull_request:
+    paths:
+      - 'frontend-desktop/**'
+      - 'frontendMobile/**'
+      - 'backend/**'
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies (frontend-desktop)
+        run: |
+          cd frontend-desktop
+          npm ci
+
+      - name: ESLint frontend-desktop
+        run: |
+          cd frontend-desktop
+          npm run lint || exit 1
+
+      - name: Install dependencies (frontendMobile)
+        run: |
+          cd frontendMobile
+          npm ci
+
+      - name: ESLint frontendMobile
+        run: |
+          cd frontendMobile
+          npm run lint || exit 1
+
+      - name: Install dependencies (backend)
+        run: |
+          cd backend
+          npm ci
+
+      - name: ESLint backend
+        run: |
+          cd backend
+          npm run lint || exit 1
