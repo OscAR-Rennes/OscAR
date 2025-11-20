@@ -2,8 +2,16 @@ name: Deploy frontend-desktop to Vercel (Docker)
 
 on:
   push:
+    branches:
+      - master
     paths:
       - 'frontend-desktop/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'frontend-desktop/**'
+  workflow_dispatch: {}
 
 jobs:
   vercel-deploy:
