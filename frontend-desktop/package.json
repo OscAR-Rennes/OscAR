@@ -10,7 +10,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watch=false --passWithNoTests",
+    "lint": "echo \"No lint configured for frontend-desktop\"",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "vercel": "^48.10.5"
   }
 }
