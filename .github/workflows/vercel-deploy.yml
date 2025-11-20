@@ -18,17 +18,25 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install dependencies
+        run: |
+          cd frontend-desktop
+          if [ -f package-lock.json ] ; then npm ci ; else npm install ; fi
+
+      - name: Build project
+        run: |
+          cd frontend-desktop
+          npm run build
+
       - name: Install Vercel CLI
         run: |
           cd frontend-desktop
-          npm install -g vercel
+          npm install -D vercel
 
-      - name: Deploy to Vercel (Dockerfile)
+      - name: Deploy to Vercel (prebuilt)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          # Deploy using the vercel.json which references the Dockerfile via @vercel/docker
-          npx vercel --prod --confirm --token "$VERCEL_TOKEN" --local-config vercel.json
+          npx vercel build
+          npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --yes
