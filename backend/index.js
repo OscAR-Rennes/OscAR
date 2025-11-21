@@ -2,7 +2,7 @@ import http from 'http';
 
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Hello from pure Node.js backend');
+  res.end('Hello from purde Node.js backend');
 });
 
 const PORT = process.env.PORT || 5000;
