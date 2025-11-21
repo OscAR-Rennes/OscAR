@@ -58,8 +58,7 @@ jobs:
             exit 0
           fi
 
-          # Install railway CLI and deploy the pushed image
-          npm install -g railway
+          # Deploy the pushed image (railway CLI already installed above)
           railway login --token "$RAILWAY_TOKEN"
           railway deploy --image ghcr.io/${{ github.repository_owner }}/osc_backend:latest --project "$RAILWAY_PROJECT_ID" --service "$RAILWAY_SERVICE_ID"
 
