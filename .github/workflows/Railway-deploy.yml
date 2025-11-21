@@ -59,7 +59,7 @@ jobs:
           fi
 
           # Deploy the pushed image (railway CLI already installed above)
-          railway login --token "$RAILWAY_TOKEN"
+          railway login < "$RAILWAY_TOKEN"
           railway deploy --image ghcr.io/${{ github.repository_owner }}/osc_backend:latest --project "$RAILWAY_PROJECT_ID" --service "$RAILWAY_SERVICE_ID"
 
       - name: Frontend URL reminder
