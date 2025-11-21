@@ -6,7 +6,7 @@ export default function Home() {
   useEffect(() => {
     fetch('https://oscbackend-production.up.railway.app/api/hello')
       .then(res => res.json())
-      .then(data => setMessage(data.message))
+      .then(data => setMessage(data.message, "coucou"))
       .catch(err => setMessage('Error: ' + err.message));
   }, []);
 
