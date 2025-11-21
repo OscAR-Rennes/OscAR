@@ -9,7 +9,7 @@ app.use(cors({
 }));
 
 app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Helldddod ffddrosdme fbackddend!' });
+  res.json({ message: 'Heddlldddod ffddrosdme fbackddend!' });
 });
 
 // Utiliser le port fourni par Railway
