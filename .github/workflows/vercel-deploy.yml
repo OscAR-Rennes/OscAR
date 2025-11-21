@@ -48,6 +48,4 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          # Generate .vercel/output locally so Vercel doesn't run builders server-side
           npx vc --cwd build --prod --debug --token "$VERCEL_TOKEN"
-          npx vercel deploy --prod --token "$VERCEL_TOKEN" --project "$VERCEL_PROJECT_ID"
