@@ -55,9 +55,6 @@ jobs:
           mkdir -p ~/.railway
           echo "$RAILWAY_TOKEN" > ~/.railway/token
 
-          # Lier le projet Railway avec le token
-          railway link --token "$RAILWAY_TOKEN" --project "$RAILWAY_PROJECT_ID"
-
           # Déployer le service Container (lié au projet)
           railway up
 
