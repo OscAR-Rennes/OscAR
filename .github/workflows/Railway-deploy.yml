@@ -50,10 +50,5 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           REPO_OWNER: ${{ github.repository_owner }}
         run: |
-          curl -X POST "https://production-api.railway.app/v1/services/${RAILWAY_SERVICE_ID}/deploys" \
-            -H "Authorization: Bearer $RAILWAY_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"image\":\"ghcr.io/${REPO_OWNER}/osc_backend:sha-${GITHUB_SHA}\"}"
+            railway up --service=$RAILWAY_SERVICE_NAME -d
 
-      - name: Frontend URL reminder
-        run: echo "Frontend is served at: https://oscar-deploiement.vercel.app/"
