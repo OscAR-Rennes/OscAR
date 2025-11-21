@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+
 const app = express();
 
-// Autoriser le front sur Vercel
 app.use(cors({
   origin: 'https://<TON_FRONTEND_VERCEL_URL>'
 }));
