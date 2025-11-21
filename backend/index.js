@@ -1,12 +1,17 @@
-import http from 'http';
+const express = require('express');
+const cors = require('cors');
+const app = express();
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Helddrddde Node.js backend');
+// Autoriser le front sur Vercel
+app.use(cors({
+  origin: 'https://<TON_FRONTEND_VERCEL_URL>'
+}));
+
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from backend!' });
 });
 
-const PORT = process.env.PORT || 5000;
-
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on http://0.0.0.0:${PORT}`);
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log(`Backend listening on port ${port}`);
 });
