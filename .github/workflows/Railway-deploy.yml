@@ -47,7 +47,9 @@ jobs:
         run: curl -fsSL https://railway.app/install.sh | sh
 
       - name: Trigger Railway Deploy
-        run: railway up --service $RAILWAY_SERVICE_ID
+        env:
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+        run: railway up --service $"RAILWAY_SERVICE_ID"
 
       - name: Frontend URL reminder
         run: |
