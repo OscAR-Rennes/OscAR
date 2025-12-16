@@ -1,4 +1,4 @@
-name: Build, Push and Deploy backend Docker image (Railway)
+name: Prod Deployment to Railway (backend)
 
 on:
   push:

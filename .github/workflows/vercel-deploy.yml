@@ -1,4 +1,4 @@
-name: Deploy frontend-desktop to Vercel (Docker)
+name: Prod Deployment to Vercel (frontend-desktop)
 
 on:
   push:
