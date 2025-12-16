@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1>Stellaris la </h1>
+      <h1>Stellaris la oui</h1>
       <p>{message}</p>
     </div>
   );

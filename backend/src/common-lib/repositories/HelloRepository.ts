@@ -3,6 +3,6 @@ import { HelloEntity } from '../entity/HelloEntity.js';
 
 export class HelloRepository {
   getHello(): HelloEntity {
-    return new HelloEntity('Salut du backend test sqds');
+    return new HelloEntity('Salut du backend test test 1');
   }
 }
