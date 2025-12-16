@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1>Matéo la pupuce !</h1>
+      <h1>Matéo la pupuce !!</h1>
       <p>{message}</p>
     </div>
   );
