@@ -6,11 +6,6 @@ on:
       - main
     paths:
       - 'frontend-desktop/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'frontend-desktop/**'
   workflow_dispatch: {}
 
 jobs:
