@@ -15,8 +15,6 @@ RUN if [ -f package-lock.json ]; then \
 
 COPY . .
 
-RUN npm ci --omit=dev
-
 EXPOSE 5000
 
 CMD ["node", "dist/app/server.js"]
