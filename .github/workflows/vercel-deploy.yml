@@ -43,12 +43,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          DEPLOYMENT_URL=$(npx vercel deploy --prod --yes \
-            --token=$VERCEL_TOKEN \
-            --org-id=$VERCEL_ORG_ID \
-            --project-id=$VERCEL_PROJECT_ID)
-          echo "Deployment URL: $DEPLOYMENT_URL"
-          npx vercel alias $DEPLOYMENT_URL oscar-deploiement.vercel.app --token=$VERCEL_TOKEN
-
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN >deployment-url.txt 2>error.txt
+          npx vercel alias --token=$VERCEL_TOKEN $deploymentUrl oscar-deploiement.vercel.app
 
 
