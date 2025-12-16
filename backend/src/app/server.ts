@@ -6,7 +6,7 @@ const app = express();
 
 // Autoriser le front Vercel
 app.use(cors({
-  origin: process.env.FRONT_URL //https://oscar-deploiement.vercel.app
+  origin: process.env.FRONT_URL //https://oscar-deploiement.vercel.appe
 }));
 
 app.use('/api', helloRoutes);
