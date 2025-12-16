@@ -1,14 +1,14 @@
-name: Prod Deployment to Vercel (frontend-desktop)
+name: PreProd Deployment to Vercel (frontend-desktop)
 
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'frontend-desktop/**'
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - 'frontend-desktop/**'
   workflow_dispatch: {}
@@ -48,4 +48,4 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          npx vc --cwd build --prod --debug --token "$VERCEL_TOKEN"
+          npx vc --cwd build --preprod --debug --token "$VERCEL_TOKEN"
