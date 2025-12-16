@@ -43,4 +43,6 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          npx vc --cwd build --prod --debug --token "$VERCEL_TOKEN"
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
+
+
