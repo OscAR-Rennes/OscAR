@@ -1,0 +1,51 @@
+name: Deploy frontend-desktop to Vercel (Docker)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend-desktop/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend-desktop/**'
+  workflow_dispatch: {}
+
+jobs:
+  vercel-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          cd frontend-desktop
+          npm install
+
+      - name: Build project
+        run: |
+          cd frontend-desktop
+          npm run build
+
+      - name: Install Vercel CLI
+        run: |
+          cd frontend-desktop
+          npm install -D vercel
+
+      - name: Create prebuilt output and deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          cd frontend-desktop
+          npx vc --cwd build --preprod --debug --token "$VERCEL_TOKEN"
