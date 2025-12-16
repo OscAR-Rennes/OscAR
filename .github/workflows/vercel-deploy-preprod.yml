@@ -43,4 +43,5 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          npx vercel --token "$VERCEL_TOKEN" --alias oscar-deploiement-preprod.vercel.app
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
+
