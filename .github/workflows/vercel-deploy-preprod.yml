@@ -3,7 +3,7 @@ name: PreProd Deployment to Vercel (frontend-desktop)
 on:
   push:
     branches:
-      - main
+      - develop
     paths:
       - 'frontend-desktop/**'
   workflow_dispatch: {}
