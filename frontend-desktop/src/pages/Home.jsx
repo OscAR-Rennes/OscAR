@@ -13,7 +13,6 @@ export default function Home() {
   return (
     <div>
       <h1>Matéo la pupuce !!!!!!!</h1>
-      <p>Test pour la préprod allez la putain de ta mere purée PLEASE !!!</p>
       <p>{message}</p>
     </div>
   );
