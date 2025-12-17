@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchHello } from '../api/apiClient';
+import { fetchHello } from '../api/services/hello.api';
 
 export default function Home() {
   const [message, setMessage] = useState('');
@@ -14,7 +14,7 @@ export default function Home() {
     <div>
       <h1>Matéo la pupuce !!!!!!!</h1>
       <p>Test pour la preprod</p>
-      <p>19h12</p>
+      <p>Il est minuit 54</p>
       <p>{message}</p>
     </div>
   );

@@ -1,9 +1,9 @@
-name: Prod Deployment to Railway (backend)
+name: Preprod Deployment to Railway (backend)
 
 on:
   push:
     branches: 
-      - master
+      - develop
     paths:
       - 'backend/**'
   workflow_dispatch: {}
@@ -33,7 +33,7 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+          RAILWAY_SERVICE_PREPROD_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
         run: |
