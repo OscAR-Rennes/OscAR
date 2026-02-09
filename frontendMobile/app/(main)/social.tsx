@@ -37,7 +37,7 @@ export default function SocialScreen() {
     const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     return (
-        <ScrollView style={{ backgroundColor: theme.COLORS.background }} contentContainerStyle={{ paddingTop: theme.SPACING.small, paddingHorizontal: theme.SPACING.medium, height: '100%' }}>
+        <ScrollView contentContainerStyle={{ paddingTop: theme.SPACING.small, paddingHorizontal: theme.SPACING.medium, height: '100%' }}>
             
             {/* Friend Requests - Display only if user is authenticated */}
             {isAuthenticated && (
@@ -47,7 +47,7 @@ export default function SocialScreen() {
                         iconUri={getIconUri("envelope.svg")} 
                         iconColor={theme.COLORS.success} 
                     />
-                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste des demandes d'amis à venir</Text>
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.friendRequestsListMessage}</Text>
                 </View>
             )}
 
@@ -67,7 +67,7 @@ export default function SocialScreen() {
                     />
                 ) : (
                     <>
-                        <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste des amis à venir</Text>
+                        <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.friendsListMessage}</Text>
 
                         {/* All friends button */}
                         <TouchableOpacity style={[{ width: '100%', marginTop: theme.SPACING.medium }]} onPress={() => router.push('/social-friends')}>
@@ -94,7 +94,7 @@ export default function SocialScreen() {
                     <Text style={{ marginLeft: theme.SPACING.small, fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700', color: theme.COLORS.textPrimary }}>{texts.globalLeaderboardTitle}</Text>
                 </View>
                 <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.globalLeaderboardMessage}</Text>
-                
+
                 {/* All leaderboard informations */}
                 <TouchableOpacity style={[{ width: '100%', marginTop: theme.SPACING.medium }]} onPress={() => router.push('/social-leaderboard')}>
                     <LinearGradient
@@ -124,6 +124,8 @@ const STATIC_TEXTS = {
         globalLeaderboardMessage: "Liste des meilleurs joueurs à venir",
         connectButtonText: "Se connecter →",
         seeMoreButtonText: "Voir plus",
+        friendRequestsListMessage: "Liste des demandes d'amis à venir",
+        friendsListMessage: "Liste des amis à venir",
     },
     en: {
         friendRequestsTitle: "Friend Requests (0)",
@@ -133,5 +135,7 @@ const STATIC_TEXTS = {
         globalLeaderboardMessage: "List of top players coming soon",
         connectButtonText: "Log in →",
         seeMoreButtonText: "See more",
+        friendRequestsListMessage: "Friend requests list coming soon",
+        friendsListMessage: "Friends list coming soon",
     },
 };

@@ -27,7 +27,7 @@ export default function ProfilScreen() {
     const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     return (
-        <View style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
+        <View style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={{ paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.xLarge }}>
                 {/* Profile Picture */}
                 <View style={{ alignItems: 'center', marginBottom: theme.SPACING.large }}>

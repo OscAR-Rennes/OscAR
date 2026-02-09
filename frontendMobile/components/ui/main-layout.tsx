@@ -9,25 +9,14 @@ interface MainLayoutProps {
 }
 
 // Main layout component wrapping all screens with header and bottom navigation
-
 export default function MainLayout({ children }: MainLayoutProps) {
-  return (
-    <SafeAreaView style={styles.container}>
-      <HeaderNavbar />
-      <View style={styles.content}>
-        {children}
-      </View>
-      <BottomNavbar />
-    </SafeAreaView>
-  );
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#FEFEFE' }}>
+            <HeaderNavbar />
+            <View style={{ flex: 1}}>
+                {children}
+            </View>
+            <BottomNavbar />
+        </SafeAreaView>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FEFEFE',
-  },
-  content: {
-    flex: 1,
-  },
-});

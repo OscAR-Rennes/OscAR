@@ -29,9 +29,9 @@ function getIconUri(iconName: IconName): string {
 }
 
 // HuntSection component for each section (Current Hunts, Completed Hunts)
-const HuntSection = ({ title, icon, iconColor, placeholderIcon, placeholderMessage, buttonText, isAuthenticated }: { title: string; icon: IconName; iconColor: string; placeholderIcon: string; placeholderMessage: string; buttonText: string; isAuthenticated: boolean }) => {
+const HuntSection = ({ title, icon, iconColor, placeholderIcon, placeholderMessage, buttonText, isAuthenticated, authMessage }: { title: string; icon: IconName; iconColor: string; placeholderIcon: string; placeholderMessage: string; buttonText: string; isAuthenticated: boolean; authMessage: string }) => {
     const router = useRouter();
-    
+
     return (
         <View style={{ flexDirection: 'column', marginBottom: theme.SPACING.medium }}>
             <View style={{ flexDirection: 'row', marginBottom: theme.SPACING.medium, alignItems: 'center' }}>
@@ -39,7 +39,7 @@ const HuntSection = ({ title, icon, iconColor, placeholderIcon, placeholderMessa
                 <Text style={{ ...globalStyles.subtitle, fontSize: theme.FONT_SIZES.text, marginLeft: theme.SPACING.small }}>{title}</Text>
             </View>
             {isAuthenticated ? (
-                <Text style={{ textAlign: 'center', color: theme.COLORS.textSecondary }}>Logique d'affichage des chasses en fonction de la connexion ici</Text>
+                <Text style={{ color: theme.COLORS.textSecondary }}>{authMessage}</Text>
             ) : (
                 <PlaceholderNotConnected
                     icon={placeholderIcon as any}
@@ -70,6 +70,7 @@ export default function HuntScreen() {
                     placeholderMessage={texts.currentHuntsPlaceholderMessage}
                     buttonText={texts.connectButtonText}
                     isAuthenticated={isAuthenticated}
+                    authMessage={texts.currentHuntsAuthMessage}
                 />
                 <HuntSection
                     title={texts.completedHuntsTitle}
@@ -79,12 +80,12 @@ export default function HuntScreen() {
                     placeholderMessage={texts.completedHuntsPlaceholderMessage}
                     buttonText={texts.connectButtonText}
                     isAuthenticated={isAuthenticated}
+                    authMessage={texts.completedHuntsAuthMessage}
                 />
             </ScrollView>
         </KeyboardAvoidingView>
     );
 }
-
 
 // Translations of static texts
 const STATIC_TEXTS = {
@@ -95,6 +96,8 @@ const STATIC_TEXTS = {
         completedHuntsTitle: 'Chasses complétées (0)',
         completedHuntsPlaceholderMessage: 'Connectez-vous pour pouvoir enregistrer votre progression !',
         connectButtonText: 'Se connecter →',
+        currentHuntsAuthMessage: 'Affichage des chasses en cours pour les utilisateurs connectés.',
+        completedHuntsAuthMessage: 'Affichage des chasses complétées pour les utilisateurs connectés.',
     },
     en: {
         pageTitle: 'My Hunts',
@@ -103,5 +106,7 @@ const STATIC_TEXTS = {
         completedHuntsTitle: 'Completed Hunts (0)',
         completedHuntsPlaceholderMessage: 'Log in to save your progress !',
         connectButtonText: 'Log in →',
+        currentHuntsAuthMessage: 'Displaying current hunts for authenticated users.',
+        completedHuntsAuthMessage: 'Displaying completed hunts for authenticated users.',
     },
 };

@@ -47,9 +47,7 @@ export default function ProfilModifyScreen() {
                         <SvgUri uri={getIconUri("image-placeholder.svg")} width={60} height={60} color={theme.COLORS.background} />
                     </View>
                     <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.large }}>
-                        <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]}> {/* No translation needed here */}
-                            <TextInput style={[{ fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700' }]} placeholder="Pseudo" placeholderTextColor={theme.COLORS.textPrimary} keyboardType="default" />
-                        </TouchableOpacity>
+                        <Text style={{fontWeight: '700', fontSize: theme.FONT_SIZES.subtitle, marginTop: theme.SPACING.small}}>Pseudo</Text>
                     </View>
                 </View>
 
