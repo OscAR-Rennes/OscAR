@@ -6,13 +6,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { theme, globalStyles } from '../constants/theme';
-
-// Forgot Password screen 
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
+    const { language } = useLanguage(); // Retrieve current language
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
+    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     // Get URI from icon module
     function getIconUri(iconSource: number): string {
@@ -43,14 +44,14 @@ export default function ForgotPasswordScreen() {
                 style={[theme.CONTAINER_STYLES.center]}
             >
                 <View style={[{ backgroundColor: theme.COLORS.background, borderRadius: 18, paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.xLarge, width: '85%' }]}>
-                    <Text style={[globalStyles.title, { textAlign: 'center' }]}>LOOTOPIA</Text>
+                    <Text style={[globalStyles.title, { textAlign: 'center' }]}>{texts.title}</Text>
                     <Text style={[globalStyles.smallText, { textAlign: 'center', marginTop: theme.SPACING.small, marginBottom: theme.SPACING.xLarge }]}>
-                        La chasse vous attend !
+                        {texts.subtitle}
                     </Text>
 
                     {/* Input Email */}
                     <View style={[{paddingBottom: theme.SPACING.medium }]}>
-                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>Email</Text>
+                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.emailLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
                             <SvgUri
                                 uri={getIconUri(require('../assets/icon/mail.svg'))}
@@ -61,7 +62,7 @@ export default function ForgotPasswordScreen() {
                             />
                             <TextInput
                                 style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
-                                placeholder="votre@email.com"
+                                placeholder={texts.emailPlaceholder}
                                 placeholderTextColor={theme.COLORS.placeholder}
                                 keyboardType="email-address"
                                 value={email}
@@ -78,21 +79,37 @@ export default function ForgotPasswordScreen() {
                             end={{ x: 1, y: 0 }}
                             style={[theme.BUTTON_STYLES.default, { width: '100%' }]}
                         >
-                            <Text style={[globalStyles.text, { color: theme.COLORS.background, fontWeight: '900' }]}>
-                                Réinitialiser
-                            </Text>
+                            <Text style={[globalStyles.text, { color: theme.COLORS.background, fontWeight: '900' }]}> {texts.resetButton} </Text>
                         </LinearGradient>
                     </TouchableOpacity>
 
                     {/* Back Button */}
                     <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.small, marginTop: theme.SPACING.large }]} onPress={() => router.push('/connection')} activeOpacity={0.7}>
                         <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
-                        <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '700' }]}>
-                            Retour à la connexion
-                        </Text>
+                        <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '700' }]}> {texts.backButton} </Text>
                     </TouchableOpacity>
                 </View>
             </LinearGradient>
         </View>
     );
 }
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        title: "LOOTOPIA",
+        subtitle: "La chasse vous attend !",
+        emailLabel: "Email",
+        emailPlaceholder: "votre@email.com",
+        resetButton: "Envoyer le code",
+        backButton: "Retour à la connexion",
+    },
+    en: {
+        title: "LOOTOPIA",
+        subtitle: "The hunt awaits you!",
+        emailLabel: "Email",
+        emailPlaceholder: "your@email.com",
+        resetButton: "Send reset code",
+        backButton: "Back to login",
+    },
+};

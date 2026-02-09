@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import PageTitle from '../../components/page-title';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Icon mapping
 const ICONS = {
@@ -54,30 +55,53 @@ const HuntSection = ({ title, icon, iconColor, placeholderIcon, placeholderMessa
 // Hunt screen
 export default function HuntScreen() {
     const { isAuthenticated } = useAuth();
+    const { language } = useLanguage(); // Retrieve current language
+    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: theme.SPACING.large }}>
-                <PageTitle title="Mes Chasses" />
+                <PageTitle title={texts.pageTitle} />
                 <HuntSection
-                    title="Chasses en cours (0)"
+                    title={texts.currentHuntsTitle}
                     icon="target-larger.svg"
                     iconColor={theme.COLORS.primary}
                     placeholderIcon="target-larger.svg"
-                    placeholderMessage="Connectez-vous pour pouvoir voir vos chasses en cours !"
-                    buttonText="Se connecter →"
+                    placeholderMessage={texts.currentHuntsPlaceholderMessage}
+                    buttonText={texts.connectButtonText}
                     isAuthenticated={isAuthenticated}
                 />
                 <HuntSection
-                    title="Chasses complétées (0)"
+                    title={texts.completedHuntsTitle}
                     icon="check.svg"
                     iconColor={theme.COLORS.success}
                     placeholderIcon="target-larger.svg"
-                    placeholderMessage="Connectez-vous pour pouvoir enregistrer votre progression !"
-                    buttonText="Se connecter →"
+                    placeholderMessage={texts.completedHuntsPlaceholderMessage}
+                    buttonText={texts.connectButtonText}
                     isAuthenticated={isAuthenticated}
                 />
             </ScrollView>
         </KeyboardAvoidingView>
     );
 }
+
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        pageTitle: 'Mes Chasses',
+        currentHuntsTitle: 'Chasses en cours (0)',
+        currentHuntsPlaceholderMessage: 'Connectez-vous pour pouvoir voir vos chasses en cours !',
+        completedHuntsTitle: 'Chasses complétées (0)',
+        completedHuntsPlaceholderMessage: 'Connectez-vous pour pouvoir enregistrer votre progression !',
+        connectButtonText: 'Se connecter →',
+    },
+    en: {
+        pageTitle: 'My Hunts',
+        currentHuntsTitle: 'Current Hunts (0)',
+        currentHuntsPlaceholderMessage: 'Log in to see your current hunts !',
+        completedHuntsTitle: 'Completed Hunts (0)',
+        completedHuntsPlaceholderMessage: 'Log in to save your progress !',
+        connectButtonText: 'Log in →',
+    },
+};

@@ -6,6 +6,7 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Icon mapping
 const ICONS = {
@@ -20,9 +21,10 @@ function getIconUri(iconName: keyof typeof ICONS): string {
     return Asset.fromModule(iconSource).uri || '';
 }
 
-// Profil screen
 export default function ProfilScreen() {
     const router = useRouter();
+    const { language } = useLanguage(); // Retrieve current language
+    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -32,7 +34,7 @@ export default function ProfilScreen() {
                     <View style={{ width: 140, height: 140, borderRadius: 500, backgroundColor: '#dfdfdf', justifyContent: 'center', alignItems: 'center' }}>
                         <SvgUri uri={getIconUri("image-placeholder.svg")} width={60} height={60} color={theme.COLORS.background} />
                     </View>
-                    <Text style={{ fontSize: 25, fontWeight: '700', color: theme.COLORS.textPrimary, marginTop: theme.SPACING.small }}>Pseudo</Text>
+                    <Text style={{ fontSize: 25, fontWeight: '700', color: theme.COLORS.textPrimary, marginTop: theme.SPACING.small }}>{texts.profilePicturePlaceholder}</Text>
                 </View>
 
                 {/* Total Points Section */}
@@ -43,8 +45,8 @@ export default function ProfilScreen() {
                     style={[{ width: '100%', paddingHorizontal: theme.SPACING.medium, paddingVertical: theme.SPACING.medium, borderRadius: 12, marginBottom: theme.SPACING.medium, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}
                 >
                     <View>
-                        <Text style={[{ color: theme.COLORS.background, fontWeight: '900' }]}>Total des points</Text>
-                        <Text style={[{ color: theme.COLORS.background, fontSize: 30, fontWeight: '900' }]}>0</Text>
+                        <Text style={[{ color: theme.COLORS.background, fontWeight: '900' }]}>{texts.totalPointsTitle}</Text>
+                        <Text style={[{ color: theme.COLORS.background, fontSize: 30, fontWeight: '900' }]}>{texts.totalPointsValue}</Text>
                     </View>
                     <View>
                         <SvgUri uri={getIconUri("trophy.svg")} width={60} height={60} color={theme.COLORS.background} />
@@ -53,9 +55,9 @@ export default function ProfilScreen() {
 
                 {/* Stats Section */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: theme.SPACING.large, gap: theme.SPACING.medium }}>
-                    <StatsCard icon="target-larger.svg" value={0} label="Chasse" backgroundColor="#fce4ec" iconColor={theme.COLORS.primary} width={30} height={30} />
-                    <StatsCard icon="pin.svg" value={0} label="Centre Culturel" backgroundColor="#fff9c4" iconColor={theme.COLORS.secondary} width={30} height={30} />
-                    <StatsCard icon="group.svg" value={0} label="Amis" backgroundColor="#e3f2fd" iconColor={theme.COLORS.tertiary} width={35} height={35} />
+                    <StatsCard icon="target-larger.svg" value={0} label={texts.statsHuntLabel} backgroundColor="#fce4ec" iconColor={theme.COLORS.primary} width={30} height={30} />
+                    <StatsCard icon="pin.svg" value={0} label={texts.statsCulturalCenterLabel} backgroundColor="#fff9c4" iconColor={theme.COLORS.secondary} width={30} height={30} />
+                    <StatsCard icon="group.svg" value={0} label={texts.statsFriendsLabel} backgroundColor="#e3f2fd" iconColor={theme.COLORS.tertiary} width={35} height={35} />
                 </View>
 
                 {/* Buttons */}
@@ -63,15 +65,39 @@ export default function ProfilScreen() {
                     style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: theme.COLORS.background, borderWidth: 1, borderColor: theme.COLORS.border, marginBottom: theme.SPACING.medium }}
                     onPress={() => router.push('/profil-modify')}
                 >
-                    <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.textPrimary, textAlign: 'center' }}>Modifier mon profil</Text>
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.textPrimary, textAlign: 'center' }}>{texts.modifyProfileButton}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: '#ffebee', borderWidth: 1, borderColor: theme.COLORS.error }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
                         <SvgUri uri={getIconUri("logout.svg")} width={25} height={25} color={theme.COLORS.error} />
-                        <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.error }}>Déconnexion</Text>
+                        <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.error }}>{texts.logoutButton}</Text>
                     </View>
                 </TouchableOpacity>
             </ScrollView>
         </View>
     );
 }
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        profilePicturePlaceholder: "Pseudo",
+        totalPointsTitle: "Total des points",
+        totalPointsValue: "0",
+        statsHuntLabel: "Chasses",
+        statsCulturalCenterLabel: "Centre Culturel",
+        statsFriendsLabel: "Amis",
+        modifyProfileButton: "Modifier mon profil",
+        logoutButton: "Déconnexion",
+    },
+    en: {
+        profilePicturePlaceholder: "Username",
+        totalPointsTitle: "Total Points",
+        totalPointsValue: "0",
+        statsHuntLabel: "Hunts",
+        statsCulturalCenterLabel: "Cultural Center",
+        statsFriendsLabel: "Friends",
+        modifyProfileButton: "Edit My Profile",
+        logoutButton: "Logout",
+    },
+};

@@ -10,6 +10,7 @@ import BottomNavbar from '@/components/ui/bottom-navbar';
 import { SvgUri } from 'react-native-svg';
 import AddFriends from '../components/add-friends';
 import SectionTitle from '../components/section-title';
+import { useLanguage } from '../context/LanguageContext'; // Import du contexte de langue
 
 // Icon mapping
 const ICONS = {
@@ -34,38 +35,54 @@ function getIconUri(iconName: IconName): string {
 
 export default function SocialFriendsScreen() {
     const router = useRouter();
-        
-  return (
-    <SafeAreaView style={{backgroundColor: theme.COLORS.background, flex: 1}}>
-        <HeaderNavbar/>
+    const { language } = useLanguage(); // Retrieve the current language
+    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
-        <View style={{flex: 1, paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.medium}}>
+    return (
+        <SafeAreaView style={{backgroundColor: theme.COLORS.background, flex: 1}}>
+            <HeaderNavbar/>
 
-            {/* Back Button */}
-            <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/social')} activeOpacity={0.7}>
-                <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
-                <Text style={[{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>
-                    Retour au Social
-                </Text>
-            </TouchableOpacity>
+            <View style={{flex: 1, paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.medium}}>
 
-            {/* Friends Leaderboard */}
-            <View style={{ borderRadius: 8, borderColor: theme.COLORS.border, borderWidth: 1, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
-                <SectionTitle 
-                    title="Classement des Amis" 
-                    iconUri={getIconUri("trophy.svg")} 
-                    iconColor={theme.COLORS.secondary} 
-                />
-                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste détaillée des amis à venir.</Text>
-                
-                {/* Add friends button */}
-                <AddFriends />
+                {/* Back Button */}
+                <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/social')} activeOpacity={0.7}>
+                    <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
+                    <Text style={[{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>
+                        {texts.backButton}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Friends Leaderboard */}
+                <View style={{ borderRadius: 8, borderColor: theme.COLORS.border, borderWidth: 1, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
+                    <SectionTitle 
+                        title={texts.leaderboardTitle} 
+                        iconUri={getIconUri("trophy.svg")} 
+                        iconColor={theme.COLORS.secondary} 
+                    />
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.leaderboardPlaceholder}</Text>
+
+                    {/* Add friends button */}
+                    <AddFriends />
+                </View>
             </View>
-        </View>
 
-        <View style={{flex: 1, justifyContent: 'flex-end'}}>
-            <BottomNavbar/>
-        </View>
-    </SafeAreaView>
-  );
+            <View style={{flex: 1, justifyContent: 'flex-end'}}>
+                <BottomNavbar/>
+            </View>
+        </SafeAreaView>
+    );
 }
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        backButton: "Retour au Social",
+        leaderboardTitle: "Classement des Amis",
+        leaderboardPlaceholder: "Liste détaillée des amis à venir.",
+    },
+    en: {
+        backButton: "Back to Social",
+        leaderboardTitle: "Friends Leaderboard",
+        leaderboardPlaceholder: "Detailed list of friends coming soon.",
+    },
+};

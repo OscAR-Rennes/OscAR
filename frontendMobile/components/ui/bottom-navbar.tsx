@@ -4,7 +4,8 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { useRouter, usePathname } from 'expo-router';
 import { theme } from '../../constants/theme';
-import { useAuth } from '../../context/AuthContext'; // Import centralisé
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext'; 
 
 // Icon paths
 const ICON_PATHS = {
@@ -42,26 +43,39 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
     const router = useRouter();
     const pathname = currentRoute || usePathname();
     const { isAuthenticated } = useAuth();
+    const { language } = useLanguage(); // Retrieve current language
 
-    // Define tabs with conditional Connection/Profil tab
+    // Define tab labels based on the current language
+    const labels = STATIC_TEXTS[language];
+
     const connectionTab = {
         key: 'connection',
-        label: isAuthenticated ? 'Profil' : 'Connexion',
+        label: isAuthenticated ? labels.profile : labels.connection,
         route: isAuthenticated ? '/profil' : '/connection',
         icon: ICON_PATHS.connexion,
     };
 
-    // Tabs array
     const tabs: Tab[] = [
-        { key: 'index', label: 'Maps', route: '/(main)', icon: ICON_PATHS.index },
-        { key: 'hunt', label: 'Chasses', route: '/(main)/hunt', icon: ICON_PATHS.hunt },
-        { key: 'social', label: 'Social', route: '/(main)/social', icon: ICON_PATHS.social },
+        { key: 'index', label: labels.maps, route: '/(main)', icon: ICON_PATHS.index },
+        { key: 'hunt', label: labels.hunt, route: '/(main)/hunt', icon: ICON_PATHS.hunt },
+        { key: 'social', label: labels.social, route: '/(main)/social', icon: ICON_PATHS.social },
         connectionTab,
     ];
 
-    // Render the bottom navigation bar using the tabs defined
     return (
-        <View style={styles.container}>
+        <View
+            style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                height: 80,
+                paddingTop: theme.SPACING.large,
+                paddingHorizontal: theme.SPACING.small,
+                backgroundColor: theme.COLORS.background,
+                borderTopWidth: 3,
+                borderTopColor: theme.COLORS.active,
+            }}
+        >
             {tabs.map((tab) => {
                 const isActive =
                     (tab.key === 'index' && (pathname === '/' || normalizeRoute(pathname) === normalizeRoute(tab.route))) ||
@@ -72,7 +86,13 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
                 return (
                     <TouchableOpacity
                         key={tab.key}
-                        style={styles.tabButton}
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingVertical: theme.SPACING.small,
+                            gap: theme.SPACING.small,
+                        }}
                         onPress={() => onNavigate ? onNavigate(tab.route) : router.push(tab.route as any)}
                         activeOpacity={0.7}
                     >
@@ -84,7 +104,14 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
                                 color={itemColor}
                             />
                         )}
-                        <Text style={[styles.label, { color: itemColor }]}>
+                        <Text
+                            style={{
+                                fontSize: theme.FONT_SIZES.tinyText,
+                                fontWeight: '600',
+                                marginTop: 2,
+                                color: itemColor,
+                            }}
+                        >
                             {tab.label}
                         </Text>
                     </TouchableOpacity>
@@ -94,28 +121,20 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        height: 80,
-        paddingTop: theme.SPACING.large,
-        paddingHorizontal: theme.SPACING.small,
-        backgroundColor: theme.COLORS.background,
-        borderTopWidth: 3,
-        borderTopColor: theme.COLORS.active,
+// Translations of tab labels
+const STATIC_TEXTS = {
+    fr: {
+        maps: 'Carte',
+        hunt: 'Chasses',
+        social: 'Social',
+        connection: 'Connexion',
+        profile: 'Profil',
     },
-    tabButton: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: theme.SPACING.small,
-        gap: theme.SPACING.small,
+    en: {
+        maps: 'Maps',
+        hunt: 'Hunts',
+        social: 'Social',
+        connection: 'Connection',
+        profile: 'Profile',
     },
-    label: {
-        fontSize: 12,
-        fontWeight: '600',
-        marginTop: 2,
-    },
-});
+};

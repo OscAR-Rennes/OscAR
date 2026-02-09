@@ -10,6 +10,7 @@ import BottomNavbar from '../components/ui/bottom-navbar';
 import { Ionicons } from '@expo/vector-icons';
 import ModifyPassword from '../components/modify-password';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLanguage } from '../context/LanguageContext';
 
 // Icon mapping
 const ICONS = {
@@ -22,10 +23,11 @@ function getIconUri(iconName: keyof typeof ICONS): string {
     return Asset.fromModule(iconSource).uri || '';
 }
 
-// Profil Modify screen
 export default function ProfilModifyScreen() {
     const router = useRouter();
+    const { language } = useLanguage(); // Retrieve current language
     const [showModifyPassword, setShowModifyPassword] = useState(false);
+    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -35,7 +37,7 @@ export default function ProfilModifyScreen() {
                 <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.large }}>
                     <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/profil')}>
                         <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
-                        <Text style={{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }}>Retour au Profil</Text>
+                        <Text style={{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }}>{texts.backButton}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -45,7 +47,7 @@ export default function ProfilModifyScreen() {
                         <SvgUri uri={getIconUri("image-placeholder.svg")} width={60} height={60} color={theme.COLORS.background} />
                     </View>
                     <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.large }}>
-                        <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]}>
+                        <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]}> {/* No translation needed here */}
                             <TextInput style={[{ fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700' }]} placeholder="Pseudo" placeholderTextColor={theme.COLORS.textPrimary} keyboardType="default" />
                         </TouchableOpacity>
                     </View>
@@ -55,41 +57,41 @@ export default function ProfilModifyScreen() {
                 <View>
                     {/* First Name */}
                     <View style={{ marginBottom: theme.SPACING.medium }}>
-                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>Prénom</Text>
+                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.firstNameLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder="Jean" placeholderTextColor={theme.COLORS.placeholder} keyboardType="default" />
+                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.firstNamePlaceholder} placeholderTextColor={theme.COLORS.placeholder} keyboardType="default" />
                         </View>
                     </View>
 
                     {/* Last Name */}
                     <View style={{ marginBottom: theme.SPACING.medium }}>
-                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>Nom</Text>
+                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.lastNameLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder="Dupont" placeholderTextColor={theme.COLORS.placeholder} keyboardType="default" />
+                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.lastNamePlaceholder} placeholderTextColor={theme.COLORS.placeholder} keyboardType="default" />
                         </View>
                     </View>
 
                     {/* Email */}
                     <View style={{ marginBottom: theme.SPACING.medium }}>
-                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>Adresse email</Text>
+                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.emailLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder="votre@email.com" placeholderTextColor={theme.COLORS.placeholder} keyboardType="email-address" />
+                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.emailPlaceholder} placeholderTextColor={theme.COLORS.placeholder} keyboardType="email-address" />
                         </View>
                     </View>
 
                     {/* Save Modifications Button */}
                     <TouchableOpacity activeOpacity={0.7}>
                         <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[{ width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }]}>
-                            <Text style={[globalStyles.text, { color: theme.COLORS.background, fontWeight: '700', paddingVertical: theme.SPACING.medium }]}>Enregistrer les modifications</Text>
+                            <Text style={[globalStyles.text, { color: theme.COLORS.background, fontWeight: '700', paddingVertical: theme.SPACING.medium }]}>{texts.saveButton}</Text>
                         </LinearGradient>
                     </TouchableOpacity>
 
                     <View style={{ borderRadius: 8, borderColor: theme.COLORS.border, borderWidth: 1, paddingVertical: theme.SPACING.medium, paddingHorizontal: theme.SPACING.large, marginTop: theme.SPACING.large, gap: theme.SPACING.medium }}>
-                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>Zone sensible</Text>
+                        <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.sensitiveZoneLabel}</Text>
 
                         {/* Modify Password Button */}
                         <TouchableOpacity activeOpacity={0.7} style={{ width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 8, backgroundColor: '#ffb7c1', borderWidth: 1, borderColor: theme.COLORS.error }} onPress={() => setShowModifyPassword(true)}>
-                            <Text style={[globalStyles.text, { fontWeight: '800', paddingVertical: theme.SPACING.medium }]}>Modifier mon mot de passe</Text>
+                            <Text style={[globalStyles.text, { fontWeight: '800', paddingVertical: theme.SPACING.medium }]}>{texts.modifyPasswordButton}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -112,3 +114,31 @@ export default function ProfilModifyScreen() {
         </SafeAreaView>
     );
 }
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        backButton: "Retour au Profil",
+        firstNameLabel: "Prénom",
+        firstNamePlaceholder: "Jean",
+        lastNameLabel: "Nom",
+        lastNamePlaceholder: "Dupont",
+        emailLabel: "Adresse email",
+        emailPlaceholder: "votre@email.com",
+        saveButton: "Enregistrer les modifications",
+        sensitiveZoneLabel: "Zone sensible",
+        modifyPasswordButton: "Modifier mon mot de passe",
+    },
+    en: {
+        backButton: "Back to Profile",
+        firstNameLabel: "First Name",
+        firstNamePlaceholder: "John",
+        lastNameLabel: "Last Name",
+        lastNamePlaceholder: "Doe",
+        emailLabel: "Email Address",
+        emailPlaceholder: "your@email.com",
+        saveButton: "Save Changes",
+        sensitiveZoneLabel: "Sensitive Zone",
+        modifyPasswordButton: "Change My Password",
+    },
+};
