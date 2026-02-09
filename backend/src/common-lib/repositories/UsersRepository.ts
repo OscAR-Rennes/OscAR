@@ -89,7 +89,6 @@ export class UserRepository  {
   }
 
   async switchUsersStatus(ids: SwitchStatusUsersRequestDTO): Promise<{ id: string; isActive: boolean }[]> {
-    console.log("begin sql", ids)
     const result = await pool.query(
       `
         UPDATE users
@@ -99,7 +98,6 @@ export class UserRepository  {
       `,
       [ids]
     );
-    console.log("fin sql")
     return result.rows;
   }
 

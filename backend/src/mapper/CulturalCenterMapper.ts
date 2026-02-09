@@ -12,7 +12,8 @@ export const culturalCenterMapper = {
     toLightWithouActiveDTO(culturalCenter: CulturalCenterEntity) {
         return {
             id: culturalCenter.id,
-            name: culturalCenter.name
+            name: culturalCenter.name,
+            isActive: culturalCenter.isActive
         }
     }
 };

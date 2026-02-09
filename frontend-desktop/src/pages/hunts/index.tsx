@@ -2,7 +2,7 @@ import { CreateHuntDto } from "../../api/models/hunts/AddHuntDto";
 import { CreateIndexDto } from "../../api/models/index/AddIndexDto";
 import { CreateStepDto } from "../../api/models/steps/AddStepDto";
 import DynamicForm from "../../common/components/dynamic_form/DynamicForm";
-import { useHomeData } from "./home.data";
+import { useHomeData } from "./hunts.data";
 import { useState } from "react";
 
 export default function Home() {
@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <>
-      <h1>Lootopia V0.0.1</h1>
+      <h1>Lootopia V0.0.1 - Hunt management</h1>
 
       <section>
         <h2>Ajouter une chasse</h2>

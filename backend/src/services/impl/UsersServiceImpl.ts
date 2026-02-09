@@ -125,6 +125,7 @@ export class UsersServiceImpl implements UsersService {
 
   async switchUsersStatus(ids: SwitchStatusUsersRequestDTO): Promise<boolean> {
     try {
+      console.log(ids)
       const updatedUsers = await userRepository.switchUsersStatus(ids);
 
       if (updatedUsers.length === 0) {

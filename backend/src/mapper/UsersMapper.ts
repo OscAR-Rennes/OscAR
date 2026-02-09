@@ -7,6 +7,8 @@ export const userMapper = {
     return {
       id: entity.id,
       email: entity.email,
+      isActive: entity.isActive,
+      username: entity.username
     };
   },
 
