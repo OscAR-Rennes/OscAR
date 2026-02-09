@@ -8,6 +8,7 @@ import HeaderNavbar from '@/components/ui/header-navbar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNavbar from '@/components/ui/bottom-navbar';
 import SectionTitle from '../components/section-title';
+import { useLanguage } from '../context/LanguageContext';
 
 // Icon mapping
 const ICONS = {
@@ -28,38 +29,53 @@ function getIconUri(iconName: IconName): string {
 }
 
 // Social Leaderboard screen
-
 export default function SocialLeaderboardScreen() {
     const router = useRouter();
-        
-  return (
-    <SafeAreaView style={{backgroundColor: theme.COLORS.background, flex: 1}}>
-        <HeaderNavbar/>
+    const { language } = useLanguage(); // Retrieve the current language
+    const texts = STATIC_TEXTS[language]; // Retrieve the translated texts
 
-        <View style={{flex: 1, paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.medium}}>
+    return (
+        <SafeAreaView style={{backgroundColor: theme.COLORS.background, flex: 1}}>
+            <HeaderNavbar/>
 
-            {/* Back Button */}
-            <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/social')} activeOpacity={0.7}>
-                <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
-                <Text style={[{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>
-                    Retour au Social
-                </Text>
-            </TouchableOpacity>
+            <View style={{flex: 1, paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.medium}}>
 
-            {/* Global Leaderboard */}
-            <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
-                <SectionTitle 
-                    title="Classement Global" 
-                    iconUri={getIconUri("trophy.svg")} 
-                    iconColor={theme.COLORS.secondary} 
-                />
-                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste des meilleurs joueurs à venir</Text>
+                {/* Back Button */}
+                <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/social')} activeOpacity={0.7}>
+                    <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
+                    <Text style={[{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>
+                        {texts.backButton}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Global Leaderboard */}
+                <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
+                    <SectionTitle 
+                        title={texts.leaderboardTitle} 
+                        iconUri={getIconUri("trophy.svg")} 
+                        iconColor={theme.COLORS.secondary} 
+                    />
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.leaderboardPlaceholder}</Text>
+                </View>
             </View>
-        </View>
 
-        <View style={{flex: 1, justifyContent: 'flex-end'}}>
-            <BottomNavbar/>
-        </View>
-    </SafeAreaView>
-  );
+            <View style={{flex: 1, justifyContent: 'flex-end'}}>
+                <BottomNavbar/>
+            </View>
+        </SafeAreaView>
+    );
 }
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        backButton: "Retour au Social",
+        leaderboardTitle: "Classement Global",
+        leaderboardPlaceholder: "Liste des meilleurs joueurs à venir",
+    },
+    en: {
+        backButton: "Back to Social",
+        leaderboardTitle: "Global Leaderboard",
+        leaderboardPlaceholder: "List of top players coming soon",
+    },
+};

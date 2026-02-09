@@ -9,6 +9,7 @@ import { SvgUri } from 'react-native-svg';
 import { TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import SectionTitle from '../../components/section-title';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Icon mapping
 const ICONS = {
@@ -30,42 +31,43 @@ function getIconUri(iconName: IconName): string {
     return Asset.fromModule(iconSource).uri || '';
 }
 
-// Social screen
 export default function SocialScreen() {
     const { isAuthenticated } = useAuth();
+    const { language } = useLanguage(); // Retrieve current language
+    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
     return (
-        <ScrollView style={{ backgroundColor: theme.COLORS.background }} contentContainerStyle={{ paddingTop: theme.SPACING.small, paddingHorizontal: theme.SPACING.medium, height: '100%' }}>
+        <ScrollView contentContainerStyle={{ paddingTop: theme.SPACING.small, paddingHorizontal: theme.SPACING.medium, height: '100%' }}>
             
             {/* Friend Requests - Display only if user is authenticated */}
             {isAuthenticated && (
                 <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
                     <SectionTitle 
-                        title="Demandes d'amis (0)" 
+                        title={texts.friendRequestsTitle} 
                         iconUri={getIconUri("envelope.svg")} 
                         iconColor={theme.COLORS.success} 
                     />
-                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste des demandes d'amis à venir</Text>
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.friendRequestsListMessage}</Text>
                 </View>
             )}
 
             {/* Friends Leaderboard */}
             <View style={{ borderRadius: 8, borderColor: theme.COLORS.border, borderWidth: 1, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
                 <SectionTitle 
-                    title="Classement des Amis" 
+                    title={texts.friendsLeaderboardTitle} 
                     iconUri={getIconUri("trophy.svg")} 
                     iconColor={theme.COLORS.secondary} 
                 />
                 {!isAuthenticated ? (
                     <PlaceholderNotConnected
                         icon="group.svg"
-                        message="Connectez-vous pour pouvoir ajouter des amis et voir leur progression !"
-                        buttonText="Se connecter →"
+                        message={texts.friendRequestsPlaceholderMessage}
+                        buttonText={texts.connectButtonText}
                         onPress={() => router.push('/connection')}
                     />
                 ) : (
                     <>
-                        <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste des amis à venir</Text>
+                        <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.friendsListMessage}</Text>
 
                         {/* All friends button */}
                         <TouchableOpacity style={[{ width: '100%', marginTop: theme.SPACING.medium }]} onPress={() => router.push('/social-friends')}>
@@ -76,7 +78,7 @@ export default function SocialScreen() {
                                 style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 20, height: 35 }]}
                             >
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
-                                    <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>Voir plus</Text>
+                                    <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{texts.seeMoreButtonText}</Text>
                                     <SvgUri uri={getIconUri("plus.svg")} width={20} height={20} color={theme.COLORS.background} />
                                 </View>
                             </LinearGradient>
@@ -89,10 +91,10 @@ export default function SocialScreen() {
             <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
                 <View style={{ flexDirection: 'row', marginBottom: theme.SPACING.large, width: '100%' }}>
                     <SvgUri uri={getIconUri("trophy.svg")} width={30} height={30} color={theme.COLORS.secondary} />
-                    <Text style={{ marginLeft: theme.SPACING.small, fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700', color: theme.COLORS.textPrimary }}>Classement Global</Text>
+                    <Text style={{ marginLeft: theme.SPACING.small, fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700', color: theme.COLORS.textPrimary }}>{texts.globalLeaderboardTitle}</Text>
                 </View>
-                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>Liste des meilleurs joueurs à venir</Text>
-                
+                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.globalLeaderboardMessage}</Text>
+
                 {/* All leaderboard informations */}
                 <TouchableOpacity style={[{ width: '100%', marginTop: theme.SPACING.medium }]} onPress={() => router.push('/social-leaderboard')}>
                     <LinearGradient
@@ -102,7 +104,7 @@ export default function SocialScreen() {
                         style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 20, height: 35 }]}
                     >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
-                            <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>Voir plus</Text>
+                            <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{texts.seeMoreButtonText}</Text>
                             <SvgUri uri={getIconUri("plus.svg")} width={20} height={20} color={theme.COLORS.background} />
                         </View>
                     </LinearGradient>
@@ -111,3 +113,29 @@ export default function SocialScreen() {
         </ScrollView>
     );
 }
+
+// Translations of static texts
+const STATIC_TEXTS = {
+    fr: {
+        friendRequestsTitle: "Demandes d'amis (0)",
+        friendRequestsPlaceholderMessage: "Connectez-vous pour pouvoir ajouter des amis et voir leur progression !",
+        friendsLeaderboardTitle: "Classement des Amis",
+        globalLeaderboardTitle: "Classement Global",
+        globalLeaderboardMessage: "Liste des meilleurs joueurs à venir",
+        connectButtonText: "Se connecter →",
+        seeMoreButtonText: "Voir plus",
+        friendRequestsListMessage: "Liste des demandes d'amis à venir",
+        friendsListMessage: "Liste des amis à venir",
+    },
+    en: {
+        friendRequestsTitle: "Friend Requests (0)",
+        friendRequestsPlaceholderMessage: "Log in to add friends and see their progress !",
+        friendsLeaderboardTitle: "Friends Leaderboard",
+        globalLeaderboardTitle: "Global Leaderboard",
+        globalLeaderboardMessage: "List of top players coming soon",
+        connectButtonText: "Log in →",
+        seeMoreButtonText: "See more",
+        friendRequestsListMessage: "Friend requests list coming soon",
+        friendsListMessage: "Friends list coming soon",
+    },
+};
