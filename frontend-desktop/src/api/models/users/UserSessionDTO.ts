@@ -1,6 +1,6 @@
 export interface UserSessionDTO {
-    id: number,
-    username: string, //to delete
-    //role: string,
-    //cultural_center: number,
+    id: string,
+    username: string,
+    rights: string[],
+    id_cultural_center: string | null,
 }

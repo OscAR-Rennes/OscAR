@@ -1,0 +1,30 @@
+components:
+
+  schemas:
+
+    IndexCreateRequestDTO:
+      type: object
+      required:
+        - name
+        - hunt_id
+      properties:
+        name:
+          type: string
+        hunt_id:
+          type: string
+
+    IndexCreateResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    IndexLightDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string

@@ -10,7 +10,7 @@ export async function generateToken(user: AuthResponseDTO) {
     id: user.id.toString(),
     username: user.username, //to delete
     rights: user.rights,
-    //permissions: user.permissions,
+    cultural_center: user.id_cultural_center,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("2h")

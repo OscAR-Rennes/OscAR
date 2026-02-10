@@ -12,8 +12,11 @@ export class HuntServiceImpl implements HuntService {
 
     async createHunt(huntData: CreateHuntRequestDTO, userId: string): Promise<CreateHuntResponseDTO> {
         try {
-            huntData.creator_id = userId
-            const hunt = await huntRepository.create(huntData);
+            const huntToCreate = {
+                ...huntData,
+                creator_id: userId,
+            };
+            const hunt = await huntRepository.create(huntToCreate);
             const huntDTO: CreateHuntResponseDTO = huntMapper.toCreateResponseDto(hunt);
             return huntDTO;
         } catch (error: any) {

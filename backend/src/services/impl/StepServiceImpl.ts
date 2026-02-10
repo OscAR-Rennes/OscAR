@@ -13,20 +13,19 @@ export class StepServiceImpl implements StepService {
 
     async createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO> {
         try {
-
+            let stepToCreate = stepData;
             if (!stepData.index_id) {
                 const index = await indexRepository.createIncrementEmpty(stepData.hunt_id);
                 stepData.index_id = index.id;
-                const step = await stepRepository.create(stepData);
-                const stepDto: CreateStepResponseDTO = stepMapper.toCreateResponseDto(step);
-                return stepDto;
+                stepToCreate = {
+                    ...stepData,
+                    index_id: index.id,
+                };
 
-            } else {
-                const step = await stepRepository.create(stepData);
-                const stepDto: CreateStepResponseDTO = stepMapper.toCreateResponseDto(step);
-                return stepDto;
             }
 
+            const step = await stepRepository.create(stepToCreate);
+            return stepMapper.toCreateResponseDto(step);
 
         } catch (error: any) {
             throw new AppError({

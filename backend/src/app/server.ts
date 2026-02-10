@@ -14,6 +14,9 @@ import difficultyRoutes from '../routes/DifficultyRoutes.js';
 import { runMigrations } from '../common-lib/config/runMigrations.js';
 import { RoleEnum } from '../common-lib/enum/roleEnum.js';
 import indexRoutes from '../routes/IndexRoutes.js';
+import culturalCenterRoutes from '../routes/CulturalCenterRoutes.js';
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "../swagger/swagger.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -27,13 +30,21 @@ app.use(cookieParser());
 
 app.use('/api', usersRoutes);
 app.use('/api', authRoutes);
-app.use('/api', requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]), huntsRoutes);
-app.use('/api', requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]), stepsRoutes);
-app.use('/api', requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]), indexRoutes);
-app.use('/api', requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]), difficultyRoutes)
+app.use('/api', huntsRoutes);
+app.use('/api', stepsRoutes);
+app.use('/api', indexRoutes);
+app.use('/api', difficultyRoutes)
+app.use('/api', culturalCenterRoutes)
 
 // Routes admin protégées par le middleware requireRole
 app.use('/api/admin', requireRole(RoleEnum.ADMIN), adminRoutes);
+
+// Swagger
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 // Routes non définies()
 app.use((req, res, next) => {

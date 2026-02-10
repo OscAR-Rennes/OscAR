@@ -7,9 +7,8 @@ export const authMapper = {
     return {
         id: entity.id,
         username: entity.username, //to delete
-        rights: entity.rights
-        //cultural_center: number,
+        rights: entity.rights,
+        id_cultural_center: entity.id_cultural_center ?? null,
     };
-  },
-
+  }
 };

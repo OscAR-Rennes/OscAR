@@ -14,8 +14,7 @@ export class IndexServiceImpl implements IndexService {
     async createIndex(indexData: CreateIndexRequestDTO): Promise<CreateIndexResponseDTO> {
         try {
             const index = await indexRepository.create(indexData);
-            const indexDTO = indexMapper.toCreateResponseDto(index);
-            return indexDTO;
+            return indexMapper.toCreateResponseDto(index);
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la création de l\'index',
@@ -24,10 +23,10 @@ export class IndexServiceImpl implements IndexService {
         }
     }
 
-    async getIndexByHunt(huntId: GetIndexByHuntRequestDTO): Promise<GetIndexByHuntResponseDTO[]> {
+    async getIndexByHunt(huntId: string): Promise<GetIndexByHuntResponseDTO[]> {
         try {
-            const index = await indexRepository.getByHuntID(huntId);
-            return index.map(indexMapper.toLightDTO);
+            const indexes = await indexRepository.getByHuntID(huntId);
+            return indexes.map(indexMapper.toLightDTO);
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des index de la chasse',

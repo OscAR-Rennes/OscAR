@@ -1,0 +1,26 @@
+components:
+
+  schemas:
+
+    AuthResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        rights:
+          type: array
+          items:
+            type: string
+        id_cultural_center:
+          type: string
+          nullable: true
+
+    AuthRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string

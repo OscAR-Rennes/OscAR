@@ -1,7 +1,7 @@
 import { apiClient } from '../apiClient';
 
 export function logUser(loginData) {
-  return apiClient('/auth/login', { method: 'POST', body: loginData });
+  return apiClient('/auth/login/web', { method: 'POST', body: loginData });
 
 }
 

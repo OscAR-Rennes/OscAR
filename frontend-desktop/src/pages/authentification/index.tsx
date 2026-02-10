@@ -1,68 +1,44 @@
+import { useState } from "react";
 import DynamicForm from "../../common/components/dynamic_form/DynamicForm.jsx";
-import { CreateUserDto } from "../../api/models/users/AddUserDto.js";
-import { LogUserDto } from "../../api/models/users/LogUserDto.js";
-import { addUser } from "../../api/services/users.api.js";
-import { currentUser, logoutUser, logUser } from "../../api/services/auth.api.js";
 import { useAuthStore } from "../../common/store/authStore";
-import { useNotificationStore } from "../../common/store/notificationStore";
+import { useAuthentificationData } from "./authentification.data";
 
 export default function Authentification() {
+  
+  const {
+    addLoginFields,
+    addSigninFields,
+    handleLogout,
+    handleSubmitLogin,
+    handleSubmitSignin
+  } = useAuthentificationData();
 
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const clearUser = useAuthStore((state) => state.clearUser);
-  const setUser = useAuthStore((state) => state.setUser);
-    
-  const signinFields = [
-    { name: "email", label: "Email", type: "email", required: true },
-    { name: "password", label: "Mot de passe", type: "password", required: true },
-    { name: "username", label: "Nom d'utilisateur", type: "text", required: true },
-  ];
 
-  const loginFields = [
-    { name: "email", label: "Email", type: "email", required: true },
-    { name: "password", label: "Mot de passe", type: "password", required: true },
-  ]
-
-  const handleSubmitSignin = async (values: CreateUserDto) => {
-
-    if (!values.email || !values.username || !values.password) {
-      console.error("Missing fields");
-      return;
-    }
-
-    const newUser = await addUser(values);
-    setUser(newUser);
-  };
-
-  const handleSubmitLogin = async (values: LogUserDto) => {
-
-    if (!values.email || !values.password) {
-      console.error("Missing field");
-      return;
-    }
-
-    const newUser = await logUser(values);
-    setUser(newUser);
-  };
-
-  const handleLogout = async () => {
-    await logoutUser();
-    clearUser();
-  };
+  const [resetLoginForm, setResetLoginForm] = useState(0);
+  const [resetSigninForm, setResetSigninForm] = useState(0);
 
   return (
     <>
       <DynamicForm
-        fields={signinFields}
-        onSubmit={handleSubmitSignin}
+        fields={addSigninFields}
+        onSubmit={async (data: any) => {
+          await handleSubmitSignin(data);
+          setResetSigninForm((n) => n + 1); 
+        }}
         submitLabel="Envoyer"
+        resetSignal={resetSigninForm}
       />
 
       <DynamicForm
-        fields={loginFields}
-        onSubmit={handleSubmitLogin}
+        fields={addLoginFields}
+        onSubmit={async (data: any) => {
+          await handleSubmitLogin(data);
+          setResetLoginForm((n) => n + 1); 
+        }}
         submitLabel="Envoyer"
+        resetSignal={resetLoginForm}
       />
       
       <section aria-label="Auth actions">

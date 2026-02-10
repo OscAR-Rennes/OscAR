@@ -5,5 +5,5 @@ import { GetIndexByHuntRequestDTO } from "../common-lib/dto/index/GetIndexByHunt
 
 export interface IndexService {
   createIndex(indexData: CreateIndexRequestDTO): Promise<CreateIndexResponseDTO>;
-  getIndexByHunt(huntId: GetIndexByHuntRequestDTO): Promise<GetIndexByHuntResponseDTO[]>;
+  getIndexByHunt(huntId: string): Promise<GetIndexByHuntResponseDTO[]>;
 }
