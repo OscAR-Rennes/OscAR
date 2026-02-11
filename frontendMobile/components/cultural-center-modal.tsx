@@ -2,6 +2,8 @@ import React from 'react';
 import { Modal, View, Text, Image, TouchableOpacity } from 'react-native';
 import { theme, globalStyles } from '../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Animated } from 'react-native';
+import { useEffect, useRef } from 'react';
 
 interface CulturalCenterModalProps {
     visible: boolean;
@@ -12,32 +14,61 @@ interface CulturalCenterModalProps {
     onViewCenter: () => void;
 }
 
-const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({
-    visible,
-    culturalCenterName,
-    culturalCenterDescription,
-    onClose,
-}) => {
+const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, culturalCenterName, culturalCenterDescription, onClose, }) => {
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const resetAnimation = () => {
+        fadeAnim.setValue(0);
+    };
+
+    useEffect(() => {
+        if (visible) {
+            resetAnimation();
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                onClose();
+            });
+        }
+    }, [visible]);
+
+    const closeModalWithAnimation = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => {
+            onClose();
+        });
+    };
+
     return (
         <Modal
-            animationType="slide"
+            animationType="none"
             transparent={true}
             visible={visible}
-            onRequestClose={onClose}
+            onRequestClose={closeModalWithAnimation}
         >
-            <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                <TouchableOpacity style={{ flex: 1 }} onPress={onClose} />
-                <View style={{ height: '42%', width: '100%', backgroundColor: theme.COLORS.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: theme.SPACING.large, }}>
-                    
+            <Animated.View style={{ flex: 1, backgroundColor: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)']
+            }) }}>
+                <TouchableOpacity style={{ flex: 1 }} onPress={closeModalWithAnimation} />
+                <Animated.View style={{ transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }], height: '42%', width: '100%', backgroundColor: theme.COLORS.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: theme.SPACING.large }}>
                     {/* Cultural Center Informations */}
                     <Image source={{ uri: 'https://picsum.photos/800/1200' }} style={{ width: '100%', height: 150, borderRadius: 10, marginBottom: theme.SPACING.medium, }} />
                     <Text style={{ ...globalStyles.title, marginBottom: theme.SPACING.small }}> {culturalCenterName} </Text>
                     <Text style={{ ...globalStyles.text, color: theme.COLORS.textSecondary, marginBottom: theme.SPACING.medium }}> {culturalCenterDescription} </Text>
-                    
                     <View style={{ flexDirection: 'column', width: '100%', gap: theme.SPACING.small }}>
-                        
-                        {/* See more informations */}
-                        <TouchableOpacity style={[{ width: '100%' }]} onPress={onClose}>
+                        <TouchableOpacity style={[{ width: '100%' }]} onPress={closeModalWithAnimation}>
                             <LinearGradient
                                 colors={[theme.COLORS.primary, theme.COLORS.secondary]}
                                 start={{ x: 0, y: 0 }}
@@ -50,8 +81,8 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
-                </View>
-            </View>
+                </Animated.View>
+            </Animated.View>
         </Modal>
     );
 };
