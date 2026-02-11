@@ -5,73 +5,22 @@ import { useCheckRights } from "../../common/components/security/CheckRights";
 import { useAuthStore } from "../../common/store/authStore";
 import { activateDeactivateUsers, getAllUsers, getUsersByCulturalCenter } from "../../api/services/users.api";
 import { activateDeactivateCulturalCenter, getAllCulturalCenters } from "../../api/services/culturalcenter.api";
+import { useUsersnData } from "./users.data";
 
 
 export default function Users() {
 
-  const [selectedUsersRows, setSelectedUsersRows] = useState([]);
-  const [selectedCulturalCentersRows, setSelectedCulturalCenterssRows] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [culturalCenters, setCulturalCenters] = useState([])
-
-  const checkRights = useCheckRights();
-
-  const isAdmin = checkRights(RoleEnum.ADMIN)
-  const isCulturalCenterManager = checkRights(RoleEnum.CULTURAL_CENTER_MANAGER)
-
-  const user = useAuthStore((state) => state.user);
-  
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchData = async () => {
-    const usersData = await (
-      isAdmin
-        ? getAllUsers()
-        : getUsersByCulturalCenter(user.id_cultural_center)
-    );
-
-      setUsers(usersData)
-
-      if (isAdmin) {
-        const culturalCentersData = await getAllCulturalCenters()
-        setCulturalCenters(culturalCentersData)
-      }
-    }
-
-    fetchData()
-  }, [user])
-
-  const refreshUsers = async () => {
-    const usersData = await (
-      isAdmin
-        ? getAllUsers()
-        : getUsersByCulturalCenter(user.id_cultural_center)
-    );
-    setUsers(usersData)
-  };
-
-  const refreshCulturalCenters = async () => {
-    if (isAdmin) {
-      const culturalCentersData = await getAllCulturalCenters()
-      setCulturalCenters(culturalCentersData)
-    }
-  };
-
-  const handleActivateDeactivateUsers = async () => {
-    const ids = selectedUsersRows.map(row => row.id);
-    await activateDeactivateUsers(ids)
-    setSelectedUsersRows([])
-    refreshUsers()
-  };
-
-  const handleActivateDeactivateCulturalCenters = async () => {
-    const ids = selectedCulturalCentersRows.map(row => row.id);
-    await activateDeactivateCulturalCenter(ids)
-    setSelectedCulturalCenterssRows([])
-    refreshCulturalCenters()
-    refreshUsers()
-  };
+  const {
+    isAdmin,
+    users,
+    culturalCenters,
+    setSelectedUsersRows,
+    setSelectedCulturalCenterssRows,
+    userColumns,
+    culturalCentersColumns,
+    handleActivateDeactivateCulturalCenters,
+    handleActivateDeactivateUsers
+  } = useUsersnData();
 
   return (
     <>
@@ -91,15 +40,7 @@ export default function Users() {
           </button>
           <Table
             data={users}
-            columns={[
-              { key: "username", label: "Username" },
-              { key: "email", label: "Email"},
-              {
-                key: "isActive",
-                label: "Status",
-                render: (row) => (row.isActive ? "🟢 Actif" : "🔴 Inactif"),
-              }
-            ]}
+            columns={userColumns}
             onRowSelect={(rows) => setSelectedUsersRows(rows)}
           />
         </>
@@ -115,14 +56,7 @@ export default function Users() {
           </button>
           <Table
             data={culturalCenters}
-            columns={[
-              { key: "name", label: "Name" },
-              {
-                key: "isActive",
-                label: "Status",
-                render: (row) => (row.isActive ? "🟢 Actif" : "🔴 Inactif"),
-              }
-            ]}
+            columns={culturalCentersColumns}
             onRowSelect={(rows) => setSelectedCulturalCenterssRows(rows)}
           />
         </>
