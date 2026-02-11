@@ -90,6 +90,10 @@ export default function MapsScreen() {
         setSearchQuery('');
         setFilteredCenters([]);
         setFlatListVisible(false);
+
+        // Show the modal and set the selected center
+        setSelectedCenter(center);
+        setModalVisible(true);
     };
 
     const handleDeepLTranslation = async (lang: 'fr' | 'en') => {
