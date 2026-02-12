@@ -4,11 +4,10 @@ import { useAuthStore } from "../../common/store/authStore";
 import { useAuthentificationData } from "./authentification.data";
 
 export default function Authentification() {
-  
   const {
     addLoginFields,
     addSigninFields,
-    handleLogout,
+    //handleLogout,
     handleSubmitLogin,
     handleSubmitSignin
   } = useAuthentificationData();
@@ -18,39 +17,68 @@ export default function Authentification() {
 
   const [resetLoginForm, setResetLoginForm] = useState(0);
   const [resetSigninForm, setResetSigninForm] = useState(0);
+  const [showSignin, setShowSignin] = useState(true);
+
+  if (isAuthenticated) {
+    return <div>Vous êtes déjà connecté.</div>;
+  }
 
   return (
     <>
-      <DynamicForm
-        fields={addSigninFields}
-        onSubmit={async (data: any) => {
-          await handleSubmitSignin(data);
-          setResetSigninForm((n) => n + 1); 
-        }}
-        submitLabel="Envoyer"
-        resetSignal={resetSigninForm}
-      />
-
-      <DynamicForm
-        fields={addLoginFields}
-        onSubmit={async (data: any) => {
-          await handleSubmitLogin(data);
-          setResetLoginForm((n) => n + 1); 
-        }}
-        submitLabel="Envoyer"
-        resetSignal={resetLoginForm}
-      />
-      
-      <section aria-label="Auth actions">
-        <button
-          type="button"
-          onClick={() => {
-            console.log("AUTH STORE:", { user, isAuthenticated });
+      {showSignin ? (
+        <DynamicForm
+          fields={addSigninFields}
+          onSubmit={async (data: any) => {
+            await handleSubmitSignin(data);
+            setResetSigninForm((n) => n + 1);
+            setShowSignin(false);
           }}
-        >
-          Debug auth store
-        </button>
+          submitLabel="S'inscrire"
+          resetSignal={resetSigninForm}
+          footer={
+            <span>
+              Vous avez déjà un compte ?{" "}
+              <a
+                href="#"
+                className="dynamic-form-link secondary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowSignin(false);
+                }}
+              >
+                Connectez-vous !
+              </a>
+            </span>
+          }
+        />
+      ) : (
+        <DynamicForm
+          fields={addLoginFields}
+          onSubmit={async (data: any) => {
+            await handleSubmitLogin(data);
+            setResetLoginForm((n) => n + 1);
+          }}
+          submitLabel="Se connecter"
+          resetSignal={resetLoginForm}
+          footer={
+            <span>
+              Pas encore de compte ?{" "}
+              <a
+                href="#"
+                className="dynamic-form-link secondary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowSignin(true);
+                }}
+              >
+                Inscrivez-vous !
+              </a>
+            </span>
+          }
+        />
+      )}
 
+      {/* <section aria-label="Auth actions">
         <button
           type="button"
           onClick={handleLogout}
@@ -58,9 +86,7 @@ export default function Authentification() {
         >
           Se déconnecter
         </button>
-      </section>
-
+      </section> */}
     </>
-
   );
 }

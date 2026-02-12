@@ -1,0 +1,127 @@
+/* Fond général */
+body, .dynamic-form-bg {
+  min-height: 100vh;
+  width: 100vw;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Conteneur des deux formulaires */
+.forms-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Formulaire */
+.dynamic-form-container {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 370px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Titre et sous-titre */
+.dynamic-form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.dynamic-form-title {
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1px;
+}
+.dynamic-form-subtitle {
+  font-size: 1.08rem;
+  color: #222;
+  margin: 0.2rem 0 0 0;
+}
+
+/* Champs */
+.dynamic-form-field {
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+.dynamic-form-container label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.dynamic-form-container input,
+.dynamic-form-container select {
+  width: 100%;
+  padding: 0.9rem 1rem 0.9rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: #fafafa;
+  font-size: 1rem;
+  margin-bottom: 0.1rem;
+  box-sizing: border-box;
+}
+.dynamic-form-container input[type="password"] {
+  letter-spacing: 0.2em;
+}
+
+/* Icônes dans les champs */
+.dynamic-form-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: #bdbdbd;
+  pointer-events: none;
+}
+
+/* Bouton */
+.dynamic-form-container button[type="submit"] {
+  width: 100%;
+  padding: 1rem 0;
+  margin-top: 1.2rem;
+  border: none;
+  border-radius: 12px;
+  background: #4953d3;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.dynamic-form-container button[type="submit"]:hover {
+  opacity: 0.93;
+}
+
+/* Liens */
+.dynamic-form-link {
+  color: #4953d3;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  display: inline-block;
+  font-size: 0.98rem;
+}
+.dynamic-form-link.secondary {
+  color: #4953d3;
+  font-weight: bold;
+}
+.dynamic-form-footer {
+  margin-top: 1.2rem;
+  text-align: left;
+  font-size: 0.98rem;
+}
+.dynamic-form-footer a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #4953d3;
+}

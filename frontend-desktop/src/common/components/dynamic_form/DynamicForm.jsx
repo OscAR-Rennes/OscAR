@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import "./DynamicForm.style.css";
 
-export default function DynamicForm({ fields, onSubmit, submitLabel = "Valider", onFieldChange = undefined, resetSignal = 0 }) {
+export default function DynamicForm({ fields, onSubmit, submitLabel = "Valider", onFieldChange = undefined, resetSignal = 0, footer = null }) {
   const [values, setValues] = useState(() =>
     fields.reduce((acc, field) => {
       acc[field.name] = field.defaultValue ?? "";
@@ -64,19 +65,26 @@ export default function DynamicForm({ fields, onSubmit, submitLabel = "Valider",
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {fields.map((field) => (
-        <div key={field.name} style={{ marginBottom: "1rem" }}>
-          <label>
-            {field.label}
-            {field.required && " *"}
-          </label>
-
-          {renderField(field)}
+    <div className="dynamic-form-bg">
+      <form className="dynamic-form-container" onSubmit={handleSubmit}>
+        <div className="dynamic-form-header">
+          <h1 className="dynamic-form-title">LOOTOPIA</h1>
+          <p className="dynamic-form-subtitle">La chasse vous attend !</p>
         </div>
-      ))}
-
-      <button type="submit">{submitLabel}</button>
-    </form>
+        {fields.map((field) => (
+          <div key={field.name} className="dynamic-form-field">
+            <label>
+              {field.label}
+              {field.required && " *"}
+            </label>
+            {renderField(field)}
+          </div>
+        ))}
+        <p className="dynamic-form-legend"><span className="required-star">*</span> champs obligatoires</p>
+        
+        <button type="submit">{submitLabel}</button>
+        {footer && <div className="dynamic-form-footer">{footer}</div>}
+      </form>
+    </div>
   );
 }
