@@ -24,18 +24,24 @@ export default function Authentification() {
   }
 
   return (
-    <>
+    <div className="dynamic-form-bg">
       {showSignin ? (
-        <DynamicForm
-          fields={addSigninFields}
-          onSubmit={async (data: any) => {
-            await handleSubmitSignin(data);
-            setResetSigninForm((n) => n + 1);
-            setShowSignin(false);
-          }}
-          submitLabel="S'inscrire"
-          resetSignal={resetSigninForm}
-          footer={
+        <>
+          <div className="dynamic-form-header">
+            <h1 className="dynamic-form-title">LOOTOPIA</h1>
+            <p className="dynamic-form-subtitle">La chasse vous attend !</p>
+          </div>
+          <DynamicForm
+            fields={addSigninFields}
+            onSubmit={async (data: any) => {
+              await handleSubmitSignin(data);
+              setResetSigninForm((n) => n + 1);
+              setShowSignin(false);
+            }}
+            submitLabel="S'inscrire"
+            resetSignal={resetSigninForm}
+          />
+          <div className="dynamic-form-footer">
             <span>
               Vous avez déjà un compte ?{" "}
               <a
@@ -49,18 +55,24 @@ export default function Authentification() {
                 Connectez-vous !
               </a>
             </span>
-          }
-        />
+          </div>
+        </>
       ) : (
-        <DynamicForm
-          fields={addLoginFields}
-          onSubmit={async (data: any) => {
-            await handleSubmitLogin(data);
-            setResetLoginForm((n) => n + 1);
-          }}
-          submitLabel="Se connecter"
-          resetSignal={resetLoginForm}
-          footer={
+        <>
+          <div className="dynamic-form-header">
+            <h1 className="dynamic-form-title">LOOTOPIA</h1>
+            <p className="dynamic-form-subtitle">La chasse vous attend !</p>
+          </div>
+          <DynamicForm
+            fields={addLoginFields}
+            onSubmit={async (data: any) => {
+              await handleSubmitLogin(data);
+              setResetLoginForm((n) => n + 1);
+            }}
+            submitLabel="Se connecter"
+            resetSignal={resetLoginForm}
+          />
+          <div className="dynamic-form-footer">
             <span>
               Pas encore de compte ?{" "}
               <a
@@ -74,8 +86,8 @@ export default function Authentification() {
                 Inscrivez-vous !
               </a>
             </span>
-          }
-        />
+          </div>
+        </>
       )}
 
       {/* <section aria-label="Auth actions">
@@ -87,6 +99,6 @@ export default function Authentification() {
           Se déconnecter
         </button>
       </section> */}
-    </>
+    </div>
   );
 }
