@@ -2,6 +2,8 @@ import { useState } from "react";
 import DynamicForm from "../../common/components/dynamic_form/DynamicForm.jsx";
 import { useAuthStore } from "../../common/store/authStore";
 import { useAuthentificationData } from "./authentification.data";
+import Modal from "../../common/components/modal/Modal.jsx";
+import "./authentification.style.css";
 
 export default function Authentification() {
   const {
@@ -24,12 +26,12 @@ export default function Authentification() {
   }
 
   return (
-    <div className="dynamic-form-bg">
+    <Modal>
       {showSignin ? (
         <>
-          <div className="dynamic-form-header">
-            <h1 className="dynamic-form-title">LOOTOPIA</h1>
-            <p className="dynamic-form-subtitle">La chasse vous attend !</p>
+          <div className="auth-header">
+            <h1 className="auth-title">LOOTOPIA</h1>
+            <p className="auth-subtitle">La chasse vous attend !</p>
           </div>
           <DynamicForm
             fields={addSigninFields}
@@ -41,12 +43,12 @@ export default function Authentification() {
             submitLabel="S'inscrire"
             resetSignal={resetSigninForm}
           />
-          <div className="dynamic-form-footer">
+          <div className="auth-footer">
             <span>
               Vous avez déjà un compte ?{" "}
               <a
                 href="#"
-                className="dynamic-form-link secondary"
+                className="auth-link secondary"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowSignin(false);
@@ -59,9 +61,9 @@ export default function Authentification() {
         </>
       ) : (
         <>
-          <div className="dynamic-form-header">
-            <h1 className="dynamic-form-title">LOOTOPIA</h1>
-            <p className="dynamic-form-subtitle">La chasse vous attend !</p>
+          <div className="auth-header">
+            <h1 className="auth-title">LOOTOPIA</h1>
+            <p className="auth-subtitle">La chasse vous attend !</p>
           </div>
           <DynamicForm
             fields={addLoginFields}
@@ -72,12 +74,12 @@ export default function Authentification() {
             submitLabel="Se connecter"
             resetSignal={resetLoginForm}
           />
-          <div className="dynamic-form-footer">
+          <div className="auth-footer">
             <span>
               Pas encore de compte ?{" "}
               <a
                 href="#"
-                className="dynamic-form-link secondary"
+                className="auth-link secondary"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowSignin(true);
@@ -99,6 +101,6 @@ export default function Authentification() {
           Se déconnecter
         </button>
       </section> */}
-    </div>
+    </Modal>
   );
 }

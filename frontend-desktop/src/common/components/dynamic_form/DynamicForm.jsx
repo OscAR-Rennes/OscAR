@@ -81,7 +81,7 @@ export default function DynamicForm({
           {renderField(field)}
         </div>
       ))}
-      <p className="dynamic-form-legend"><span className="required-star">*</span> champs obligatoires</p>
+      <p>* champs obligatoires</p>
       <button type="submit">{submitLabel}</button>
     </form>
   );
