@@ -33,7 +33,10 @@ export class UsersController  {
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
       console.log("Getting all user by cultural center")
-      const { culturalcenter_id } =  req.params
+      const culturalcenter_id = req.user?.id_cultural_center;
+      if (!culturalcenter_id) {
+        throw new Error("Centre culturel de l'utilisateur introuvable");
+      }
       const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id)
       res.status(201).json(users)
     } catch (err) {

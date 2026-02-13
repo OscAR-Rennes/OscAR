@@ -28,7 +28,7 @@ export default function Users() {
     const usersData = await (
       isAdmin
         ? getAllUsers()
-        : getUsersByCulturalCenter(user.id_cultural_center)
+        : getUsersByCulturalCenter()
     );
 
       setUsers(usersData)
@@ -46,7 +46,7 @@ export default function Users() {
     const usersData = await (
       isAdmin
         ? getAllUsers()
-        : getUsersByCulturalCenter(user.id_cultural_center)
+        : getUsersByCulturalCenter()
     );
     setUsers(usersData)
   };
