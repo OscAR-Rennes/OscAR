@@ -1,4 +1,4 @@
-import { LightUserDTO } from "../common-lib/dto/users/UsersGetAllDTO.js";
+import { LightUserDTO } from "../common-lib/dto/users/LightUserDTO.js";
 import { NewUserResponseDTO } from "../common-lib/dto/users/NewUserResponseDTO.js";
 import { NewUserRequestDTO } from "../common-lib/dto/users/NewUserRequestDTO.js";
 import { SwitchStatusUsersRequestDTO } from "../common-lib/dto/users/SwitchStatusUsersRequestDTO.js";
