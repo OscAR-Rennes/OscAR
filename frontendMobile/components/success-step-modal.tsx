@@ -8,10 +8,13 @@ import { useLanguage } from '../context/LanguageContext';
 interface SuccessStepModalProps {
     onClose: () => void;
     points: number;
+    isLastStep: boolean;
+    totalPoints: number;
 }
 
 // Icon mapping
 const ICONS = {
+    "star.svg": require('../assets/icon/star.svg'),
     "check.svg": require('../assets/icon/check.svg'),
 } as const;
 
@@ -28,7 +31,7 @@ function getIconUri(iconName: IconName): string {
     return Asset.fromModule(iconSource).uri || '';
 }
 
-const SuccessStepModal: React.FC<SuccessStepModalProps> = ({ onClose, points }) => {
+const SuccessStepModal: React.FC<SuccessStepModalProps> = ({ onClose, points, isLastStep, totalPoints }) => {
     const { language } = useLanguage(); // Retrieve current language
     const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
@@ -42,11 +45,23 @@ const SuccessStepModal: React.FC<SuccessStepModalProps> = ({ onClose, points }) 
                                 <SvgUri uri={getIconUri("check.svg")} width={50} height={50} color="#FFF" style={{ marginTop: 5}}/>
                             </View>
                             <Text style={[{ marginTop: theme.SPACING.medium, fontSize: 27, fontWeight: '700'  }]}>{texts.bravo}</Text>
-                            <Text style={[globalStyles.text, { textAlign: 'center', marginTop: theme.SPACING.small, color: '#a7a7a7', fontWeight: '600' }]}>{texts.foundMessage}</Text>
-                            <Text style={[{ color: theme.COLORS.secondary, marginTop: theme.SPACING.medium, fontSize: 35, fontWeight: '800' }]}>+ {points} points</Text>
+                            {isLastStep ? (
+                                <>
+                                    <Text style={[globalStyles.text, { textAlign: 'center', marginTop: theme.SPACING.small, color: '#a7a7a7', fontWeight: '600' }]}>{texts.completedHunt}</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginTop: theme.SPACING.medium }}>
+                                        <Text style={[{ textAlign: 'center', fontSize: 35, fontWeight: '800' }]}>+ {totalPoints}</Text>
+                                        <SvgUri uri={getIconUri("star.svg")} width={40} height={40} color={theme.COLORS.secondary} />
+                                    </View>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={[globalStyles.text, { textAlign: 'center', marginTop: theme.SPACING.small, color: '#a7a7a7', fontWeight: '600' }]}>{texts.foundMessage}</Text>
+                                    <Text style={[{ color: theme.COLORS.secondary, marginTop: theme.SPACING.medium, fontSize: 35, fontWeight: '800' }]}>+ {points} points</Text>
+                                </>
+                            )}
 
                             <TouchableOpacity onPress={onClose} style={[{ width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50, marginTop: theme.SPACING.small}]}>                            
-                                <Text style={[{ fontSize: theme.FONT_SIZES.text, color: '#a7a7a7', fontWeight: '700' }]}>{texts.nextStepButton}</Text>
+                                <Text style={[{ fontSize: theme.FONT_SIZES.text, color: '#a7a7a7', fontWeight: '700' }]}>{isLastStep ? texts.returnToMenu : texts.nextStepButton}</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>
@@ -61,11 +76,17 @@ const STATIC_TEXTS = {
         bravo: 'Bravo !',
         foundMessage: 'Vous avez trouvé !',
         nextStepButton: 'Passer à l’étape suivante →',
+        completedHunt: 'Vous avez complété la chasse !',
+        pointsEarned: 'points gagnés',
+        returnToMenu: 'Retour au menu →',
     },
     en: {
         bravo: 'Congratulations !',
         foundMessage: 'You found it !',
         nextStepButton: 'Go to the next step →',
+        completedHunt: 'You have completed the hunt !',
+        pointsEarned: 'points earned',
+        returnToMenu: 'Return to menu →',
     },
 };
 

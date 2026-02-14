@@ -27,7 +27,6 @@ interface Step {
     updated_at: string;
 }
 
-
 // Icon mapping
 const ICONS = {
     "star.svg": require('../assets/icon/star.svg'),
@@ -49,21 +48,16 @@ function getIconUri(iconName: IconName): string {
 
 const CurrentStepScreen: React.FC = () => {
     const router = useRouter();
-    const { stepId, huntId } = useLocalSearchParams();
-    const [currentStep, setCurrentStep] = useState<Step | null>(null);
+    const { huntId } = useLocalSearchParams();
+    const [currentStepIndex, setCurrentStepIndex] = useState(0); // Track the current step index
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    
+    const [totalPoints, setTotalPoints] = useState(0); // Track total points earned
+
     const { language } = useLanguage(); // Retrieve current language
     const texts = STATIC_TEXTS[language]; // Retrieve translated texts
 
-    const steps = data.steps.filter((s: Step) => s.hunt_id === huntId); // Fix missing steps reference
-
-    useEffect(() => {
-        if (stepId) {
-            const step = data.steps.find((s: Step) => s.id === stepId);
-            setCurrentStep(step || null);
-        }
-    }, [stepId]);
+    const steps = data.steps.filter((s: Step) => s.hunt_id === huntId); // Filter steps by hunt ID
+    const currentStep = steps[currentStepIndex]; // Get the current step based on the index
 
     const handleScanPress = () => {
         setShowSuccessModal(true);
@@ -71,6 +65,13 @@ const CurrentStepScreen: React.FC = () => {
 
     const handleCloseModal = () => {
         setShowSuccessModal(false);
+        setTotalPoints(totalPoints + currentStep.points); // Increment total points after closing modal
+        if (currentStepIndex < steps.length - 1) {
+            setCurrentStepIndex(currentStepIndex + 1); // Increment the step index
+        } else {
+            // Redirect to menu or handle end of hunt
+            router.push('/');
+        }
     };
 
     if (!currentStep) {
@@ -97,10 +98,10 @@ const CurrentStepScreen: React.FC = () => {
                 <View style={[{ flexDirection: 'column', marginBottom: theme.SPACING.large, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium}]}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginBottom: theme.SPACING.medium }}>
                         <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Progression</Text>
-                        <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Étape 1 / {steps.length}</Text>
+                        <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Étape {currentStepIndex + 1} / {steps.length}</Text>
                     </View>
                     <View style={{ height: 8, backgroundColor: '#d8d8d8', borderRadius: 4, width: '100%' }}>
-                        <View style={{ height: '100%', backgroundColor: theme.COLORS.secondary, borderRadius: 4, width: `${(1 / steps.length) * 100}%` }} />
+                        <View style={{ height: '100%', backgroundColor: theme.COLORS.secondary, borderRadius: 4, width: `${((currentStepIndex + 1) / steps.length) * 100}%` }} />
                     </View>
                 </View>
 
@@ -108,7 +109,7 @@ const CurrentStepScreen: React.FC = () => {
                 <View style={{ backgroundColor: theme.COLORS.background, paddingHorizontal: theme.SPACING.medium, paddingVertical: theme.SPACING.xLarge, borderRadius: theme.SPACING.medium, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5 }}>
                     <View style={{ alignItems: 'center', marginBottom: theme.SPACING.medium }}>
                         <View style={{ backgroundColor: theme.COLORS.primary, borderRadius: 500, width: 70, height: 70, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: theme.FONT_SIZES.subtitle }}>1</Text>
+                            <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: theme.FONT_SIZES.subtitle }}>{currentStepIndex + 1}</Text>
                         </View>
                         <Text style={[globalStyles.title, { marginTop: theme.SPACING.small, textAlign: 'center' }]}>{currentStep.title}</Text>
                         <Text style={[globalStyles.text, { textAlign: 'center', marginTop: theme.SPACING.small }]}>{currentStep.description}</Text>
@@ -138,18 +139,18 @@ const CurrentStepScreen: React.FC = () => {
                 {/* Points and Remaining Steps */}
                 <View style={{ flexDirection: 'row', marginTop: theme.SPACING.large, justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ width: '46%', height: 110, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', gap: 5  }}>
-                        <Text style={[globalStyles.title, { color: theme.COLORS.secondary }]}>0</Text>
+                        <Text style={[globalStyles.title, { color: theme.COLORS.secondary }]}>{totalPoints}</Text>
                         <Text style={[globalStyles.text, { fontWeight: '700', textAlign: 'center' }]}>{texts.pointsEarned}</Text>
                     </View>
                     <View style={{ width: '46%', height: 110, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-                        <Text style={[globalStyles.title, { color: theme.COLORS.tertiary }]}>{steps.length - 1}</Text>
+                        <Text style={[globalStyles.title, { color: theme.COLORS.tertiary }]}>{steps.length - currentStepIndex - 1}</Text>
                         <Text style={[globalStyles.text, { fontWeight: '700', textAlign: 'center' }]}>{texts.stepsRemaining}</Text>
                     </View>
                 </View>
             </ScrollView>
 
             {/* Success Modal */}
-            {showSuccessModal && <SuccessStepModal onClose={handleCloseModal} points={currentStep.points} />}
+            {showSuccessModal && <SuccessStepModal onClose={handleCloseModal} points={currentStep.points} isLastStep={currentStepIndex === steps.length - 1} totalPoints={totalPoints} />}
 
             <BottomNavbar />
         </SafeAreaView>
@@ -163,6 +164,7 @@ const STATIC_TEXTS = {
         stepsRemaining: 'Étapes restantes',
         scanButton: 'Scanner / Caméra RA',
         informationText: "Utilisez votre caméra pour scanner l’oeuvre ou le lieu !",
+        huntCompleted: "Félicitations ! Vous avez terminé la chasse au trésor !",
     },
     en: {
         backToMenu: 'Back to Menu',
@@ -170,6 +172,7 @@ const STATIC_TEXTS = {
         stepsRemaining: 'Steps Remaining',
         scanButton: 'Scan / AR Camera',
         informationText: "Use your camera to scan the artwork or location !",
+        huntCompleted: "Congratulations! You have completed the treasure hunt!",
     },
 };
 
