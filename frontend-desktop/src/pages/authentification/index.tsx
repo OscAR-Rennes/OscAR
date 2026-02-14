@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DynamicForm from "../../common/components/dynamic_form/DynamicForm.jsx";
 import { useAuthStore } from "../../common/store/authStore";
 import { useAuthentificationData } from "./authentification.data";
@@ -16,14 +17,17 @@ export default function Authentification() {
 
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const navigate = useNavigate();
 
   const [resetLoginForm, setResetLoginForm] = useState(0);
   const [resetSigninForm, setResetSigninForm] = useState(0);
   const [showSignin, setShowSignin] = useState(true);
 
-  if (isAuthenticated) {
-    return <div>Vous êtes déjà connecté.</div>;
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home/hunts");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <Modal>

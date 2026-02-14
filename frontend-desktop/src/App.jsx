@@ -25,7 +25,7 @@ export default function App() {
       <Notification />
       <Routes>
         {/* Redirection par défaut */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/home/authentification" replace />} />
 
         {/* Route protégée */}
         <Route
