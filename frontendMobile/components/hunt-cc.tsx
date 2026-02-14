@@ -4,8 +4,10 @@ import { theme, globalStyles } from '../constants/theme';
 import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import { useLanguage } from '../context/LanguageContext';
+import { useRouter } from 'expo-router';
 
 type Hunt = {
+    id: string; // Add the ID field
     title: string;
     difficulty: string;
     steps: number;
@@ -37,6 +39,7 @@ function getIconUri(iconName: IconName): string {
 const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
+    const router = useRouter();
 
     const getDifficultyStyles = (difficulty: string) => {
         switch (difficulty.toLowerCase()) {
@@ -63,10 +66,25 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
         }
     };
 
+    const handleHuntPress = (hunt: Hunt & { id: string }) => {
+        router.push({
+            pathname: '/hunt-details',
+            params: {
+                id: hunt.id, // Pass the hunt ID
+                title: hunt.title,
+                description: `Description for ${hunt.title}` // Placeholder description
+            },
+        });
+    };
+
     return (
         <View>
             {hunts.map((hunt: Hunt, index: number) => (
-                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, marginBottom: theme.SPACING.medium, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 5 }}>
+                <TouchableOpacity 
+                    key={index} 
+                    style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, marginBottom: theme.SPACING.medium, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 5 }}
+                    onPress={() => handleHuntPress(hunt)}
+                >
                     {/* Hunt Informations */}
                     <View style={{ flex: 1 }}>
                         <Text style={[{ marginBottom: theme.SPACING.small, fontSize: 20, fontWeight: 'bold' }]}>{hunt.title}</Text>
@@ -79,10 +97,9 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
                     {/* Points Section */}
                     <View style={[{ height: '100%', flexDirection: 'column'}]}>
                         <View style={[{ flexDirection: 'row', gap: 4 }]}>
-                            <Text style={[{ fontSize: 25, fontWeight: '700' }]}>{hunt.points}</Text>
+                            <Text style={[{ fontSize: 25, fontWeight: '700', }]}>+ {hunt.points}</Text>
                             <SvgUri uri={getIconUri("star.svg")} width={28} height={28} color={theme.COLORS.secondary} />
                         </View>
-                        <Text style={[{ textAlign: 'center', fontWeight: '500' }]}>{texts.points}</Text>
                     </View>
                 </TouchableOpacity>
             ))}

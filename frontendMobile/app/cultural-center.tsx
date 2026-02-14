@@ -59,6 +59,7 @@ const CulturalCenterScreen: React.FC = () => {
             const stepsCount = data.steps.filter(step => step.hunt_id === hunt.id).length;
 
             return {
+                id: hunt.id, // Include the hunt ID
                 title: hunt.title,
                 difficulty: difficulty ? difficulty.name : texts.unknown,
                 difficultyColor: difficultyColor,
