@@ -86,7 +86,7 @@ const CurrentStepScreen: React.FC = () => {
             <HeaderNavbar />
             <ScrollView contentContainerStyle={{ padding: theme.SPACING.large }}>
                 {/* Back Button */}
-                <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.small }}>
+                <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.medium }}>
                     <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/')}>
                         <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
                         <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>{texts.backToMenu}</Text>
@@ -94,9 +94,14 @@ const CurrentStepScreen: React.FC = () => {
                 </View>
 
                 {/* Step Progression */}
-                <View style={{ marginBottom: theme.SPACING.large, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Progression</Text>
-                    <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Étape 1 / {steps.length}</Text>
+                <View style={[{ flexDirection: 'column', marginBottom: theme.SPACING.large, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium}]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginBottom: theme.SPACING.medium }}>
+                        <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Progression</Text>
+                        <Text style={[globalStyles.text, { fontWeight: 'bold' }]}>Étape 1 / {steps.length}</Text>
+                    </View>
+                    <View style={{ height: 8, backgroundColor: '#d8d8d8', borderRadius: 4, width: '100%' }}>
+                        <View style={{ height: '100%', backgroundColor: theme.COLORS.secondary, borderRadius: 4, width: `${(1 / steps.length) * 100}%` }} />
+                    </View>
                 </View>
 
                 {/* Step Details */}
@@ -127,18 +132,18 @@ const CurrentStepScreen: React.FC = () => {
                             </View>
                         </LinearGradient>
                     </TouchableOpacity>
-                    <Text style={[globalStyles.text, { textAlign: 'center', fontSize: theme.FONT_SIZES.smallText, marginTop: theme.SPACING.small, color: theme.COLORS.textTertiary }]}>{texts.informationText}</Text>
+                    <Text style={[globalStyles.text, { textAlign: 'center', fontSize: theme.FONT_SIZES.smallText, marginTop: theme.SPACING.medium, color: theme.COLORS.textTertiary }]}>{texts.informationText}</Text>
                 </View>
 
                 {/* Points and Remaining Steps */}
                 <View style={{ flexDirection: 'row', marginTop: theme.SPACING.large, justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ width: '46%', backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, justifyContent: 'space-between', alignItems: 'center', gap: 5  }}>
-                        <Text style={[globalStyles.title]}>0</Text>
-                        <Text style={[globalStyles.text]}>{texts.pointsEarned}</Text>
+                    <View style={{ width: '46%', height: 110, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', gap: 5  }}>
+                        <Text style={[globalStyles.title, { color: theme.COLORS.secondary }]}>0</Text>
+                        <Text style={[globalStyles.text, { fontWeight: '700', textAlign: 'center' }]}>{texts.pointsEarned}</Text>
                     </View>
-                    <View style={{ width: '46%', backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, justifyContent: 'space-between', alignItems: 'center', gap: 5 }}>
-                        <Text style={[globalStyles.title]}>{steps.length - 1}</Text>
-                        <Text style={[globalStyles.text]}>{texts.stepsRemaining}</Text>
+                    <View style={{ width: '46%', height: 110, backgroundColor: theme.COLORS.background, shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+                        <Text style={[globalStyles.title, { color: theme.COLORS.tertiary }]}>{steps.length - 1}</Text>
+                        <Text style={[globalStyles.text, { fontWeight: '700', textAlign: 'center' }]}>{texts.stepsRemaining}</Text>
                     </View>
                 </View>
             </ScrollView>
