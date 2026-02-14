@@ -7,6 +7,7 @@ const COLORS = {
   background: '#FEFEFE',
   textPrimary: '#1f1f1f',
   textSecondary: '#666',
+  textTertiary: '#A9A9A9',
   placeholder: '#A9A9A9',
   border: '#E0E0E0',
   icon: '#393939',

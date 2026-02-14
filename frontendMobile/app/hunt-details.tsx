@@ -106,8 +106,25 @@ const HuntDetailsScreen: React.FC = () => {
                 </View>
 
                 {/* Start Hunt Button */}
-                <TouchableOpacity style={{ width: '100%', marginTop: theme.SPACING.medium }}>
-                    <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
+                <TouchableOpacity
+                    style={{ width: '100%', marginTop: theme.SPACING.medium }}
+                    onPress={() => {
+                        if (steps.length > 0) {
+                            router.push({
+                                pathname: '/current-step',
+                                params: {
+                                    stepId: steps[0].id, // Pass the first step's ID
+                                    huntId: huntId, // Pass the hunt ID
+                                },
+                            });
+                        }
+                    }}
+                >
+                    <LinearGradient
+                        colors={[theme.COLORS.primary, theme.COLORS.secondary]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
                             <SvgUri uri={getIconUri("play-button.svg")} width={20} height={20} color={theme.COLORS.background} />
                             <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{texts.startHunt}</Text>
