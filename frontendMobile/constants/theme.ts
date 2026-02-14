@@ -14,6 +14,9 @@ const COLORS = {
   inactive: '#393939',
   success: '#4BB543',
   error: '#F72C25',
+  easy: '#4BB543',
+  medium: '#F7B32B',
+  hard: '#F72C25',
 };
 
 const FONT_SIZES = {
@@ -26,6 +29,7 @@ const FONT_SIZES = {
 };
 
 const SPACING = {
+  xsmall: 4,
   small: 8,
   medium: 16,
   large: 24,

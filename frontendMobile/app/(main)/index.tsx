@@ -27,7 +27,7 @@ function getIconUri(iconName: IconName): string {
     return Asset.fromModule(iconSource).uri || '';
 }
 
-// Définir les types pour les données
+// Define types for addresses
 interface Address {
     id: string;
     zip: string;
@@ -38,6 +38,7 @@ interface Address {
     street_number: number;
 }
 
+// Define types for cultural centers
 interface CulturalCenter {
     id: string;
     name: string;
@@ -180,11 +181,11 @@ export default function MapsScreen() {
                                 culturalCenterName={selectedCenter.name}
                                 culturalCenterDescription={selectedCenter.description}
                                 culturalCenterImage={selectedCenter.picture_path}
-                                onClose={() => {
-                                    setSelectedCenter(null); // Reset selected center first
-                                    setModalVisible(false); // Then close the modal
+                                culturalCenterId={selectedCenter.id}
+                                onClose={() => setModalVisible(false)}
+                                onViewCenter={() => {
+                                    setModalVisible(false);
                                 }}
-                                onViewCenter={() => console.log('View center details')}
                             />
                         )}
                     </View>

@@ -4,18 +4,23 @@ import { theme, globalStyles } from '../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Animated } from 'react-native';
 import { useEffect, useRef } from 'react';
+import { router } from 'expo-router/build/exports';
+import { useLanguage } from '../context/LanguageContext';
 
 interface CulturalCenterModalProps {
     visible: boolean;
     culturalCenterName: string;
     culturalCenterImage: string;
     culturalCenterDescription: string;
+    culturalCenterId: string;
     onClose: () => void;
     onViewCenter: () => void;
 }
 
-const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, culturalCenterName, culturalCenterDescription, onClose, }) => {
+const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, culturalCenterName, culturalCenterDescription, culturalCenterImage, culturalCenterId, onClose, onViewCenter }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const { language } = useLanguage();
+    const texts = STATIC_TEXTS[language];
 
     const resetAnimation = () => {
         fadeAnim.setValue(0);
@@ -49,6 +54,19 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
             onClose();
         });
     };
+    
+    const navigateToCulturalCenter = () => {
+        onClose();
+        router.push({
+            pathname: '/cultural-center',
+            params: {
+                name: culturalCenterName,
+                description: culturalCenterDescription,
+                image: culturalCenterImage,
+                id: culturalCenterId,
+            },
+        });
+    };
 
     return (
         <Modal
@@ -68,15 +86,14 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
                     <Text style={{ ...globalStyles.title, marginBottom: theme.SPACING.small }}> {culturalCenterName} </Text>
                     <Text style={{ ...globalStyles.text, color: theme.COLORS.textSecondary, marginBottom: theme.SPACING.medium }}> {culturalCenterDescription} </Text>
                     <View style={{ flexDirection: 'column', width: '100%', gap: theme.SPACING.small }}>
-                        <TouchableOpacity style={[{ width: '100%' }]} onPress={closeModalWithAnimation}>
+                        <TouchableOpacity style={[{ width: '100%' }]} onPress={navigateToCulturalCenter}>
                             <LinearGradient
                                 colors={[theme.COLORS.primary, theme.COLORS.secondary]}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
-                                style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 10, height: 50 }]}
-                            >
+                                style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 10, height: 50 }]}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
-                                    <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>Voir le centre</Text>
+                                    <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{texts.viewCenter}</Text>
                                 </View>
                             </LinearGradient>
                         </TouchableOpacity>
@@ -85,6 +102,15 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
             </Animated.View>
         </Modal>
     );
+};
+
+const STATIC_TEXTS = {
+    fr: {
+        viewCenter: 'Voir le centre',
+    },
+    en: {
+        viewCenter: 'View center',
+    },
 };
 
 export default CulturalCenterModal;
