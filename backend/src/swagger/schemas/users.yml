@@ -1,0 +1,101 @@
+components:
+
+  schemas:
+
+    LightUserDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+
+    UserCreateRequestDTO:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - rights
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        rights:
+          type: array
+          items:
+            type: string
+        id_cultural_center:
+          type: string
+          nullable: true
+        isNewCulturalCenter:
+          type: boolean
+        newCulturalCenter:
+          $ref: "#/components/schemas/CreateCulturalCenterRequestDTO"
+      oneOf:
+        - required: ["id_cultural_center"]
+        - required: ["isNewCulturalCenter", "newCulturalCenter"]
+
+    UserCreateResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+
+    UserCreateCulturalCenterRequestDTO:
+      type: object
+      required:
+        - name
+        - description
+        - address
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        address_id:
+          type: string
+          nullable: true
+        picture_path:
+          type: string
+          nullable: true
+        address:
+          $ref: "#/components/schemas/UserCreateAddressRequestDTO"
+
+    UserCreateAddressRequestDTO:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        zip:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+        longitude:
+          type: number
+        street:
+          type: string
+          nullable: true
+        street_number:
+          type: number
+          nullable: true
+
+    UserSwitchStatus:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+        - ids

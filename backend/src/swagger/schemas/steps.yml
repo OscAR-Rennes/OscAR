@@ -1,0 +1,36 @@
+components:
+
+  schemas:
+
+    StepCreateRequestDTO:
+      type: object
+      required:
+        - title
+        - description
+        - hunt_id
+        - points
+        - latitude
+        - longitude
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        hunt_id:
+          type: integer
+        points:
+          type: integer
+        latitude:
+          type: number
+        longitude:
+          type: number
+        index_id:
+          type: string
+
+    StepCreateResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string

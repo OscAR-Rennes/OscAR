@@ -1,5 +1,6 @@
 export interface LightUserDTO {
   id: string;
-  email: string;
   username: string;
+  email: string;
+  isActive: boolean;
 }

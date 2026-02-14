@@ -12,8 +12,8 @@ export class DifficultyController  {
   async getAll(req: Request, res: Response, next: any) {
     try {
       console.log("Getting all difficulty");
-      const users = await this.difficultyService.getAllDifficulty();
-      res.status(200).json(users);
+      const difficulties = await this.difficultyService.getAllDifficulty();
+      res.status(200).json(difficulties);
     } catch (err) {
       next(err);
     }

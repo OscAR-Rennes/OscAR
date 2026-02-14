@@ -3,10 +3,11 @@ import { LightUserDTO } from "../common-lib/dto/users/UsersGetAllDTO.js";
 import { NewUserResponseDTO } from "../common-lib/dto/users/NewUserResponseDTO.js";
 
 export const userMapper = {
-  toDTO(entity: UserEntity): LightUserDTO {
+  toLightDTO(entity: UserEntity): LightUserDTO {
     return {
       id: entity.id,
       email: entity.email,
+      isActive: entity.isActive,
       username: entity.username
     };
   },

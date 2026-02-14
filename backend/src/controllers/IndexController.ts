@@ -22,7 +22,7 @@ export class IndexController  {
 
   async getIndexByHunt(req: Request, res: Response, next: any) {
     try {
-        const huntId = req.body
+        const { huntId } = req.params;
         const index = await this.indexService.getIndexByHunt(huntId);
         res.status(201).json(index)
     } catch (err) {

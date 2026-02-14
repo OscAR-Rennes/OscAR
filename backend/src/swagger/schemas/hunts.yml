@@ -1,0 +1,45 @@
+components:
+
+  schemas:
+
+    HuntCreateRequestDTO:
+      type: object
+      required:
+        - title
+        - description
+        - difficulty_id
+        - points
+        - latitude
+        - longitude
+        - picture_path
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        difficulty_id:
+          type: string
+        points:
+          type: number
+        latitude:
+          type: number
+        longitude:
+          type: number
+        picture_path:
+          type: string
+
+    HuntCreateResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+
+    HuntLightDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string

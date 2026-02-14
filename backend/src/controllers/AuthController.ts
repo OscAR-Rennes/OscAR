@@ -5,56 +5,56 @@ import AppError from "../common-lib/errors/AppError.js";
 
 export class AuthController {
 
-  private authService: AuthServiceImpl;
-
-  constructor() {
-    this.authService = new AuthServiceImpl();
-  }
+  private authService = new AuthServiceImpl();
 
   async authentificateUser(req: Request, res: Response, next: any) {
     try {
       console.log("Authenticating user");
       const authRequest: AuthRequestDTO = req.body;
 
-      const validationItems = [] as any[];
-      if (!authRequest.email) validationItems.push({ field: 'email', message: 'Email requis' });
-      if (!authRequest.password) validationItems.push({ field: 'password', message: 'Mot de passe requis' });
-      if (validationItems.length) throw new AppError({ userMessage: 'Données invalides', details: validationItems, route: req.originalUrl, statusCode: 400 });
+      const errors = [];
+      if (!authRequest.email) errors.push({ field: "email", message: "Email requis" });
+      if (!authRequest.password) errors.push({ field: "password", message: "Mot de passe requis" });
+
+      if (errors.length) {
+        throw new AppError({
+          userMessage: "Données invalides",
+          details: errors,
+          route: req.originalUrl,
+          statusCode: 400,
+        });
+      }
 
       const result = await this.authService.connectUser(authRequest);
 
-      if (!result) {
-        throw new AppError({ userMessage: 'Identifiants invalides', statusCode: 401, route: req.originalUrl });
-      }
-
       res.cookie("token", result.token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 60 * 24,
-        });
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24,
+      });
 
       const { token, ...user } = result;
       console.log("User authenticated", user);
+
       return res.json(user);
     } catch (err) {
-      return next(err);
+      next(err);
     }
   }
 
   async getCurrentUser(req: Request, res: Response) {
-      console.log("Getting current user", req.user);
-      return res.json(req.user);
+    console.log("Getting current user", req.user);
+    return res.json(req.user);
   }
 
- async logoutUser(req: Request, res: Response) {
+  async logoutUser(req: Request, res: Response) {
     console.log("Logging out user", req.user);
     res.clearCookie("token", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
     });
-    return res.sendStatus(204);;
+    return res.sendStatus(204);
   }
-
 }

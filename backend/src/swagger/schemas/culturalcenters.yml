@@ -1,0 +1,31 @@
+components:
+
+  schemas:
+
+    CulturalCenterLightDTOWithoutActive:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    CulturalCenterLightDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        isActive:
+          type: boolean
+
+    CulturalCenterSwitchStatus:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+        - ids
