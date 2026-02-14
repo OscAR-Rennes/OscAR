@@ -1,0 +1,32 @@
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.auth-title {
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 0.06rem;
+}
+.auth-subtitle {
+  font-size: 1.08rem;
+  color: #222;
+  margin: 0.2rem 0 0 0;
+}
+.auth-footer {
+  margin-top: 1.2rem;
+  text-align: left;
+  font-size: 0.98rem;
+}
+.auth-link {
+  color: #4953d3;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  display: inline-block;
+  font-size: 0.98rem;
+}
+.auth-link.secondary {
+  color: #4953d3;
+  font-weight: bold;
+}

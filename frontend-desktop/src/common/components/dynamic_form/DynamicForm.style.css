@@ -1,0 +1,52 @@
+.dynamic-form-container {
+  background: #fff;
+  border-radius: 1.375rem;
+  box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.13);
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 23.125rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.dynamic-form-field {
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+.dynamic-form-container label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.dynamic-form-container input,
+.dynamic-form-container select {
+  width: 100%;
+  padding: 0.9rem 1rem 0.9rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e0e0e0;
+  background: #fafafa;
+  font-size: 1rem;
+  margin-bottom: 0.1rem;
+  box-sizing: border-box;
+}
+.dynamic-form-container input[type="password"] {
+  letter-spacing: 0.2em;
+}
+
+.dynamic-form-container button[type="submit"] {
+  width: 100%;
+  padding: 1rem 0;
+  margin-top: 1.2rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: #4953d3;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.dynamic-form-container button[type="submit"]:hover {
+  opacity: 0.93;
+}

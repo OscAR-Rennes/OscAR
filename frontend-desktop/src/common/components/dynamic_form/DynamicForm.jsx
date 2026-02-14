@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
+import "./DynamicForm.style.css";
 
-export default function DynamicForm({ fields, onSubmit, submitLabel = "Valider", onFieldChange = undefined, resetSignal = 0 }) {
+export default function DynamicForm({
+  fields,
+  onSubmit,
+  submitLabel = "Valider",
+  onFieldChange = undefined,
+  resetSignal = 0,
+}) {
   const [values, setValues] = useState(() =>
     fields.reduce((acc, field) => {
       acc[field.name] = field.defaultValue ?? "";
@@ -64,18 +71,17 @@ export default function DynamicForm({ fields, onSubmit, submitLabel = "Valider",
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="dynamic-form-container" onSubmit={handleSubmit}>
       {fields.map((field) => (
-        <div key={field.name} style={{ marginBottom: "1rem" }}>
+        <div key={field.name} className="dynamic-form-field">
           <label>
             {field.label}
             {field.required && " *"}
           </label>
-
           {renderField(field)}
         </div>
       ))}
-
+      <p>* champs obligatoires</p>
       <button type="submit">{submitLabel}</button>
     </form>
   );
