@@ -59,44 +59,35 @@ export class UserRepository  {
   //TODO : Create User for mobile (without rights managements and cultural center affiliation)
 
   async findByCredentials(email: string): Promise<UserEntity | null> {
-    const result = await pool.query(
-      `SELECT 
-          u.*,
-          COALESCE(json_agg(r.name) FILTER (WHERE r.name IS NOT NULL), '[]') AS rights
-      FROM users u
-      LEFT JOIN right_user ru ON ru.user_id = u.id
-      LEFT JOIN rights r ON r.id = ru.right_id
-      WHERE u.email = $1
-      GROUP BY u.id`,
-      [email]
-    );
+    const user = await prisma.users.findUnique({
+      where: { email },
+      include: {
+        right_user: {
+          include: { rights: true },
+        },
+      },
+    });
 
-    if (result.rowCount === 0) {
-      return null;
-    }
+    if (!user) return null;
 
-    return result.rows[0];
+    const rights = user.right_user.map(ru => ru.rights.name);
+
+    return new UserEntity({ ...user, rights });
   }
   
   async findById(userId: string): Promise<UserEntity | null> {
-    const result = await pool.query(
-      `SELECT 
-          u.*,
-          COALESCE(json_agg(r.name) FILTER (WHERE r.name IS NOT NULL), '[]') AS rights
-      FROM users u
-      LEFT JOIN right_user ru ON ru.user_id = u.id
-      LEFT JOIN rights r ON r.id = ru.right_id
-      WHERE u.id = $1
-      GROUP BY u.id`,
-      [userId]
-    );
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      include: {
+        right_user: { include: { rights: true } },
+      },
+    });
 
-    if (result.rowCount === 0) {
-      return null;
-    }
+    if (!user) return null;
 
-    const user = result.rows[0];
-    return user;
+    const rights = user.right_user.map(ru => ru.rights.name);
+
+    return new UserEntity({ ...user, rights });
   }
 
   async switchUsersStatus(ids: string[]): Promise<{ id: string; isActive: boolean }[]> {
