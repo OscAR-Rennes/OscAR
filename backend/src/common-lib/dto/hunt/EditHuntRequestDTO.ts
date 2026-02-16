@@ -1,8 +1,7 @@
-export interface CreateHuntRequestDTO {
+export interface EditHuntRequestDTO {
+    id: string,
     title: string;
     description: string;
-    creator_id: string;
-    cultural_center_id: string;
     difficulty_id: string;
     points: number;
     latitude: number;

@@ -1,17 +1,26 @@
-import { PoolClient } from "pg";
 import { pool } from "../config/database.js";
 import { CreateCulturalCenterRequestDTO } from "../dto/culturalcenter/CreateCulturalCenterRequestDTO.js";
 import { CulturalCenterEntity } from "../entity/CulturalCenterEntity.js";
 import { SwitchStatusCulturalCenterRequestDTO } from "../dto/culturalcenter/SwitchStatusCulturalCenterRequestDTO.js";
+import { prisma } from "../config/prismaClient";
+import { PrismaClient } from "@prisma/client";
+
 
 export class CulturalCenterRepository  {
-    async createWithClient(client: PoolClient, culturalCenterData: CreateCulturalCenterRequestDTO): Promise<CulturalCenterEntity> {
-        console.log(culturalCenterData)
-        const result = await client.query(
-        "INSERT INTO cultural_centers (name, description, address_id, picture_path) VALUES ($1, $2, $3, $4) RETURNING *",
-        [culturalCenterData.name, culturalCenterData.description, culturalCenterData.address_id, culturalCenterData.picture_path]
-        );
-        return result.rows[0];
+
+    async create(
+        data: CreateCulturalCenterRequestDTO,
+        prismaClient?: PrismaClient
+    ): Promise<CulturalCenterEntity> {
+        const client = prismaClient || prisma;
+        const formattedData = {
+            name: data.name,
+            description: data.description,
+            address_id: data.address_id,
+            picture_path: data.picture_path ?? null,
+        };
+        const culturalCenterRecord = await client.cultural_centers.create({ data: formattedData });
+        return new CulturalCenterEntity(culturalCenterRecord);
     }
 
     async getAllActive(): Promise<CulturalCenterEntity[]> {

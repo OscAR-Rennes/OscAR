@@ -1,47 +1,58 @@
-import { PoolClient } from "pg";
 import { pool } from "../config/database.js";
 import { NewUserRequestDTO } from "../dto/users/NewUserRequestDTO.js";
 import { UserEntity } from "../entity/UsersEntity.js";
 import bcrypt from "bcrypt";
-import { SwitchStatusUsersRequestDTO } from "../dto/users/SwitchStatusUsersRequestDTO.js";
 import { RoleEnum } from "../enum/roleEnum.js";
+import { PrismaClient } from "@prisma/client";
+import { prisma } from "../config/prismaClient";
+
 
 export class UserRepository  {
+  
   async findAll(): Promise<UserEntity[]> {
-    const result = await pool.query("SELECT * FROM users");
-    return result.rows;
+    const users = await prisma.users.findMany();
+    return users.map(user => new UserEntity(user));
   }
 
-  async createWithClient(client: PoolClient, userData: NewUserRequestDTO): Promise<UserEntity> {
+  async create(
+    userData: NewUserRequestDTO,
+    prismaClient?: PrismaClient
+  ): Promise<UserEntity> {
+    const client = prismaClient || prisma;
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const result = await client.query(
-      `INSERT INTO users (email, username, password, id_cultural_center)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id, username`,
-      [userData.email, userData.username, hashedPassword, userData.id_cultural_center]
+
+    const userRecord = await client.users.create({
+      data: {
+        email: userData.email,
+        username: userData.username,
+        password: hashedPassword,
+        id_cultural_center: userData.id_cultural_center,
+      },
+    });
+
+    await Promise.all(
+      userData.rights.map(async name => {
+        const right = await prisma.rights.findUnique({ where: { name } });
+        if (!right) throw new Error(`Right ${name} not found`);
+        await prisma.right_user.create({
+          data: {
+            user_id: userRecord.id,
+            right_id: right.id,
+          },
+        });
+      })
     );
-    const user = result.rows[0];
-    const rightsResult = await client.query(
-      `SELECT id, name FROM rights WHERE name = ANY($1)`,
-      [userData.rights]
-    );
-    const rightIds = rightsResult.rows.map(r => r.id);
-    const insertValues = rightIds
-      .map((_, i) => `($1, $${i + 2})`)
-      .join(", ");
-    await client.query(
-      `INSERT INTO right_user (user_id, right_id) VALUES ${insertValues}`,
-      [user.id, ...rightIds]
-    );
-    return user;
+    return new UserEntity(userRecord);
   }
 
   async findAllByCulturalCenter(culturalcenter_id: string): Promise<UserEntity[]> {
-    const result = await pool.query(
-      `SELECT * FROM users WHERE id_cultural_center = ($1)`,
-      [culturalcenter_id]
-    );
-    return result.rows;
+    const users = await prisma.users.findMany({
+      where: {
+        id_cultural_center: culturalcenter_id,
+      },
+    });
+    return users.map(user => new UserEntity(user));
   }
 
 
@@ -88,17 +99,17 @@ export class UserRepository  {
     return user;
   }
 
-  async switchUsersStatus(ids: SwitchStatusUsersRequestDTO): Promise<{ id: string; isActive: boolean }[]> {
-    const result = await pool.query(
-      `
-        UPDATE users
-        SET "isActive" = NOT "isActive"
-        WHERE id = ANY($1)
-        RETURNING id, "isActive"
-      `,
-      [ids]
-    );
-    return result.rows;
+  async switchUsersStatus(ids: string[]): Promise<{ id: string; isActive: boolean }[]> {
+    if (ids.length === 0) return [];
+    const updatedUsers = await prisma.$queryRaw<
+      { id: string; isActive: boolean }[]
+    >`
+      UPDATE "users"
+      SET "isActive" = NOT "isActive"
+      WHERE id = ANY(${ids})
+      RETURNING id, "isActive";
+    `;
+    return updatedUsers;
   }
 
   async deactivateUsersByCenter(centerId: string) {

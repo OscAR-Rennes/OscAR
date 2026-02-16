@@ -1,4 +1,6 @@
+import { logoutUser } from "../../api/services/auth.api";
 import Table from "../../common/components/table/Table";
+import { useAuthStore } from "../../common/store/authStore";
 import { useUsersnData } from "./users.data";
 
 
@@ -16,9 +18,23 @@ export default function Users() {
     handleActivateDeactivateUsers
   } = useUsersnData();
 
+  const clearUser = useAuthStore((state) => state.clearUser);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const handleLogout = async () => {
+      await logoutUser();
+      clearUser();
+  };
+
   return (
     <>
       <h1>Lootopia V0.0.1 - Users management</h1>
+      <button
+          type="button"
+          onClick={handleLogout}
+          disabled={!isAuthenticated}
+        >
+          Se déconnecter
+        </button>
 
       { isAdmin && (
         <>
@@ -55,7 +71,6 @@ export default function Users() {
           />
         </>
       )}
-
     </>
   );
 }
