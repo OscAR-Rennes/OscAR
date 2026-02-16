@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { useRouter, usePathname } from 'expo-router';
 import { theme } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
@@ -9,19 +8,15 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../constants/language-en.json';
 import translationsFr from '../../constants/language-fr.json';
 import { Tab } from '../../common/dto/ITab';
+import { getIconUri, IconName } from '../../app/icon-mapping';
 
 // Icon paths
-const ICON_PATHS = {
-    index: require('../../assets/icon/map.svg'),
-    hunt: require('../../assets/icon/target.svg'),
-    social: require('../../assets/icon/loyalty-points.svg'),
-    connexion: require('../../assets/icon/user.svg'),
+const ICON_PATHS: Record<string, IconName> = {
+    index: "map.svg",
+    hunt: "target.svg",
+    social: "loyalty-points.svg",
+    connexion: "user.svg",
 };
-
-// Get URI from icon module
-function getIconUri(iconSource: number): string {
-    return Asset.fromModule(iconSource).uri || '';
-}
 
 // Normalize routes to ignore the /(main) prefix
 function normalizeRoute(route: string): string {
@@ -77,6 +72,16 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
                     normalizeRoute(pathname) === normalizeRoute(tab.route);
                 const itemColor = isActive ? theme.COLORS.active : theme.COLORS.inactive;
                 const iconUri = getIconUri(tab.icon);
+                
+                // Custom icon sizes for visual consistency (compensating for SVG stroke/design differences)
+                let iconWidth = 28;
+                let iconHeight = 28;
+                
+                if (tab.key === 'social') {
+                    // Social icon (loyalty-points) needs to be larger due to thinner design
+                    iconWidth = 30;
+                    iconHeight = 30;
+                }
 
                 return (
                     <TouchableOpacity
@@ -94,8 +99,8 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
                         {iconUri && (
                             <SvgUri
                                 uri={iconUri}
-                                width={28}
-                                height={28}
+                                width={iconWidth}
+                                height={iconHeight}
                                 color={itemColor}
                             />
                         )}

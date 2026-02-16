@@ -2,26 +2,13 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { theme } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import PageTitle from './page-title';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
+import { getIconUri } from '../app/icon-mapping';
 
-// Icon mapping
-const ICONS = {
-    "lock.svg": require('../assets/icon/lock.svg'),
-    "lock-larger.svg": require('../assets/icon/lock-larger.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
-
-// ModifyPassword component
 const ModifyPassword: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];

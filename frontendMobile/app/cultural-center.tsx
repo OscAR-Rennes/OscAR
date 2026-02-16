@@ -13,29 +13,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import HuntList from '@/components/hunt-cc';
 import data from '@/assets/data.json';
 import { useLanguage } from '../context/LanguageContext';
-import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-// Icon mapping
-const ICONS = {
-    "target.svg": require('../assets/icon/target-larger.svg'),
-    "loyalty-points.svg": require('../assets/icon/loyalty-points-larger.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from './icon-mapping';
 
 const CulturalCenterScreen: React.FC = () => {
     const router = useRouter();
@@ -61,11 +42,11 @@ const CulturalCenterScreen: React.FC = () => {
             const stepsCount = data.steps.filter(step => step.hunt_id === hunt.id).length;
 
             return {
-                id: hunt.id, // Include the hunt ID
+                id: hunt.id,
                 title: hunt.title,
                 difficulty: difficulty ? difficulty.name : texts.unknown,
                 difficultyColor: difficultyColor,
-                steps: stepsCount, // Counted steps
+                steps: stepsCount,
                 points: hunt.points,
             };
         });
@@ -106,10 +87,7 @@ const CulturalCenterScreen: React.FC = () => {
                     <Text style={[{ color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>{texts.backToMenu}</Text>
                 </TouchableOpacity>
 
-                <Image
-                    source={{ uri: 'https://picsum.photos/800/1200' }}
-                    style={{ width: '100%', height: 200, borderRadius: 10, marginBottom: theme.SPACING.medium }}
-                />
+                <Image source={{ uri: 'https://picsum.photos/800/1200' }} style={{ width: '100%', height: 200, borderRadius: 10, marginBottom: theme.SPACING.medium }} />
                 <Text style={{ fontSize: theme.FONT_SIZES.title, fontWeight: 'bold', marginBottom: theme.SPACING.small, color: theme.COLORS.textPrimary }}>
                     {centerName}
                 </Text>
@@ -120,56 +98,25 @@ const CulturalCenterScreen: React.FC = () => {
                 {/* Double Button */}
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.15, shadowRadius: 5,}}>
                     <View style={{ flexDirection: 'row', backgroundColor: theme.COLORS.background, borderRadius: 18, padding: 5 }}>
-                        <Animated.View
-                            style={{
-                                position: 'absolute',
-                                top: 5,
-                                left: 5,
-                                width: '50%',
-                                height: '100%',
-                                borderRadius: 15,
-                                transform: [{ translateX }],
-                            }}
-                        >
-                            <LinearGradient
-                                colors={[theme.COLORS.primary, theme.COLORS.secondary]}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                                style={{ flex: 1, borderRadius: 15 }}
-                            />
+                        <Animated.View style={{ position: 'absolute', top: 5, left: 5, width: '50%', height: '100%', borderRadius: 15, transform: [{ translateX }], }} >
+                            <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 15 }} />
                         </Animated.View>
-                        <TouchableOpacity
-                            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }}
-                            onPress={() => handleButtonPress('chasses')}
-                            activeOpacity={1}
-                        >
+
+                        {/* All Hunts */}
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }} onPress={() => handleButtonPress('chasses')} activeOpacity={1} >
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
-                                <SvgUri uri={getIconUri("target.svg")} width={25} height={25} color={activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary} />
-                                <Animated.Text
-                                    style={{
-                                        color: activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary, // Blanc pour actif, noir pour inactif
-                                        fontWeight: 'bold',
-                                        fontSize: 17,
-                                    }}
-                                >
+                                <SvgUri uri={getIconUri("target-larger.svg")} width={25} height={25} color={activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary} />
+                                <Animated.Text style={{ color: activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary, fontWeight: 'bold', fontSize: 17, }} >
                                     {texts.hunts}
                                 </Animated.Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }}
-                            onPress={() => handleButtonPress('classement')}
-                            activeOpacity={1}
-                        >
+
+                        {/* Leaderboard for cultural center */}
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }} onPress={() => handleButtonPress('classement')} activeOpacity={1} >
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
-                                <SvgUri uri={getIconUri("loyalty-points.svg")} width={33} height={33} color={activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary} />
-                                <Animated.Text
-                                    style={{
-                                        color: activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary, // Blanc pour actif, noir pour inactif
-                                        fontWeight: 'bold',
-                                        fontSize: 17,
-                                    }}
-                                >
+                                <SvgUri uri={getIconUri("loyalty-points.svg")} width={28} height={28} color={activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary} />
+                                <Animated.Text style={{ color: activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary, fontWeight: 'bold', fontSize: 17, }} >
                                     {texts.leaderboard}
                                 </Animated.Text>
                             </View>
@@ -195,6 +142,7 @@ const CulturalCenterScreen: React.FC = () => {
     );
 };
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.culturalCenter,
     fr: translationsFr.culturalCenter

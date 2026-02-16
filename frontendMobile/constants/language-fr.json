@@ -19,8 +19,8 @@
     "completedHuntsTitle": "Chasses complétées (0)",
     "completedHuntsPlaceholderMessage": "Connectez-vous pour pouvoir enregistrer votre progression !",
     "connectButtonText": "Se connecter →",
-    "currentHuntsAuthMessage": "Affichage des chasses en cours pour les utilisateurs connectés.",
-    "completedHuntsAuthMessage": "Affichage des chasses complétées pour les utilisateurs connectés."
+    "currentHuntsAuthMessage": "Affichage des chasses en cours pour les utilisateurs connectés à venir",
+    "completedHuntsAuthMessage": "Affichage des chasses complétées pour les utilisateurs connectés à venir"
   },
   "huntDetails": {
     "backToMenu": "Retour au menu",
@@ -78,7 +78,7 @@
   "socialFriends": {
     "backButton": "Retour au Social",
     "leaderboardTitle": "Classement des Amis",
-    "leaderboardPlaceholder": "Liste détaillée des amis à venir."
+    "leaderboardPlaceholder": "Liste détaillée des amis à venir"
   },
   "socialLeaderboard": {
     "backButton": "Retour au Social",

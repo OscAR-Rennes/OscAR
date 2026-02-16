@@ -5,45 +5,38 @@ const DEEPL_API_URL = 'https://api-free.deepl.com/v2/translate';
 const apiKey = Constants.expoConfig?.extra?.deeplApiKey;
 
 if (!apiKey) {
-  throw new Error('DEEPL_API_KEY is not defined in the environment variables.');
+    throw new Error('DEEPL_API_KEY is not defined in the environment variables.');
 }
 
-/**
- * Translate text using DeepL API
- * @param text - The text to translate
- * @param targetLang - The target language (e.g., 'EN', 'FR')
- * @returns The translated text
- */
 interface DeepLResponse {
-  translations: { text: string }[];
+    translations: { text: string }[];
 }
 
 export const translateText = async (text: string, targetLang: string): Promise<string> => {
-  try {
+    try {
+        const response = await axios.post<DeepLResponse>(
+            DEEPL_API_URL,
+            new URLSearchParams({
+                text,
+                target_lang: targetLang,
+                source_lang: 'FR',
+            }),
+            {
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  Authorization: `DeepL-Auth-Key ${apiKey}`,
+              },
+            }
+        );
 
-    const response = await axios.post<DeepLResponse>(
-      DEEPL_API_URL,
-      new URLSearchParams({
-        text,
-        target_lang: targetLang,
-        source_lang: 'FR',
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `DeepL-Auth-Key ${apiKey}`,
-        },
-      }
-    );
+        const translations = response.data.translations;
+        if (translations && translations.length > 0) {
+            return translations[0].text;
+        }
 
-    const translations = response.data.translations;
-    if (translations && translations.length > 0) {
-      return translations[0].text;
+        throw new Error('No translations found in the response.');
+    } catch (error) {
+        console.error('Error while translating text:', error);
+        throw error;
     }
-
-    throw new Error('No translations found in the response.');
-  } catch (error) {
-    console.error('Error while translating text:', error);
-    throw error;
-  }
 };

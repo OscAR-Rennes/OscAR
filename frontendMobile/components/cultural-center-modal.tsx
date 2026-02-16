@@ -74,6 +74,7 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
             }) }}>
                 <TouchableOpacity style={{ flex: 1 }} onPress={closeModalWithAnimation} />
                 <Animated.View style={{ transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }], height: '42%', width: '100%', backgroundColor: theme.COLORS.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: theme.SPACING.large }}>
+                    
                     {/* Cultural Center Informations */}
                     <Image source={{ uri: 'https://picsum.photos/800/1200' }} style={{ width: '100%', height: 150, borderRadius: 10, marginBottom: theme.SPACING.medium, }} />
                     <Text style={{ ...globalStyles.title, marginBottom: theme.SPACING.small }}> {culturalCenterName} </Text>
@@ -97,6 +98,7 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
     );
 };
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.culturalCenterModal,
     fr: translationsFr.culturalCenterModal

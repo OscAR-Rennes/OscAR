@@ -2,34 +2,15 @@ import React from 'react';
 import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { theme, globalStyles } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
 import { SuccessStepModalProps } from '../common/dto/ISuccessStepModalProps';
-
-// Icon mapping
-const ICONS = {
-    "star.svg": require('../assets/icon/star.svg'),
-    "check.svg": require('../assets/icon/check.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from '../app/icon-mapping';
 
 const SuccessStepModal: React.FC<SuccessStepModalProps> = ({ onClose, points, isLastStep, totalPoints }) => {
-    const { language } = useLanguage(); // Retrieve current language
-    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
+    const { language } = useLanguage();
+    const texts = STATIC_TEXTS[language];
 
     return (
         <Modal animationType="fade" transparent={true} visible={true} onRequestClose={onClose} >
@@ -67,6 +48,7 @@ const SuccessStepModal: React.FC<SuccessStepModalProps> = ({ onClose, points, is
     );
 };
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.successStepModal,
     fr: translationsFr.successStepModal

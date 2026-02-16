@@ -5,31 +5,15 @@ import { theme } from '../../constants/theme';
 import { useLanguage } from '../../context/LanguageContext';
 import { SvgUri } from 'react-native-svg';
 import culturalCentersData from '../../assets/data.json';
-import { Asset } from 'expo-asset';
 import '../../utils/ignoreWarnings';
 import CulturalCenterModal from '../../components/cultural-center-modal';
 import LanguageButton from '../../components/language-button';
 import mapInitialValues from '../../constants/map-initial-values.json';
 import { Address } from '../../common/dto/IAddress';
 import { CulturalCenter } from '../../common/dto/ICulturalCenter';
-
-// Icon mapping
-const ICONS = {
-    "globe.svg": require('../../assets/icon/globe.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from '../icon-mapping';
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
 
 export default function MapsScreen() {
     const { language, setLanguage } = useLanguage();
@@ -39,12 +23,14 @@ export default function MapsScreen() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredCenters, setFilteredCenters] = useState<CulturalCenter[]>([]);
     const [isFlatListVisible, setFlatListVisible] = useState<boolean>(false);
+    
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedCenter, setSelectedCenter] = useState<CulturalCenter | null>(null);
 
     const culturalCenters: CulturalCenter[] = culturalCentersData.cultural_centers;
     const addresses: Address[] = culturalCentersData.address;
 
+    // Handle search input changes
     const handleSearch = (query: string) => {
         setSearchQuery(query);
         if (query.trim().length < 2) {
@@ -59,6 +45,7 @@ export default function MapsScreen() {
         setFlatListVisible(true);
     };
 
+    // Handle cultural center selection from the list
     const handleCenterSelect = (center: CulturalCenter) => {
         const address = addresses.find(addr => addr.id === center.address_id);
         if (address && mapRef.current) {
@@ -73,11 +60,11 @@ export default function MapsScreen() {
         setFilteredCenters([]);
         setFlatListVisible(false);
 
-        // Show the modal and set the selected center
         setSelectedCenter(center);
         setModalVisible(true);
     };
 
+    // Handle language change using DeepL API (simulated here)
     const handleDeepLTranslation = async (lang: 'fr' | 'en') => {
         try {
             setLanguage(lang);
@@ -86,6 +73,7 @@ export default function MapsScreen() {
         }
     };
 
+    // Dismiss FlatList when tapping outside
     const dismissFlatList = () => {
         setFlatListVisible(false);
     };
@@ -102,20 +90,8 @@ export default function MapsScreen() {
                             <Text style={{ fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700' }}>{texts.languageSelection}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <LanguageButton
-                                languageCode="fr"
-                                currentLanguage={language}
-                                onPress={() => handleDeepLTranslation('fr')}
-                                label="Français"
-                                countryCode="FR"
-                            />
-                            <LanguageButton
-                                languageCode="en"
-                                currentLanguage={language}
-                                onPress={() => handleDeepLTranslation('en')}
-                                label="English"
-                                countryCode="GB"
-                            />
+                            <LanguageButton languageCode="fr" currentLanguage={language} onPress={() => handleDeepLTranslation('fr')} label="Français" countryCode="FR" />
+                            <LanguageButton languageCode="en" currentLanguage={language} onPress={() => handleDeepLTranslation('en')} label="English" countryCode="GB" />
                         </View>
                     </View>
 
@@ -140,11 +116,7 @@ export default function MapsScreen() {
                         </View>
 
                         {/* Map View */}
-                        <MapView
-                            ref={mapRef}
-                            style={{ flex: 1 }}
-                            initialRegion={mapInitialValues.initialRegion}
-                        >
+                        <MapView ref={mapRef} style={{ flex: 1 }} initialRegion={mapInitialValues.initialRegion} >
                             {culturalCenters.map(center => {
                                 const address = addresses.find(addr => addr.id === center.address_id);
                                 if (!address) return null;
@@ -187,6 +159,3 @@ const STATIC_TEXTS = {
     en: translations.index,
     fr: translationsFr.index
 };
-
-import translations from '../../constants/language-en.json';
-import translationsFr from '../../constants/language-fr.json';

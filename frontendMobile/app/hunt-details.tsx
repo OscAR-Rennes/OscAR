@@ -7,40 +7,19 @@ import { Ionicons } from '@expo/vector-icons';
 import BottomNavbar from '@/components/ui/bottom-navbar';
 import { globalStyles, theme } from '../constants/theme';
 import data from '../assets/data.json';
-import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
 import { Step } from '../common/dto/IStep';
-
-// Icon mapping
-const ICONS = {
-    "target.svg": require('../assets/icon/target-larger.svg'),
-    "step.svg": require('../assets/icon/step.svg'),
-    "star.svg": require('../assets/icon/star.svg'),
-    "play-button.svg": require('../assets/icon/play-button.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from './icon-mapping';
 
 const HuntDetailsScreen: React.FC = () => {
     const router = useRouter();
     const { id } = useLocalSearchParams();
-    const { language } = useLanguage(); // Retrieve current language
-    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
+    const { language } = useLanguage();
+    const texts = STATIC_TEXTS[language];
 
     // Handle cases where parameters might be undefined
     const huntId = Array.isArray(id) ? id[0] : id;
@@ -102,18 +81,14 @@ const HuntDetailsScreen: React.FC = () => {
                             router.push({
                                 pathname: '/current-step',
                                 params: {
-                                    stepId: steps[0].id, // Pass the first step's ID
-                                    huntId: huntId, // Pass the hunt ID
+                                    stepId: steps[0].id,
+                                    huntId: huntId,
                                 },
                             });
                         }
                     }}
                 >
-                    <LinearGradient
-                        colors={[theme.COLORS.primary, theme.COLORS.secondary]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
+                    <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
                             <SvgUri uri={getIconUri("play-button.svg")} width={20} height={20} color={theme.COLORS.background} />
                             <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{texts.startHunt}</Text>
@@ -126,6 +101,7 @@ const HuntDetailsScreen: React.FC = () => {
     );
 };
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.huntDetails,
     fr: translationsFr.huntDetails

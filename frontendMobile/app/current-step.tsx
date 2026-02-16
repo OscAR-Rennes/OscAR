@@ -9,32 +9,13 @@ import data from '../assets/data.json';
 import SuccessStepModal from '../components/success-step-modal';
 import BottomNavbar from '@/components/ui/bottom-navbar';
 import { useLanguage } from '@/context/LanguageContext';
-import { Asset } from 'expo-asset';
 import { useRouter } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
 import { Step } from '../common/dto/IStep';
-
-// Icon mapping
-const ICONS = {
-    "star.svg": require('../assets/icon/star.svg'),
-    "camera.svg": require('../assets/icon/camera.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from './icon-mapping';
 
 const CurrentStepScreen: React.FC = () => {
     const router = useRouter();
@@ -53,6 +34,7 @@ const CurrentStepScreen: React.FC = () => {
         setShowSuccessModal(true);
     };
 
+    // Handle closing the success modal and moving to the next step or ending the hunt
     const handleCloseModal = () => {
         setShowSuccessModal(false);
         setTotalPoints(totalPoints + currentStep.points); // Increment total points after closing modal
@@ -63,14 +45,6 @@ const CurrentStepScreen: React.FC = () => {
             router.push('/');
         }
     };
-
-    if (!currentStep) {
-        return (
-            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.COLORS.background }}>
-                <Text style={globalStyles.text}>Étape introuvable.</Text>
-            </SafeAreaView>
-        );
-    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -112,11 +86,7 @@ const CurrentStepScreen: React.FC = () => {
 
                     {/* Scan Button */}
                     <TouchableOpacity onPress={handleScanPress} style={{ width: '100%' }}>
-                        <LinearGradient
-                            colors={[theme.COLORS.primary, theme.COLORS.secondary]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
+                        <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
                                 <SvgUri uri={getIconUri("camera.svg")} width={35} height={35} color={theme.COLORS.background} />
                                 <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{texts.scanButton}</Text>
@@ -147,6 +117,7 @@ const CurrentStepScreen: React.FC = () => {
     );
 };
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.currentStep,
     fr: translationsFr.currentStep

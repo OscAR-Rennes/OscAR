@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { theme, globalStyles } from '../constants/theme';
-import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import { useLanguage } from '../context/LanguageContext';
 import { useRouter } from 'expo-router';
@@ -9,24 +8,7 @@ import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
 import { Hunt } from '../common/dto/IHunt';
 import { HuntListProps } from '../common/dto/IHuntListProps';
-
-// Icon mapping
-const ICONS = {
-    "star.svg": require('../assets/icon/star.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from '../app/icon-mapping';
 
 const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
     const { language } = useLanguage();
@@ -62,9 +44,9 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
         router.push({
             pathname: '/hunt-details',
             params: {
-                id: hunt.id, // Pass the hunt ID
+                id: hunt.id,
                 title: hunt.title,
-                description: `Description for ${hunt.title}` // Placeholder description
+                description: `Description for ${hunt.title}`
             },
         });
     };
@@ -72,11 +54,7 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
     return (
         <View>
             {hunts.map((hunt: Hunt, index: number) => (
-                <TouchableOpacity 
-                    key={index} 
-                    style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, marginBottom: theme.SPACING.medium, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 5 }}
-                    onPress={() => handleHuntPress(hunt)}
-                >
+                <TouchableOpacity  key={index}  style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, marginBottom: theme.SPACING.medium, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 5 }} onPress={() => handleHuntPress(hunt)} >
                     {/* Hunt Informations */}
                     <View style={{ flex: 1 }}>
                         <Text style={[{ marginBottom: theme.SPACING.small, fontSize: 20, fontWeight: 'bold' }]}>{hunt.title}</Text>
@@ -99,6 +77,7 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
     );
 };
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.huntList,
     fr: translationsFr.huntList

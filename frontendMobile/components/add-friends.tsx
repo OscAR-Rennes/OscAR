@@ -2,27 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { theme } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
+import { getIconUri } from '../app/icon-mapping';
 
-// Icon mapping
-const ICONS = {
-    "group.svg": require('../assets/icon/group.svg'),
-    "send.svg": require('../assets/icon/send.svg'),
-    "plus.svg": require('../assets/icon/plus.svg'),
-    "user.svg": require('../assets/icon/user.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
-
-// AddFriends component
 export default function AddFriends() {
     const [isVisible, setIsVisible] = useState(false);
     const { language } = useLanguage();

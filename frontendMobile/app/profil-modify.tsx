@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Modal, TouchableWithoutFeedback } from 'react-native';
 import { globalStyles, theme } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import HeaderNavbar from '../components/ui/header-navbar';
@@ -13,23 +12,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-// Icon mapping
-const ICONS = {
-    "image-placeholder.svg": require('../assets/icon/image-placeholder.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
+import { getIconUri } from './icon-mapping';
 
 export default function ProfilModifyScreen() {
     const router = useRouter();
-    const { language } = useLanguage(); // Retrieve current language
+    const { language } = useLanguage();
     const [showModifyPassword, setShowModifyPassword] = useState(false);
-    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
+    const texts = STATIC_TEXTS[language];
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -53,7 +42,6 @@ export default function ProfilModifyScreen() {
                     </View>
                 </View>
 
-                {/* Form Fields */}
                 <View>
                     {/* First Name */}
                     <View style={{ marginBottom: theme.SPACING.medium }}>
@@ -115,6 +103,7 @@ export default function ProfilModifyScreen() {
     );
 }
 
+// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.profilModify,
     fr: translationsFr.profilModify

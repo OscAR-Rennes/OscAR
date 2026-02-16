@@ -19,8 +19,8 @@
     "completedHuntsTitle": "Completed Hunts (0)",
     "completedHuntsPlaceholderMessage": "Log in to save your progress !",
     "connectButtonText": "Log in →",
-    "currentHuntsAuthMessage": "Displaying current hunts for authenticated users.",
-    "completedHuntsAuthMessage": "Displaying completed hunts for authenticated users."
+    "currentHuntsAuthMessage": "Displaying current hunts for authenticated users coming soon",
+    "completedHuntsAuthMessage": "Displaying completed hunts for authenticated users coming soon"
   },
   "huntDetails": {
     "backToMenu": "Back to menu",
@@ -78,7 +78,7 @@
   "socialFriends": {
     "backButton": "Back to Social",
     "leaderboardTitle": "Friends Leaderboard",
-    "leaderboardPlaceholder": "Detailed list of friends coming soon."
+    "leaderboardPlaceholder": "Detailed list of friends coming soon"
   },
   "socialLeaderboard": {
     "backButton": "Back to Social",

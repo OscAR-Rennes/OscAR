@@ -2,31 +2,10 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { theme } from '../constants/theme';
-import { useRouter } from 'expo-router';
 import { PlaceholderNotConnectedProps } from '../common/dto/IPlaceHolderNotConnectedProps';
+import { getIconUri, IconName } from '../app/icon-mapping';
 
-// Icon mapping
-const ICONS = {
-    "group.svg": require('../assets/icon/group.svg'),
-    "target-larger.svg": require('../assets/icon/target-larger.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-export type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
-
-// PlaceholderNotConnected component
 const PlaceholderNotConnected: React.FC<PlaceholderNotConnectedProps> = ({ icon, message, buttonText, onPress }) => {
     return (
         <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, width: '100%', alignItems: 'center', backgroundColor: '#f0f0f0' }}>
