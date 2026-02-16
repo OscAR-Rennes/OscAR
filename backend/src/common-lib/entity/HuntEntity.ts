@@ -8,7 +8,7 @@ export class HuntEntity {
   points!: number;
   latitude!: number;
   longitude!: number;
-  picture_path?: string;
+  picture_path?: string | null;
   created_at!: Date;
   updated_at!: Date;
   cultural_center_id!: string;
