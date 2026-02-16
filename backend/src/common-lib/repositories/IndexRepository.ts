@@ -7,24 +7,22 @@ import { prisma } from "../config/prismaClient";
 export class IndexRepository {
 
     async createIncrementEmpty(hunt_id: string): Promise<IndexEntity> {
+        // 1️⃣ Récupérer le max index
+            const maxResult = await prisma.index.aggregate({
+            _max: { index: true },
+            where: { hunt_id },
+        });
 
-        const maxResult = await pool.query(
-            `SELECT COALESCE(MAX(index), 0) AS max_index
-             FROM index
-             WHERE hunt_id = $1`,
-            [hunt_id]
-        );
+        const nextIndex = (maxResult._max.index ?? 0) + 1;
 
-        const nextIndex = maxResult.rows[0].max_index + 1;
+        const indexRecord = await prisma.index.create({
+            data: {
+                hunt_id,
+                index: nextIndex,
+            },
+        });
 
-        const insertResult = await pool.query(
-            `INSERT INTO index (hunt_id, index)
-             VALUES ($1, $2)
-             RETURNING *`,
-            [hunt_id, nextIndex]
-        );
-
-        return insertResult.rows[0];
+        return new IndexEntity(indexRecord);
     }
 
     async create(indexData: CreateIndexRequestDTO): Promise<IndexEntity> {
@@ -35,7 +33,6 @@ export class IndexRepository {
 
         const nextIndex = (maxResult._max.index ?? 0) + 1;
 
-        // 2️⃣ Créer le nouvel index
         const indexRecord = await prisma.index.create({
         data: {
             name: indexData.name,

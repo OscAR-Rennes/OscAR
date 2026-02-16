@@ -3,8 +3,8 @@ export class StepEntity {
   title!: string;
   description!: string;
   points!: number;
-  latitude!: number;
-  longitude!: number;
+  latitude?: number | null;
+  longitude?: number | null;
   hunt_id!: string;
   index_id!: string;
   created_at!: Date;
