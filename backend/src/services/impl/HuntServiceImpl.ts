@@ -19,8 +19,7 @@ export class HuntServiceImpl implements HuntService {
                 cultural_center_id: userCulturalCenterId
             };
             const hunt = await huntRepository.create(huntToCreate);
-            const huntDTO: CreateHuntResponseDTO = huntMapper.toCreateResponseDto(hunt);
-            return huntDTO;
+            return huntMapper.toCreateResponseDto(hunt);
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la création de la chasse',
@@ -51,13 +50,19 @@ export class HuntServiceImpl implements HuntService {
                     statusCode: 404
                 })
             }
-            existingHunt.creator_id === userId || userRights.includes('ADMIN') || (userRights.includes('CULTURAL_CENTER_MANAGER') && existingHunt.cultural_center_id === userId) ? null :
-            (() => { throw new AppError({
-                userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
-                statusCode: 403
-            })})()
+            const hasRights =
+                existingHunt.creator_id === userId ||
+                userRights.includes('ADMIN') ||
+                (userRights.includes('CULTURAL_CENTER_MANAGER') && existingHunt.cultural_center_id === userId);
 
-            const editedHunt = await huntRepository.edit(huntData, userId, userRights)
+            if (!hasRights) {
+                throw new AppError({
+                userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
+                statusCode: 403,
+                });
+            }
+
+            const editedHunt = await huntRepository.edit(huntData);
             return huntMapper.toEditResponseDto(editedHunt)
         } catch (error: any) {
             throw new AppError({
