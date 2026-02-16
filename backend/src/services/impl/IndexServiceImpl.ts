@@ -26,10 +26,22 @@ export class IndexServiceImpl implements IndexService {
     async getIndexByHunt(huntId: string): Promise<GetIndexByHuntResponseDTO[]> {
         try {
             const indexes = await indexRepository.getByHuntID(huntId);
+            console.log("Indexes retrieved for huntId", huntId, ":", indexes);
             return indexes.map(indexMapper.toLightDTO);
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des index de la chasse',
+                statusCode: 500,
+            });
+        }
+    }
+
+    async deleteIndex(indexId: string): Promise<void> {
+        try {
+            await indexRepository.delete(indexId);
+        } catch (error: any) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la suppression de l\'index',
                 statusCode: 500,
             });
         }

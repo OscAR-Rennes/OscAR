@@ -56,4 +56,19 @@ export class IndexRepository {
         )
         return result.rows;
     }
+
+    async getById(indexId: string): Promise<IndexEntity> {
+        const result = await pool.query(
+            "SELECT * FROM index WHERE id = ($1)",
+            [indexId]
+        )
+        return result.rows[0];
+    }
+
+    async delete(indexId: string): Promise<void> {
+        await pool.query(
+            "DELETE FROM index WHERE id = ($1)",
+            [indexId]
+        )
+    }
 }

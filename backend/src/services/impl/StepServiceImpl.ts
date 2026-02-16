@@ -5,9 +5,12 @@ import { stepMapper } from "../../mapper/StepMapper";
 import { CreateStepResponseDTO } from "../../common-lib/dto/step/CreateStepResponseDTO";
 import { AppError } from "../../common-lib/errors/AppError";
 import { IndexRepository } from "../../common-lib/repositories/IndexRepository";
+import { pool } from "../../common-lib/config/database";
+import { IndexServiceImpl } from "./IndexServiceImpl";
 
 const stepRepository = new StepRepository();
 const indexRepository = new IndexRepository();
+const indexServiceImpl = new IndexServiceImpl();
 
 export class StepServiceImpl implements StepService {
 
@@ -30,6 +33,30 @@ export class StepServiceImpl implements StepService {
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la création de l\'étape',
+                statusCode: 500,
+            });
+        }
+    }
+
+    async deleteStep(stepId: string): Promise<void> {
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+            const step = await stepRepository.getStepById(stepId);
+            console.log("Step to delete:", step);
+            const stepIndexId = step.index_id;
+
+            const stepsInIndex = await stepRepository.getStepsByIndexId(stepIndexId);
+            if (stepsInIndex.length === 0) {
+                await indexServiceImpl.deleteIndex(stepIndexId);
+            }
+            await stepRepository.delete(stepId);
+
+            await client.query("COMMIT");
+        } catch (error: any) {
+            await client.query("ROLLBACK");
+            throw new AppError({
+                userMessage: 'Erreur lors de la suppression de l\'étape',
                 statusCode: 500,
             });
         }

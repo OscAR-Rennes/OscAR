@@ -3,4 +3,5 @@ import { CreateStepResponseDTO } from "../common-lib/dto/step/CreateStepResponse
 
 export interface StepService {
   createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO>;
+  deleteStep(stepId: string): Promise<void>;
 }

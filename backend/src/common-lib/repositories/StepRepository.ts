@@ -20,4 +20,28 @@ export class StepRepository {
         return result.rows[0];
     }
 
+    async getStepById(stepId: string): Promise<StepEntity> {
+        console.log("Retrieving step with ID:", stepId);
+        const result = await pool.query(
+            "SELECT * FROM steps WHERE id = $1",
+            [stepId]
+        );
+        console.log("Step retrieved:", result.rows[0]);
+        return result.rows[0];
+    }
+
+    async getStepsByIndexId(indexId: string): Promise<StepEntity[]> {
+        const result = await pool.query(
+            "SELECT * FROM steps WHERE index_id = $1",
+            [indexId]
+        );
+        return result.rows;
+    }
+
+    async delete(stepId: string): Promise<void> {
+        await pool.query(
+            "DELETE FROM steps WHERE id = $1",
+            [stepId]
+        );
+    }
 }

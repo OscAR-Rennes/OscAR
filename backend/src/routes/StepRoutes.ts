@@ -39,4 +39,11 @@ stepsRoutes.post(
     (req, res, next) => stepsController.createStep(req, res, next)
 );
 
+stepsRoutes.delete(
+    "/step/:stepId", 
+    authMiddleware, 
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.deleteStep(req, res, next)
+);
+
 export default stepsRoutes;

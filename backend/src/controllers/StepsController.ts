@@ -20,4 +20,15 @@ export class StepsController  {
     }
   }
 
+  async deleteStep(req: Request, res: Response, next: any) {
+    try {
+      const { stepId } = req.params;
+      await this.stepService.deleteStep(stepId);
+      res.sendStatus(204);
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
+
 };
