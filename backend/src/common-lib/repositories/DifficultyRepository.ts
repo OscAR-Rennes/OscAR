@@ -1,9 +1,10 @@
-import { pool } from "../config/database.js";
-import { DifficultyEntity } from "../entity/DifficultyEntity.js";
+import { prisma } from "../config/prismaClient";
+import { DifficultyEntity } from "../entity/DifficultyEntity";
 
-export class DifficultyRepository  {
+export class DifficultyRepository {
+
   async getAll(): Promise<DifficultyEntity[]> {
-    const result = await pool.query("SELECT * FROM difficulty");
-    return result.rows;
+    const difficulties = await prisma.difficulty.findMany();
+    return difficulties.map(d => new DifficultyEntity(d));
   }
 }
