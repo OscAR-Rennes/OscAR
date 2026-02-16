@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext'; 
 import translations from '../../constants/language-en.json';
 import translationsFr from '../../constants/language-fr.json';
+import { Tab } from '../../common/dto/ITab';
 
 // Icon paths
 const ICON_PATHS = {
@@ -25,14 +26,6 @@ function getIconUri(iconSource: number): string {
 // Normalize routes to ignore the /(main) prefix
 function normalizeRoute(route: string): string {
     return route.replace('/(main)', '');
-}
-
-// Tab interface
-interface Tab {
-    key: string;
-    label: string;
-    route: string;
-    icon: number;
 }
 
 // Bottom navigation bar component

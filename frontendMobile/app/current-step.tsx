@@ -15,19 +15,7 @@ import HeaderNavbar from '@/components/ui/header-navbar';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-interface Step {
-    id: string;
-    title: string;
-    description: string;
-    points: number;
-    hunt_id: string;
-    latitude: number;
-    longitude: number;
-    index_id: string;
-    created_at: string;
-    updated_at: string;
-}
+import { Step } from '../common/dto/IStep';
 
 // Icon mapping
 const ICONS = {

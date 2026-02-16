@@ -10,6 +10,8 @@ import '../../utils/ignoreWarnings';
 import CulturalCenterModal from '../../components/cultural-center-modal';
 import LanguageButton from '../../components/language-button';
 import mapInitialValues from '../../constants/map-initial-values.json';
+import { Address } from '../../common/dto/IAddress';
+import { CulturalCenter } from '../../common/dto/ICulturalCenter';
 
 // Icon mapping
 const ICONS = {
@@ -27,29 +29,6 @@ function getIconUri(iconName: IconName): string {
         return '';
     }
     return Asset.fromModule(iconSource).uri || '';
-}
-
-// Define types for addresses
-interface Address {
-    id: string;
-    zip: string;
-    city: string;
-    longitude: number;
-    latitude: number;
-    street: string;
-    street_number: number;
-}
-
-// Define types for cultural centers
-interface CulturalCenter {
-    id: string;
-    name: string;
-    description: string;
-    isActive: boolean;
-    address_id: string;
-    picture_path: string;
-    created_at: string;
-    updated_at: string;
 }
 
 export default function MapsScreen() {

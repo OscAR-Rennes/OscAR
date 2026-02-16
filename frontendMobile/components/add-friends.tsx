@@ -65,8 +65,8 @@ export default function AddFriends() {
                                     </LinearGradient>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={{ marginTop: theme.SPACING.medium, alignSelf: 'center' }} onPress={() => setIsVisible(false)}>
-                                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.back}</Text>
+                                <TouchableOpacity style={{ marginTop: theme.SPACING.large, alignSelf: 'center' }} onPress={() => setIsVisible(false)}>
+                                    <Text style={{ fontSize: theme.FONT_SIZES.label, color: theme.COLORS.textSecondary }}>{texts.back}</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>

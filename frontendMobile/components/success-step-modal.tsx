@@ -6,13 +6,7 @@ import { Asset } from 'expo-asset';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-interface SuccessStepModalProps {
-    onClose: () => void;
-    points: number;
-    isLastStep: boolean;
-    totalPoints: number;
-}
+import { SuccessStepModalProps } from '../common/dto/ISuccessStepModalProps';
 
 // Icon mapping
 const ICONS = {

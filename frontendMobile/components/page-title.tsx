@@ -1,10 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { theme } from '../constants/theme';
-
-interface PageTitleProps {
-    title: string;
-}
+import { PageTitleProps } from '../common/dto/IPageTitleProps';
 
 const PageTitle: React.FC<PageTitleProps> = ({ title }) => {
     return (

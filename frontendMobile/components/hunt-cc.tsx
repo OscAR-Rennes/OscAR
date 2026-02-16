@@ -7,18 +7,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { useRouter } from 'expo-router';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-type Hunt = {
-    id: string; // Add the ID field
-    title: string;
-    difficulty: string;
-    steps: number;
-    points: number;
-};
-
-type HuntListProps = {
-    hunts: Hunt[];
-};
+import { Hunt } from '../common/dto/IHunt';
+import { HuntListProps } from '../common/dto/IHuntListProps';
 
 // Icon mapping
 const ICONS = {

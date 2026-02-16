@@ -8,16 +8,7 @@ import { router } from 'expo-router/build/exports';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-interface CulturalCenterModalProps {
-    visible: boolean;
-    culturalCenterName: string;
-    culturalCenterImage: string;
-    culturalCenterDescription: string;
-    culturalCenterId: string;
-    onClose: () => void;
-    onViewCenter: () => void;
-}
+import { CulturalCenterModalProps } from '../common/dto/ICulturalCenterModalProps';
 
 const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, culturalCenterName, culturalCenterDescription, culturalCenterImage, culturalCenterId, onClose, onViewCenter }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;

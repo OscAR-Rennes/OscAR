@@ -5,6 +5,7 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { theme } from '../constants/theme';
 import { useRouter } from 'expo-router';
+import { PlaceholderNotConnectedProps } from '../common/dto/IPlaceHolderNotConnectedProps';
 
 // Icon mapping
 const ICONS = {
@@ -13,7 +14,7 @@ const ICONS = {
 } as const;
 
 // Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
+export type IconName = keyof typeof ICONS;
 
 // Function to get the URI of the SVG icon
 function getIconUri(iconName: IconName): string {
@@ -23,14 +24,6 @@ function getIconUri(iconName: IconName): string {
         return '';
     }
     return Asset.fromModule(iconSource).uri || '';
-}
-
-// Props for the PlaceholderNotConnected component
-interface PlaceholderNotConnectedProps {
-    icon: IconName;
-    message: string;
-    buttonText: string;
-    onPress: () => void;
 }
 
 // PlaceholderNotConnected component

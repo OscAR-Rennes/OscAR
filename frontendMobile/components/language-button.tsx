@@ -1,14 +1,7 @@
 import React from 'react';
 import { TouchableWithoutFeedback, View, Text } from 'react-native';
 import { theme } from '../constants/theme';
-
-interface LanguageButtonProps {
-    languageCode: 'fr' | 'en';
-    currentLanguage: 'fr' | 'en';
-    onPress: () => void;
-    label: string;
-    countryCode: string;
-}
+import { LanguageButtonProps } from '../common/dto/ILanguageButtonProps';
 
 const LanguageButton: React.FC<LanguageButtonProps> = ({ languageCode, currentLanguage, onPress, label, countryCode }) => {
     const isSelected = currentLanguage === languageCode;

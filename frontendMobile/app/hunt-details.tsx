@@ -13,20 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-
-// Define the type for a step
-interface Step {
-    id: string;
-    title: string;
-    description: string;
-    points: number;
-    hunt_id: string;
-    latitude: number;
-    longitude: number;
-    index_id: string;
-    created_at: string;
-    updated_at: string;
-}
+import { Step } from '../common/dto/IStep';
 
 // Icon mapping
 const ICONS = {

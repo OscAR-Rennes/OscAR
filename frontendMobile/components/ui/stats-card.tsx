@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 import { theme } from '../../constants/theme';
 import { Asset } from 'expo-asset';
+import { StatsCardProps } from '../../common/dto/IStatsCardProps';
 
 // Icon mapping
 const ICONS = {
@@ -15,17 +16,6 @@ const ICONS = {
 function getIconUri(iconName: keyof typeof ICONS): string {
     const iconSource = ICONS[iconName];
     return Asset.fromModule(iconSource).uri || '';
-}
-
-// Props for StatsCard
-interface StatsCardProps {
-    icon: keyof typeof ICONS;
-    value: number;
-    label: string;
-    backgroundColor: string;
-    iconColor: string;
-    width: number;
-    height: number;
 }
 
 // StatsCard component

@@ -2,12 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 import { theme } from '../constants/theme';
-
-interface SectionTitleProps {
-    title: string;
-    iconUri: string;
-    iconColor: string;
-}
+import { SectionTitleProps } from '../common/dto/ISectionTitleProps';
 
 const SectionTitle: React.FC<SectionTitleProps> = ({ title, iconUri, iconColor }) => {
     return (
