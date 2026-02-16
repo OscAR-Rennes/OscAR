@@ -6,6 +6,8 @@ import { Animated } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { router } from 'expo-router/build/exports';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 interface CulturalCenterModalProps {
     visible: boolean;
@@ -105,12 +107,8 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
 };
 
 const STATIC_TEXTS = {
-    fr: {
-        viewCenter: 'Voir le centre',
-    },
-    en: {
-        viewCenter: 'View center',
-    },
+    en: translations.culturalCenterModal,
+    fr: translationsFr.culturalCenterModal
 };
 
 export default CulturalCenterModal;

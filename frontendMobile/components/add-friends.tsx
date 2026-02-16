@@ -5,6 +5,8 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -77,20 +79,6 @@ export default function AddFriends() {
 
 // Translated static texts
 const STATIC_TEXTS = {
-    fr: {
-        addFriends: 'Ajouter des amis',
-        inviteFriends: 'Invitez vos amis à voir votre progression !',
-        pseudoPlaceholder: 'Pseudo',
-        pseudoHint: 'Entrez le pseudo de l’ami à ajouter',
-        sendRequest: "Envoyer la demande d'amis",
-        back: '← Retour',
-    },
-    en: {
-        addFriends: 'Add Friends',
-        inviteFriends: 'Invite your friends to see your progress!',
-        pseudoPlaceholder: 'Username',
-        pseudoHint: 'Enter the username of the friend to add',
-        sendRequest: 'Send Friend Request',
-        back: '← Back',
-    },
+    en: translations.addFriends,
+    fr: translationsFr.addFriends
 };

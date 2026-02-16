@@ -7,6 +7,8 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { theme, globalStyles } from '../../constants/theme';
 import { useLanguage } from '../../context/LanguageContext';
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
 
 export default function ConnexionScreen() {
     const router = useRouter();
@@ -118,30 +120,6 @@ export default function ConnexionScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        title: "LOOTOPIA",
-        subtitle: "La chasse vous attend !",
-        emailLabel: "Email",
-        emailPlaceholder: "votre@email.com",
-        passwordLabel: "Mot de passe",
-        passwordPlaceholder: "************",
-        forgotPassword: "Mot de passe oublié ?",
-        signInButton: "Se connecter",
-        noAccountText: "Vous n'avez pas encore de compte ?",
-        signUpLink: "Inscrivez-vous !",
-        backButton: "Retour au menu",
-    },
-    en: {
-        title: "LOOTOPIA",
-        subtitle: "The hunt awaits you!",
-        emailLabel: "Email",
-        emailPlaceholder: "your@email.com",
-        passwordLabel: "Password",
-        passwordPlaceholder: "************",
-        forgotPassword: "Forgot password?",
-        signInButton: "Sign In",
-        noAccountText: "Don't have an account yet ?",
-        signUpLink: "Sign up !",
-        backButton: "Back to menu",
-    },
+    en: translations.connection,
+    fr: translationsFr.connection
 };

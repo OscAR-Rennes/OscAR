@@ -8,6 +8,8 @@ import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import PageTitle from '../../components/page-title';
 import { useLanguage } from '../../context/LanguageContext';
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -89,24 +91,6 @@ export default function HuntScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        pageTitle: 'Mes Chasses',
-        currentHuntsTitle: 'Chasses en cours (0)',
-        currentHuntsPlaceholderMessage: 'Connectez-vous pour pouvoir voir vos chasses en cours !',
-        completedHuntsTitle: 'Chasses complétées (0)',
-        completedHuntsPlaceholderMessage: 'Connectez-vous pour pouvoir enregistrer votre progression !',
-        connectButtonText: 'Se connecter →',
-        currentHuntsAuthMessage: 'Affichage des chasses en cours pour les utilisateurs connectés.',
-        completedHuntsAuthMessage: 'Affichage des chasses complétées pour les utilisateurs connectés.',
-    },
-    en: {
-        pageTitle: 'My Hunts',
-        currentHuntsTitle: 'Current Hunts (0)',
-        currentHuntsPlaceholderMessage: 'Log in to see your current hunts !',
-        completedHuntsTitle: 'Completed Hunts (0)',
-        completedHuntsPlaceholderMessage: 'Log in to save your progress !',
-        connectButtonText: 'Log in →',
-        currentHuntsAuthMessage: 'Displaying current hunts for authenticated users.',
-        completedHuntsAuthMessage: 'Displaying completed hunts for authenticated users.',
-    },
+    en: translations.hunt,
+    fr: translationsFr.hunt
 };

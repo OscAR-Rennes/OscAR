@@ -6,6 +6,8 @@ import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import PageTitle from './page-title';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -74,22 +76,6 @@ export default ModifyPassword;
 
 // Translated static texts 
 const STATIC_TEXTS = {
-    fr: {
-        title: 'Modifier le mot de passe',
-        currentPassword: 'Mot de passe actuel',
-        newPassword: 'Nouveau mot de passe',
-        confirmPassword: 'Confirmez le nouveau mot de passe',
-        saveChanges: 'Enregistrer la modification',
-        cancel: '← Annuler',
-        placeholder: '********',
-    },
-    en: {
-        title: 'Change Password',
-        currentPassword: 'Current Password',
-        newPassword: 'New Password',
-        confirmPassword: 'Confirm New Password',
-        saveChanges: 'Save Changes',
-        cancel: '← Cancel',
-        placeholder: '********',
-    },
+    en: translations.modifyPassword,
+    fr: translationsFr.modifyPassword
 };

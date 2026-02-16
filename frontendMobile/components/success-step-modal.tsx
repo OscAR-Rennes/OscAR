@@ -4,6 +4,8 @@ import { theme, globalStyles } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 interface SuccessStepModalProps {
     onClose: () => void;
@@ -72,22 +74,8 @@ const SuccessStepModal: React.FC<SuccessStepModalProps> = ({ onClose, points, is
 };
 
 const STATIC_TEXTS = {
-    fr: {
-        bravo: 'Bravo !',
-        foundMessage: 'Vous avez trouvé !',
-        nextStepButton: 'Passer à l’étape suivante →',
-        completedHunt: 'Vous avez complété la chasse !',
-        pointsEarned: 'points gagnés',
-        returnToMenu: 'Retour au menu →',
-    },
-    en: {
-        bravo: 'Congratulations !',
-        foundMessage: 'You found it !',
-        nextStepButton: 'Go to the next step →',
-        completedHunt: 'You have completed the hunt !',
-        pointsEarned: 'points earned',
-        returnToMenu: 'Return to menu →',
-    },
+    en: translations.successStepModal,
+    fr: translationsFr.successStepModal
 };
 
 export default SuccessStepModal;

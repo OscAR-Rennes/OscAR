@@ -7,6 +7,8 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { theme, globalStyles } from '../constants/theme';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 export default function InscriptionScreen() {
     const router = useRouter();
@@ -149,36 +151,6 @@ export default function InscriptionScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        title: "LOOTOPIA",
-        subtitle: "La chasse vous attend !",
-        pseudoLabel: "Pseudo",
-        pseudoPlaceholder: "JeanDupont",
-        emailLabel: "Email",
-        emailPlaceholder: "votre@email.com",
-        passwordLabel: "Mot de passe",
-        passwordPlaceholder: "************",
-        confirmPasswordLabel: "Confirmez le mot de passe",
-        confirmPasswordPlaceholder: "************",
-        signUpButton: "S'inscrire",
-        alreadyHaveAccountText: "Vous avez déjà un compte ?",
-        signInLink: "Connectez-vous !",
-        backButton: "Retour au menu",
-    },
-    en: {
-        title: "LOOTOPIA",
-        subtitle: "The hunt awaits you !",
-        pseudoLabel: "Username",
-        pseudoPlaceholder: "JohnDoe",
-        emailLabel: "Email",
-        emailPlaceholder: "your@email.com",
-        passwordLabel: "Password",
-        passwordPlaceholder: "************",
-        confirmPasswordLabel: "Confirm Password",
-        confirmPasswordPlaceholder: "************",
-        signUpButton: "Sign Up",
-        alreadyHaveAccountText: "Already have an account ?",
-        signInLink: "Sign in !",
-        backButton: "Back to menu",
-    },
+    en: translations.inscription,
+    fr: translationsFr.inscription
 };

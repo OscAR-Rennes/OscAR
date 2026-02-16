@@ -15,6 +15,8 @@ import data from '@/assets/data.json';
 import { useLanguage } from '../context/LanguageContext';
 import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -194,24 +196,8 @@ const CulturalCenterScreen: React.FC = () => {
 };
 
 const STATIC_TEXTS = {
-    fr: {
-        backToMenu: 'Retour au menu',
-        missingInfo: 'Les informations du centre culturel sont manquantes.',
-        hunts: 'Chasses',
-        leaderboard: 'Classement',
-        noHunts: 'Aucune chasse disponible pour ce centre culturel.',
-        centerLeaderboard: 'Classement du centre à venir',
-        unknown: 'Inconnu',
-    },
-    en: {
-        backToMenu: 'Back to menu',
-        missingInfo: 'Cultural center information is missing.',
-        hunts: 'Hunts',
-        leaderboard: 'Leaderboard',
-        noHunts: 'No hunts available for this cultural center.',
-        centerLeaderboard: 'Center leaderboard coming soon',
-        unknown: 'Unknown',
-    },
+    en: translations.culturalCenter,
+    fr: translationsFr.culturalCenter
 };
 
 export default CulturalCenterScreen;

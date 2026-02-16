@@ -9,6 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNavbar from '@/components/ui/bottom-navbar';
 import SectionTitle from '../components/section-title';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -68,14 +70,6 @@ export default function SocialLeaderboardScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        backButton: "Retour au Social",
-        leaderboardTitle: "Classement Global",
-        leaderboardPlaceholder: "Liste des meilleurs joueurs à venir",
-    },
-    en: {
-        backButton: "Back to Social",
-        leaderboardTitle: "Global Leaderboard",
-        leaderboardPlaceholder: "List of top players coming soon",
-    },
+    en: translations.socialLeaderboard,
+    fr: translationsFr.socialLeaderboard
 };

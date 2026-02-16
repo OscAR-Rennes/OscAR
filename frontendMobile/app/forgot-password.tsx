@@ -7,6 +7,8 @@ import { SvgUri } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import { theme, globalStyles } from '../constants/theme';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -96,20 +98,6 @@ export default function ForgotPasswordScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        title: "LOOTOPIA",
-        subtitle: "La chasse vous attend !",
-        emailLabel: "Email",
-        emailPlaceholder: "votre@email.com",
-        resetButton: "Envoyer le code",
-        backButton: "Retour à la connexion",
-    },
-    en: {
-        title: "LOOTOPIA",
-        subtitle: "The hunt awaits you!",
-        emailLabel: "Email",
-        emailPlaceholder: "your@email.com",
-        resetButton: "Send reset code",
-        backButton: "Back to login",
-    },
+    en: translations.forgotPassword,
+    fr: translationsFr.forgotPassword
 };

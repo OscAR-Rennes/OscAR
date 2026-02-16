@@ -8,6 +8,8 @@ import culturalCentersData from '../../assets/data.json';
 import { Asset } from 'expo-asset';
 import '../../utils/ignoreWarnings';
 import CulturalCenterModal from '../../components/cultural-center-modal';
+import LanguageButton from '../../components/language-button';
+import mapInitialValues from '../../constants/map-initial-values.json';
 
 // Icon mapping
 const ICONS = {
@@ -121,22 +123,24 @@ export default function MapsScreen() {
                             <Text style={{ fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700' }}>{texts.languageSelection}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <TouchableWithoutFeedback onPress={() => handleDeepLTranslation('fr')}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: language === 'fr' ? '#FFEBEE' : '#FFFFFF', borderColor: language === 'fr' ? theme.COLORS.primary : '#CCCCCC', borderWidth: 1, borderRadius: 12, paddingVertical: 15, paddingHorizontal: 15, marginHorizontal: 5, flex: 1 }}>
-                                    <Text style={{ color: language === 'fr' ? theme.COLORS.primary : '#000000', fontWeight: 'bold', marginRight: 5 }}>FR</Text>
-                                    <Text style={{ color: language === 'fr' ? theme.COLORS.primary : '#000000', fontWeight: 'bold', fontSize: theme.FONT_SIZES.subtitle }}>Français</Text>
-                                </View>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={() => handleDeepLTranslation('en')}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: language === 'en' ? '#FFEBEE' : '#FFFFFF', borderColor: language === 'en' ? theme.COLORS.primary : '#CCCCCC', borderWidth: 1, borderRadius: 12, paddingVertical: 15, paddingHorizontal: 15, marginHorizontal: 5, flex: 1 }}>
-                                    <Text style={{ color: language === 'en' ? theme.COLORS.primary : '#000000', fontWeight: 'bold', marginRight: 5 }}>GB</Text>
-                                    <Text style={{ color: language === 'en' ? theme.COLORS.primary : '#000000', fontWeight: 'bold', fontSize: theme.FONT_SIZES.subtitle }}>English</Text>
-                                </View>
-                            </TouchableWithoutFeedback>
+                            <LanguageButton
+                                languageCode="fr"
+                                currentLanguage={language}
+                                onPress={() => handleDeepLTranslation('fr')}
+                                label="Français"
+                                countryCode="FR"
+                            />
+                            <LanguageButton
+                                languageCode="en"
+                                currentLanguage={language}
+                                onPress={() => handleDeepLTranslation('en')}
+                                label="English"
+                                countryCode="GB"
+                            />
                         </View>
                     </View>
 
-                    <View style={{ borderRadius: 12, overflow: 'hidden', borderWidth: 3, borderColor: '#000', height: 400, marginTop: theme.SPACING.medium }}>
+                    <View style={{ borderRadius: 12, overflow: 'hidden', borderWidth: 3, borderColor: '#000', height: 420, marginTop: theme.SPACING.medium }}>
                         {/* Search Bar */}
                         <View style={{ position: 'absolute', top: 10, left: 10, right: 10, zIndex: 1 }}>
                             <TextInput style={{ height: 40, borderColor: theme.COLORS.border, borderWidth: 1, borderRadius: 8, paddingHorizontal: theme.SPACING.medium, backgroundColor: theme.COLORS.background, color: theme.COLORS.textPrimary, }} placeholder={texts.searchPlaceholder} placeholderTextColor={theme.COLORS.placeholder} value={searchQuery} onChangeText={handleSearch} onFocus={() => setFlatListVisible(true)} />
@@ -157,7 +161,11 @@ export default function MapsScreen() {
                         </View>
 
                         {/* Map View */}
-                        <MapView ref={mapRef} style={{ flex: 1 }} initialRegion={{ latitude: 48.8566, longitude: 2.3522, latitudeDelta: 0.0922, longitudeDelta: 0.0421, }} >
+                        <MapView
+                            ref={mapRef}
+                            style={{ flex: 1 }}
+                            initialRegion={mapInitialValues.initialRegion}
+                        >
                             {culturalCenters.map(center => {
                                 const address = addresses.find(addr => addr.id === center.address_id);
                                 if (!address) return null;
@@ -197,14 +205,9 @@ export default function MapsScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        languageSelection: 'Sélection de la langue',
-        title: 'Carte du monde',
-        searchPlaceholder: 'Recherchez un centre culturel',
-    },
-    en: {
-        languageSelection: 'Language Selection',
-        title: 'Map of the world',
-        searchPlaceholder: 'Search for a cultural center',
-    },
+    en: translations.index,
+    fr: translationsFr.index
 };
+
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';

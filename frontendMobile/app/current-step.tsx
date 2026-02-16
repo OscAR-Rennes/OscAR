@@ -13,6 +13,8 @@ import { Asset } from 'expo-asset';
 import { useRouter } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 interface Step {
     id: string;
@@ -158,22 +160,8 @@ const CurrentStepScreen: React.FC = () => {
 };
 
 const STATIC_TEXTS = {
-    fr: {
-        backToMenu: 'Retour au Menu',
-        pointsEarned: 'Points gagnés',
-        stepsRemaining: 'Étapes restantes',
-        scanButton: 'Scanner / Caméra RA',
-        informationText: "Utilisez votre caméra pour scanner l’oeuvre ou le lieu !",
-        huntCompleted: "Félicitations ! Vous avez terminé la chasse au trésor !",
-    },
-    en: {
-        backToMenu: 'Back to Menu',
-        pointsEarned: 'Points Earned',
-        stepsRemaining: 'Steps Remaining',
-        scanButton: 'Scan / AR Camera',
-        informationText: "Use your camera to scan the artwork or location !",
-        huntCompleted: "Congratulations! You have completed the treasure hunt!",
-    },
+    en: translations.currentStep,
+    fr: translationsFr.currentStep
 };
 
 export default CurrentStepScreen;

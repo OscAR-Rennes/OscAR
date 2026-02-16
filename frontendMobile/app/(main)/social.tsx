@@ -10,6 +10,8 @@ import { TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import SectionTitle from '../../components/section-title';
 import { useLanguage } from '../../context/LanguageContext';
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -116,26 +118,6 @@ export default function SocialScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        friendRequestsTitle: "Demandes d'amis (0)",
-        friendRequestsPlaceholderMessage: "Connectez-vous pour pouvoir ajouter des amis et voir leur progression !",
-        friendsLeaderboardTitle: "Classement des Amis",
-        globalLeaderboardTitle: "Classement Global",
-        globalLeaderboardMessage: "Liste des meilleurs joueurs à venir",
-        connectButtonText: "Se connecter →",
-        seeMoreButtonText: "Voir plus",
-        friendRequestsListMessage: "Liste des demandes d'amis à venir",
-        friendsListMessage: "Liste des amis à venir",
-    },
-    en: {
-        friendRequestsTitle: "Friend Requests (0)",
-        friendRequestsPlaceholderMessage: "Log in to add friends and see their progress !",
-        friendsLeaderboardTitle: "Friends Leaderboard",
-        globalLeaderboardTitle: "Global Leaderboard",
-        globalLeaderboardMessage: "List of top players coming soon",
-        connectButtonText: "Log in →",
-        seeMoreButtonText: "See more",
-        friendRequestsListMessage: "Friend requests list coming soon",
-        friendsListMessage: "Friends list coming soon",
-    },
+    en: translations.social,
+    fr: translationsFr.social
 };

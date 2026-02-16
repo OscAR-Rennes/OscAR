@@ -7,6 +7,8 @@ import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useLanguage } from '../../context/LanguageContext';
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -80,24 +82,6 @@ export default function ProfilScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        profilePicturePlaceholder: "Pseudo",
-        totalPointsTitle: "Total des points",
-        totalPointsValue: "0",
-        statsHuntLabel: "Chasses",
-        statsCulturalCenterLabel: "Centre Culturel",
-        statsFriendsLabel: "Amis",
-        modifyProfileButton: "Modifier mon profil",
-        logoutButton: "Déconnexion",
-    },
-    en: {
-        profilePicturePlaceholder: "Username",
-        totalPointsTitle: "Total Points",
-        totalPointsValue: "0",
-        statsHuntLabel: "Hunts",
-        statsCulturalCenterLabel: "Cultural Center",
-        statsFriendsLabel: "Friends",
-        modifyProfileButton: "Edit My Profile",
-        logoutButton: "Logout",
-    },
+    en: translations.profil,
+    fr: translationsFr.profil
 };

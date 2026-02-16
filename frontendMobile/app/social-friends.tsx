@@ -11,6 +11,8 @@ import { SvgUri } from 'react-native-svg';
 import AddFriends from '../components/add-friends';
 import SectionTitle from '../components/section-title';
 import { useLanguage } from '../context/LanguageContext'; // Import du contexte de langue
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -75,14 +77,6 @@ export default function SocialFriendsScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        backButton: "Retour au Social",
-        leaderboardTitle: "Classement des Amis",
-        leaderboardPlaceholder: "Liste détaillée des amis à venir.",
-    },
-    en: {
-        backButton: "Back to Social",
-        leaderboardTitle: "Friends Leaderboard",
-        leaderboardPlaceholder: "Detailed list of friends coming soon.",
-    },
+    en: translations.socialFriends,
+    fr: translationsFr.socialFriends
 };

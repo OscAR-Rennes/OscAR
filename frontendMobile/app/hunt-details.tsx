@@ -11,6 +11,8 @@ import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Define the type for a step
 interface Step {
@@ -138,18 +140,8 @@ const HuntDetailsScreen: React.FC = () => {
 };
 
 const STATIC_TEXTS = {
-    fr: {
-        backToMenu: 'Retour au menu',
-        stepsTitle: 'Étapes de la Chasse',
-        noSteps: 'Aucune étape trouvée pour cette chasse.',
-        startHunt: 'Démarrer la chasse',
-    },
-    en: {
-        backToMenu: 'Back to menu',
-        stepsTitle: 'Hunt Steps',
-        noSteps: 'No steps found for this hunt.',
-        startHunt: 'Start the hunt',
-    },
+    en: translations.huntDetails,
+    fr: translationsFr.huntDetails
 };
 
 export default HuntDetailsScreen;

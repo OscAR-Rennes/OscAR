@@ -5,6 +5,8 @@ import { Asset } from 'expo-asset';
 import { SvgUri } from 'react-native-svg';
 import { useLanguage } from '../context/LanguageContext';
 import { useRouter } from 'expo-router';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 type Hunt = {
     id: string; // Add the ID field
@@ -108,14 +110,8 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
 };
 
 const STATIC_TEXTS = {
-    fr: {
-        steps: 'étapes',
-        points: 'Points',
-    },
-    en: {
-        steps: 'steps',
-        points: 'Points',
-    },
+    en: translations.huntList,
+    fr: translationsFr.huntList
 };
 
 export default HuntList;

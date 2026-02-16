@@ -6,6 +6,8 @@ import { useRouter, usePathname } from 'expo-router';
 import { theme } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext'; 
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
 
 // Icon paths
 const ICON_PATHS = {
@@ -123,18 +125,6 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
 
 // Translations of tab labels
 const STATIC_TEXTS = {
-    fr: {
-        maps: 'Carte',
-        hunt: 'Chasses',
-        social: 'Social',
-        connection: 'Connexion',
-        profile: 'Profil',
-    },
-    en: {
-        maps: 'Maps',
-        hunt: 'Hunts',
-        social: 'Social',
-        connection: 'Connection',
-        profile: 'Profile',
-    },
+    en: translations.bottomNavbar,
+    fr: translationsFr.bottomNavbar
 };

@@ -11,6 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import ModifyPassword from '../components/modify-password';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
 
 // Icon mapping
 const ICONS = {
@@ -113,30 +115,7 @@ export default function ProfilModifyScreen() {
     );
 }
 
-// Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        backButton: "Retour au Profil",
-        firstNameLabel: "Prénom",
-        firstNamePlaceholder: "Jean",
-        lastNameLabel: "Nom",
-        lastNamePlaceholder: "Dupont",
-        emailLabel: "Adresse email",
-        emailPlaceholder: "votre@email.com",
-        saveButton: "Enregistrer les modifications",
-        sensitiveZoneLabel: "Zone sensible",
-        modifyPasswordButton: "Modifier mon mot de passe",
-    },
-    en: {
-        backButton: "Back to Profile",
-        firstNameLabel: "First Name",
-        firstNamePlaceholder: "John",
-        lastNameLabel: "Last Name",
-        lastNamePlaceholder: "Doe",
-        emailLabel: "Email Address",
-        emailPlaceholder: "your@email.com",
-        saveButton: "Save Changes",
-        sensitiveZoneLabel: "Sensitive Zone",
-        modifyPasswordButton: "Change My Password",
-    },
+    en: translations.profilModify,
+    fr: translationsFr.profilModify
 };
