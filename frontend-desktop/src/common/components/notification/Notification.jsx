@@ -7,13 +7,14 @@ export default function Notification() {
   const remove = useNotificationStore((s) => s.removeNotification);
 
   const last = notifications.length ? notifications[notifications.length - 1] : null;
+
   useEffect(() => {
     if (!last) return;
     const t = setTimeout(() => remove(last.id), 5000);
     return () => clearTimeout(t);
   }, [last, remove]);
 
-  if (!last) return null;
+  if (!last || last.statusCode == 401) return null;
 
   return (
     <div className="osc-notification-wrapper">
