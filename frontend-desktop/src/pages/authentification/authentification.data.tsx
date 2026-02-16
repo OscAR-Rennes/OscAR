@@ -67,10 +67,10 @@ export function useAuthentificationData() {
         setUser(newUser);
       };
     
-      const handleLogout = async () => {
-        await logoutUser();
-        clearUser();
-    };
+    //   const handleLogout = async () => {
+    //     await logoutUser();
+    //     clearUser();
+    // };
 
 
     return {
@@ -80,7 +80,7 @@ export function useAuthentificationData() {
 
         handleSubmitSignin,
         handleSubmitLogin,
-        handleLogout
+        //handleLogout
     }
 
 };

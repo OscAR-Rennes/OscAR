@@ -7,6 +7,7 @@ import { currentUser } from "./api/services/auth.api";
 import Home from "./pages/hunts";
 import Authentification from "./pages/authentification";
 import ProtectedRoute from "./common/components/security/ProtectedRoute";
+import UnauthentRoute from "./common/components/security/UnauthentRoute";
 import Notification from "./common/components/notification/Notification";
 import Users from "./pages/users";
 
@@ -25,7 +26,7 @@ export default function App() {
       <Notification />
       <Routes>
         {/* Redirection par défaut */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/home/authentification" replace />} />
 
         {/* Route protégée */}
         <Route
@@ -47,7 +48,14 @@ export default function App() {
         />
 
         {/* Route publique */}
-        <Route path="/home/authentification" element={<Authentification />} />
+        <Route
+          path="/home/authentification"
+          element={
+            <UnauthentRoute>
+              <Authentification />
+            </UnauthentRoute>
+          }
+        />
       </Routes>
     </Router>
   );
