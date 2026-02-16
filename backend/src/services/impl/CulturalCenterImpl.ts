@@ -1,5 +1,6 @@
 
 import { pool } from "../../common-lib/config/database";
+import { prisma } from "../../common-lib/config/prismaClient";
 import { GetAllActiveCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllActiveCulturalCenterResponseDTO";
 import { GetAllCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllCulturalCenterResponseDTO";
 import { SwitchStatusCulturalCenterRequestDTO } from "../../common-lib/dto/culturalcenter/SwitchStatusCulturalCenterRequestDTO";
@@ -13,6 +14,7 @@ const culturalCenterRepository = new CulturalCenterRepository();
 const userRepository = new UserRepository();
 
 export class CulturalCenterServiceImpl implements CulturalCenterService {
+
     async getAllActiveCulturalCenters(): Promise<GetAllActiveCulturalCenterResponseDTO[]> {
         try {
             const culturalCenters = await culturalCenterRepository.getAllActive();
@@ -40,34 +42,26 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
     }
 
     async switchCulturalCenterStatus(ids: SwitchStatusCulturalCenterRequestDTO): Promise<boolean> {
-        const client = await pool.connect();
+    try {
+      await prisma.$transaction(async (tx) => {
+        const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids.id);
 
-        try {
-            await client.query("BEGIN");
-
-            const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids);
-
-            for (const center of centers) {
-            const centerId = center.id;
-
-            if (center.isActive === false) {
-                await userRepository.deactivateUsersByCenter(centerId);
-            } else {
-                await userRepository.activateManagersByCenter(centerId);
-            }
-            }
-
-            await client.query("COMMIT");
-            return true;
-
-        } catch (err) {
-            await client.query("ROLLBACK");
-            throw new AppError({
-            userMessage: "Erreur lors du changement de statut des centres culturels",
-            statusCode: 500,
-            });
-        } finally {
-            client.release();
+        for (const center of centers) {
+          if (center.isActive === false) {
+            await userRepository.deactivateUsersByCenter(center.id);
+          } else {
+            await userRepository.activateManagersByCenter(center.id);
+          }
         }
+      });
+
+      return true;
+
+    } catch (err) {
+      throw new AppError({
+        userMessage: "Erreur lors du changement de statut des centres culturels",
+        statusCode: 500,
+      });
     }
+  }
 }

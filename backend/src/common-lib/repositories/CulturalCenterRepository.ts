@@ -23,27 +23,30 @@ export class CulturalCenterRepository  {
         return new CulturalCenterEntity(culturalCenterRecord);
     }
 
-    async getAllActive(): Promise<CulturalCenterEntity[]> {
-        const result = await pool.query('SELECT * FROM cultural_centers WHERE "isActive" = TRUE');
-        return result.rows;
+     async getAllActive(): Promise<CulturalCenterEntity[]> {
+        const centers = await prisma.cultural_centers.findMany({
+        where: { isActive: true },
+        });
+        return centers.map(c => new CulturalCenterEntity(c));
     }
 
     async getAll(): Promise<CulturalCenterEntity[]> {
-        const result = await pool.query(`SELECT * FROM cultural_centers`)
-        return result.rows
+        const centers = await prisma.cultural_centers.findMany();
+        return centers.map(c => new CulturalCenterEntity(c));
     }
 
-    async switchCulturalCenterStatus(ids: SwitchStatusCulturalCenterRequestDTO) {
-        const result = await pool.query(
-            `
-            UPDATE cultural_centers
-            SET "isActive" = NOT "isActive"
-            WHERE id = ANY($1)
-            RETURNING id, "isActive"
-            `,
-            [ids]
-        );
 
-        return result.rows;
+    async switchCulturalCenterStatus(ids: string[]): Promise<{ id: string; isActive: boolean }[]> {
+        if (ids.length === 0) return [];
+
+        const updatedCenters = await prisma.$queryRaw<
+        { id: string; isActive: boolean }[]
+        >`
+        UPDATE "cultural_centers"
+        SET "isActive" = NOT "isActive"
+        WHERE id = ANY(${ids})
+        RETURNING id, "isActive";
+        `;
+        return updatedCenters;
     }
 }

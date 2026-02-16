@@ -113,28 +113,21 @@ export class UserRepository  {
   }
 
   async deactivateUsersByCenter(centerId: string) {
-    await pool.query(
-      `
-        UPDATE users
-        SET "isActive" = FALSE
-        WHERE id_cultural_center = $1
-      `,
-      [centerId]
-    );
+    await prisma.users.updateMany({
+      where: { id_cultural_center: centerId },
+      data: { isActive: false },
+    });
   }
 
   async activateManagersByCenter(centerId: string) {
-    await pool.query(
-      `
-        UPDATE users u
-        SET "isActive" = TRUE
-        FROM right_user ru
-        JOIN rights r ON r.id = ru.right_id
-        WHERE u.id = ru.user_id
-          AND u.id_cultural_center = $1
-          AND r.name = $2
-      `,
-      [centerId, RoleEnum.CULTURAL_CENTER_MANAGER]
-    );
+    await prisma.$executeRaw`
+      UPDATE "users" u
+      SET "isActive" = TRUE
+      FROM "right_user" ru
+      JOIN "rights" r ON r.id = ru.right_id
+      WHERE u.id = ru.user_id
+        AND u.id_cultural_center = ${centerId}
+        AND r.name = ${RoleEnum.CULTURAL_CENTER_MANAGER};
+    `;
   }
 }
