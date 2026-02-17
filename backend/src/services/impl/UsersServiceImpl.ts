@@ -6,7 +6,6 @@ import { NewUserRequestDTO } from "../../common-lib/dto/users/NewUserRequestDTO.
 import AppError from "../../common-lib/errors/AppError.js";
 import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UsersService } from "../UsersService.js";
-import { SwitchStatusUsersRequestDTO } from "../../common-lib/dto/users/SwitchStatusUsersRequestDTO.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
 
 export class UsersServiceImpl implements UsersService {

@@ -1,22 +1,21 @@
 import { NewUserRequestDTO } from "../dto/users/NewUserRequestDTO.js";
-import { UserEntity } from "../entity/UsersEntity.js";
 import bcrypt from "bcrypt";
 import { RoleEnum } from "../enum/roleEnum.js";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, users } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
-
+import { UserEntity } from "../entity/UsersEntity.js";
 
 export class UserRepository  {
   
-  async findAll(): Promise<UserEntity[]> {
+  async findAll(): Promise<users[]> {
     const users = await prisma.users.findMany();
-    return users.map((user: Partial<UserEntity>) => new UserEntity(user));
+    return users;
   }
 
   async create(
     userData: NewUserRequestDTO,
     prismaClient?: PrismaClient
-  ): Promise<UserEntity> {
+  ): Promise<users> {
     const client = prismaClient || prisma;
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -42,16 +41,16 @@ export class UserRepository  {
         });
       })
     );
-    return new UserEntity(userRecord);
+    return userRecord;
   }
 
-  async findAllByCulturalCenter(culturalcenter_id: string): Promise<UserEntity[]> {
+  async findAllByCulturalCenter(culturalcenter_id: string): Promise<users[]> {
     const users = await prisma.users.findMany({
       where: {
         id_cultural_center: culturalcenter_id,
       },
     });
-    return users.map((user: Partial<UserEntity>) => new UserEntity(user));
+    return users;
   }
 
 
