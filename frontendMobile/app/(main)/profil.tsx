@@ -3,28 +3,17 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { theme } from '../../constants/theme';
 import StatsCard from '../../components/ui/stats-card';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useLanguage } from '../../context/LanguageContext';
-
-// Icon mapping
-const ICONS = {
-    "image-placeholder.svg": require('../../assets/icon/image-placeholder.svg'),
-    "logout.svg": require('../../assets/icon/logout.svg'),
-    "trophy.svg": require('../../assets/icon/trophy.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
+import translations from '../../constants/language-en.json';
+import translationsFr from '../../constants/language-fr.json';
+import { getIconUri } from '../icon-mapping';
 
 export default function ProfilScreen() {
     const router = useRouter();
-    const { language } = useLanguage(); // Retrieve current language
-    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
+    const { language } = useLanguage();
+    const texts = STATIC_TEXTS[language];
 
     return (
         <View style={{ flex: 1 }}>
@@ -38,12 +27,7 @@ export default function ProfilScreen() {
                 </View>
 
                 {/* Total Points Section */}
-                <LinearGradient
-                    colors={[theme.COLORS.primary, theme.COLORS.secondary]}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0.3, y: 0 }}
-                    style={[{ width: '100%', paddingHorizontal: theme.SPACING.medium, paddingVertical: theme.SPACING.medium, borderRadius: 12, marginBottom: theme.SPACING.medium, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}
-                >
+                <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0 }} style={[{ width: '100%', paddingHorizontal: theme.SPACING.medium, paddingVertical: theme.SPACING.medium, borderRadius: 12, marginBottom: theme.SPACING.medium, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]} >
                     <View>
                         <Text style={[{ color: theme.COLORS.background, fontWeight: '900' }]}>{texts.totalPointsTitle}</Text>
                         <Text style={[{ color: theme.COLORS.background, fontSize: 30, fontWeight: '900' }]}>{texts.totalPointsValue}</Text>
@@ -61,10 +45,7 @@ export default function ProfilScreen() {
                 </View>
 
                 {/* Buttons */}
-                <TouchableOpacity
-                    style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: theme.COLORS.background, borderWidth: 1, borderColor: theme.COLORS.border, marginBottom: theme.SPACING.medium }}
-                    onPress={() => router.push('/profil-modify')}
-                >
+                <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: theme.COLORS.background, borderWidth: 1, borderColor: theme.COLORS.border, marginBottom: theme.SPACING.medium }} onPress={() => router.push('/profil-modify')} >
                     <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.textPrimary, textAlign: 'center' }}>{texts.modifyProfileButton}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: '#ffebee', borderWidth: 1, borderColor: theme.COLORS.error }}>
@@ -80,24 +61,6 @@ export default function ProfilScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        profilePicturePlaceholder: "Pseudo",
-        totalPointsTitle: "Total des points",
-        totalPointsValue: "0",
-        statsHuntLabel: "Chasses",
-        statsCulturalCenterLabel: "Centre Culturel",
-        statsFriendsLabel: "Amis",
-        modifyProfileButton: "Modifier mon profil",
-        logoutButton: "Déconnexion",
-    },
-    en: {
-        profilePicturePlaceholder: "Username",
-        totalPointsTitle: "Total Points",
-        totalPointsValue: "0",
-        statsHuntLabel: "Hunts",
-        statsCulturalCenterLabel: "Cultural Center",
-        statsFriendsLabel: "Friends",
-        modifyProfileButton: "Edit My Profile",
-        logoutButton: "Logout",
-    },
+    en: translations.profil,
+    fr: translationsFr.profil
 };

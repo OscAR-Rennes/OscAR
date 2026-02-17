@@ -2,30 +2,19 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { theme } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import PageTitle from './page-title';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
+import { getIconUri } from '../app/icon-mapping';
 
-// Icon mapping
-const ICONS = {
-    "lock.svg": require('../assets/icon/lock.svg'),
-    "lock-larger.svg": require('../assets/icon/lock-larger.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
-
-// ModifyPassword component
 const ModifyPassword: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
     return (
-        <View style={{ flex: 1, backgroundColor: theme.COLORS.background, paddingHorizontal: theme.SPACING.medium, paddingVertical: theme.SPACING.xLarge, borderRadius: 12, minWidth: 280 }}>
+        <View style={{ flex: 1, backgroundColor: theme.COLORS.background, paddingHorizontal: theme.SPACING.small, paddingVertical: theme.SPACING.large, borderRadius: 12, minWidth: 280, maxHeight: '96%' }}>
             <View style={{ alignItems: 'center', marginBottom: theme.SPACING.large }}>
                 <View style={{ width: 80, height: 80, borderRadius: 500, backgroundColor: theme.COLORS.error, justifyContent: 'center', alignItems: 'center' }}>
                     <SvgUri uri={getIconUri("lock-larger.svg")} width={60} height={60} color={theme.COLORS.background} />
@@ -63,8 +52,8 @@ const ModifyPassword: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ marginTop: theme.SPACING.xLarge, alignSelf: 'center' }} onPress={onClose}>
-                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.cancel}</Text>
+            <TouchableOpacity style={{ marginTop: theme.SPACING.large, alignSelf: 'center' }} onPress={onClose}>
+                <Text style={{ fontSize: theme.FONT_SIZES.label, color: theme.COLORS.textSecondary }}>{texts.cancel}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -74,22 +63,6 @@ export default ModifyPassword;
 
 // Translated static texts 
 const STATIC_TEXTS = {
-    fr: {
-        title: 'Modifier le mot de passe',
-        currentPassword: 'Mot de passe actuel',
-        newPassword: 'Nouveau mot de passe',
-        confirmPassword: 'Confirmez le nouveau mot de passe',
-        saveChanges: 'Enregistrer la modification',
-        cancel: '← Annuler',
-        placeholder: '********',
-    },
-    en: {
-        title: 'Change Password',
-        currentPassword: 'Current Password',
-        newPassword: 'New Password',
-        confirmPassword: 'Confirm New Password',
-        saveChanges: 'Save Changes',
-        cancel: '← Cancel',
-        placeholder: '********',
-    },
+    en: translations.modifyPassword,
+    fr: translationsFr.modifyPassword
 };

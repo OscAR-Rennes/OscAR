@@ -31,24 +31,16 @@ export default function MainLayout() {
     const Container = isConnectionPage ? View : SafeAreaView;
 
     return (
-        <Container style={styles.container}>
+        <Container style={[{flex: 1, backgroundColor: theme.COLORS.background }]}>
+            
             {/* Only show HeaderNavbar if not on the connection page */}
             {!isConnectionPage && <HeaderNavbar />}
-            <View style={styles.content}>
+            <View style={[{ flex: 1 }]}>
                 <Slot />
             </View>
+            
             {/* Only show BottomNavbar if not on the connection page */}
             {!isConnectionPage && <BottomNavbar currentRoute={pathname} />}
         </Container>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: theme.COLORS.background,
-    },
-    content: {
-        flex: 1,
-    },
-});
