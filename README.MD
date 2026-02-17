@@ -41,6 +41,17 @@ Les services seront accessibles aux adresses suivantes :
 
 - Frontend Web : [http://localhost:3000](http://localhost:3000)
 - Backend API : [http://localhost:5000](http://localhost:5000)
+- Postgres : [http://localhost:5432](http://localhost:5432)
+- PgAdmin : [http://localhost:8080/login?next=/](http://localhost:8080)
+
+En cas d'erreur docker similaire à :
+Error response from daemon: failed to set up container networking: network 70912c50ec4dce775a3a42b72bcab1610c1ee5947789e7233ffb86524b8bd805 not found
+
+```bash
+docker compose -f docker-compose.dev.yml down -v
+docker network prune -f
+docker system prune -f
+docker compose -f docker-compose.dev.yml up --build```
 
 ---
 

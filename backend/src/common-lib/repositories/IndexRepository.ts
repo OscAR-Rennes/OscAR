@@ -1,13 +1,12 @@
 import { pool } from "../config/database.js";
 import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO.js";
-import { IndexEntity } from "../entity/IndexEntity.js";
 import { prisma } from "../config/prismaClient.js";
+import { index } from "@prisma/client";
 
 
 export class IndexRepository {
 
-    async createIncrementEmpty(hunt_id: string): Promise<IndexEntity> {
-        // 1️⃣ Récupérer le max index
+    async createIncrementEmpty(hunt_id: string): Promise<index> {
             const maxResult = await prisma.index.aggregate({
             _max: { index: true },
             where: { hunt_id },
@@ -22,10 +21,10 @@ export class IndexRepository {
             },
         });
 
-        return new IndexEntity(indexRecord);
+        return indexRecord;
     }
 
-    async create(indexData: CreateIndexRequestDTO): Promise<IndexEntity> {
+    async create(indexData: CreateIndexRequestDTO): Promise<index> {
         const maxResult = await prisma.index.aggregate({
             _max: { index: true },
             where: { hunt_id: indexData.hunt_id },
@@ -41,14 +40,19 @@ export class IndexRepository {
         },
         });
 
-        return new IndexEntity(indexRecord);
+        return indexRecord;
     }
 
-    async getByHuntID(huntId: string): Promise<IndexEntity[]> {
-        const result = await pool.query(
-            "SELECT * FROM index WHERE hunt_id = ($1)",
-            [huntId]
-        )
-        return result.rows;
+    async getByHuntID(huntId: string): Promise<index[]> {
+        const indexRecords = await prisma.index.findMany({
+            where: { hunt_id: huntId },
+        });
+        return indexRecords;
+    }
+
+    async delete(indexId: string): Promise<void> {
+        await prisma.index.delete({
+            where: { id: indexId },
+        });
     }
 }

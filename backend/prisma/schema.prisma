@@ -17,6 +17,7 @@ model address {
   created_at       DateTime           @default(now()) @db.Timestamp(6)
   updated_at       DateTime           @default(now()) @db.Timestamp(6)
   cultural_centers cultural_centers[]
+
 }
 
 model cultural_centers {

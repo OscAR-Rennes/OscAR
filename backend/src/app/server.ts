@@ -11,7 +11,6 @@ import AppError from '../common-lib/errors/AppError.js';
 import huntsRoutes from '../routes/HuntRoutes.js';
 import stepsRoutes from '../routes/StepRoutes.js';
 import difficultyRoutes from '../routes/DifficultyRoutes.js';
-import { runMigrations } from '../common-lib/config/runMigrations.js';
 import { RoleEnum } from '../common-lib/enum/roleEnum.js';
 import indexRoutes from '../routes/IndexRoutes.js';
 import culturalCenterRoutes from '../routes/CulturalCenterRoutes.js';
@@ -60,26 +59,6 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-(async () => {
-  let migrationError: AppError | null = null;
-
-  try {
-    console.log('[BOOT] Running migrations...');
-    await runMigrations();
-    console.log('[BOOT] Migrations finished');
-  } catch (err) {
-    migrationError = new AppError({
-      userMessage: 'Échec des migrations de la base de données',
-      statusCode: 500,
-      details: err,
-    });
-  }
-
-  app.listen(port, () => {
-    logger.info(`Backend listening on port ${port}`);
-
-    if (migrationError) {
-      errorHandlerBackend(migrationError);
-    }
-  });
-})();
+app.listen(port, async () => {
+  logger.info(`Server is running on port ${port}`);
+});

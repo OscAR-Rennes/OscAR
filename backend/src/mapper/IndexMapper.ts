@@ -7,14 +7,14 @@ export const indexMapper = {
   toCreateResponseDto(entity: IndexEntity): CreateIndexResponseDTO {
     return {
       id: entity.id,
-      name: entity.name ?? ""
+      name: entity.name??""
     };
   },
 
   toLightDTO(entity: IndexEntity): GetIndexByHuntResponseDTO {
     return {
         id: entity.id,
-        name: entity.name ?? "",
+        name: entity.name??"",
         index: entity.index
     }
   }

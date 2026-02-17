@@ -4,12 +4,17 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-COPY prisma ./prisma
+RUN npm install wait-on
 
-RUN npm install
+COPY . .
+
+RUN apt-get update && apt-get install -y postgresql-client
 
 RUN npx prisma generate
 
+COPY entrypoint.sh . 
+RUN chmod +x entrypoint.sh
+
 EXPOSE 5000
 
-CMD ["npm", "run", "dev"]
+ENTRYPOINT ["./entrypoint.sh"]
