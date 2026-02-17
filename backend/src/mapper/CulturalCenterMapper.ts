@@ -1,4 +1,4 @@
-import { CulturalCenterEntity } from "../common-lib/entity/CulturalCenterEntity";
+import { CulturalCenterEntity } from "../common-lib/entity/CulturalCenterEntity.js";
 
 export const culturalCenterMapper = {
     toLightDTO(culturalCenter: CulturalCenterEntity) {  

@@ -1,7 +1,7 @@
-import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO";
-import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO";
-import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponseDTO";
-import { HuntEntity } from "../common-lib/entity/HuntEntity";
+import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO.js";
+import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO.js";
+import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
+import { HuntEntity } from "../common-lib/entity/HuntEntity.js";
 
 export const huntMapper = {
 

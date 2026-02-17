@@ -1,5 +1,5 @@
-import { CreateStepResponseDTO } from "../common-lib/dto/step/CreateStepResponseDTO";
-import { StepEntity } from "../common-lib/entity/StepEntity";
+import { CreateStepResponseDTO } from "../common-lib/dto/step/CreateStepResponseDTO.js";
+import { StepEntity } from "../common-lib/entity/StepEntity.js";
 
 export const stepMapper = {
 

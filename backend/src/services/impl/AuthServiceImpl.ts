@@ -7,6 +7,7 @@ import { generateToken } from "../../common-lib/security/auth.js";
 import bcrypt from "bcrypt";
 import AppError from "../../common-lib/errors/AppError.js";
 import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
+import logger from "../../common-lib/utils/logger.js";
 
 const userRepository = new UserRepository();
 
@@ -42,6 +43,7 @@ export class AuthServiceImpl implements AuthService {
 
     const isValid = await bcrypt.compare(userData.password, user.password);
     if (!isValid) {
+      logger.warn(`Failed login attempt for user ${userData.email}`);
       throw new AppError({
         userMessage: "Identifiants invalides",
         statusCode: 401,
