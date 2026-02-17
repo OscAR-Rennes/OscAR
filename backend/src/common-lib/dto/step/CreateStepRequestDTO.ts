@@ -5,5 +5,5 @@ export interface CreateStepRequestDTO {
   points: number;
   latitude: number;
   longitude: number;
-  index_id?: string;
+  index_id: string;
 }

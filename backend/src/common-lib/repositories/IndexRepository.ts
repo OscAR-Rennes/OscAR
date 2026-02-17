@@ -1,52 +1,47 @@
-import { pool } from "../config/database";
-import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO";
-import { GetIndexByHuntRequestDTO } from "../dto/index/GetIndexByHuntRequestDTO";
-import { IndexEntity } from "../entity/IndexEntity";
+import { pool } from "../config/database.js";
+import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO.js";
+import { IndexEntity } from "../entity/IndexEntity.js";
+import { prisma } from "../config/prismaClient.js";
+
 
 export class IndexRepository {
 
     async createIncrementEmpty(hunt_id: string): Promise<IndexEntity> {
+        // 1️⃣ Récupérer le max index
+            const maxResult = await prisma.index.aggregate({
+            _max: { index: true },
+            where: { hunt_id },
+        });
 
-        const maxResult = await pool.query(
-            `SELECT COALESCE(MAX(index), 0) AS max_index
-             FROM index
-             WHERE hunt_id = $1`,
-            [hunt_id]
-        );
+        const nextIndex = (maxResult._max.index ?? 0) + 1;
 
-        const nextIndex = maxResult.rows[0].max_index + 1;
+        const indexRecord = await prisma.index.create({
+            data: {
+                hunt_id,
+                index: nextIndex,
+            },
+        });
 
-        const insertResult = await pool.query(
-            `INSERT INTO index (hunt_id, index)
-             VALUES ($1, $2)
-             RETURNING *`,
-            [hunt_id, nextIndex]
-        );
-
-        return insertResult.rows[0];
+        return new IndexEntity(indexRecord);
     }
 
     async create(indexData: CreateIndexRequestDTO): Promise<IndexEntity> {
+        const maxResult = await prisma.index.aggregate({
+            _max: { index: true },
+            where: { hunt_id: indexData.hunt_id },
+        });
 
-        const maxResult = await pool.query(
-            `SELECT COALESCE(MAX(index), 0) AS max_index
-             FROM index
-             WHERE hunt_id = $1`,
-            [indexData.hunt_id]
-        );
+        const nextIndex = (maxResult._max.index ?? 0) + 1;
 
-        const nextIndex = maxResult.rows[0].max_index + 1;
+        const indexRecord = await prisma.index.create({
+        data: {
+            name: indexData.name,
+            index: nextIndex,
+            hunt_id: indexData.hunt_id,
+        },
+        });
 
-        const result = await pool.query(
-            "INSERT INTO index (name, index, hunt_id) VALUES ($1, $2, $3) RETURNING *",
-            [
-                indexData.name,
-                nextIndex,
-                indexData.hunt_id
-            ]
-        )
-
-        return result.rows[0];
+        return new IndexEntity(indexRecord);
     }
 
     async getByHuntID(huntId: string): Promise<IndexEntity[]> {

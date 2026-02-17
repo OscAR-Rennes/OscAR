@@ -1,4 +1,5 @@
 import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO";
+import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO";
 import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponseDTO";
 import { HuntEntity } from "../common-lib/entity/HuntEntity";
 
@@ -18,5 +19,12 @@ export const huntMapper = {
         description: entity.description
       };
     },
+
+  toEditResponseDto(entity: HuntEntity): EditHuntResponseDTO {
+    return {
+      id: entity.id,
+      title: entity.title
+    };
+  },
 
 };

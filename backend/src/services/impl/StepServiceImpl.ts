@@ -1,10 +1,10 @@
-import { StepService } from "../StepService";
-import { CreateStepRequestDTO } from "../../common-lib/dto/step/CreateStepRequestDTO";
-import { StepRepository } from "../../common-lib/repositories/StepRepository";
-import { stepMapper } from "../../mapper/StepMapper";
-import { CreateStepResponseDTO } from "../../common-lib/dto/step/CreateStepResponseDTO";
-import { AppError } from "../../common-lib/errors/AppError";
-import { IndexRepository } from "../../common-lib/repositories/IndexRepository";
+import { StepService } from "../StepService.js";
+import { CreateStepRequestDTO } from "../../common-lib/dto/step/CreateStepRequestDTO.js";
+import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
+import { stepMapper } from "../../mapper/StepMapper.js";
+import { CreateStepResponseDTO } from "../../common-lib/dto/step/CreateStepResponseDTO.js";
+import { AppError } from "../../common-lib/errors/AppError.js";
+import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
 
 const stepRepository = new StepRepository();
 const indexRepository = new IndexRepository();
