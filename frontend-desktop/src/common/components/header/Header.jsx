@@ -3,20 +3,17 @@ import { ReactComponent as ProfilIcon } from '../../assets/icon/profil.svg';
 import { ReactComponent as MenuBurgerIcon } from '../../assets/icon/menuBurger.svg';
 import { useAuthStore } from '../../store/authStore';
 
-const userRights = useAuthStore((state) => state.user);
-
-const isLoading = useAuthStore((state) => state.isLoading);
 
 export default function Header() {
-  if (isLoading) {
-    return (<div>Loading...</div>);
-  }
+  const userRights = useAuthStore((state) => state.user.rights);
+
+  console.log(userRights);
   return (
     <header className="header-bar">
         <MenuBurgerIcon className="header-menu-burger" />
         <h1 className="header-title">OscAR</h1>
         <p className="separator-header">|</p>
-        <p className="user-rights">{userRights}</p>
+        <p className="user-rights">{userRights[0]}</p>
         <ProfilIcon className="header-user-icon" />
     </header>
   );
