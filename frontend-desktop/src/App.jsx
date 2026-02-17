@@ -10,6 +10,8 @@ import ProtectedRoute from "./common/components/security/ProtectedRoute";
 import UnauthentRoute from "./common/components/security/UnauthentRoute";
 import Notification from "./common/components/notification/Notification";
 import Users from "./pages/users";
+import Layout from "./common/components/layout/Layout";
+import LayoutEmpty from "./common/components/layout/LayoutEmpty";
 
 export default function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -30,32 +32,26 @@ export default function App() {
 
         {/* Route protégée */}
         <Route
-          path="/home/hunts"
           element={
             <ProtectedRoute>
-              <Home />
+              <Layout />
             </ProtectedRoute>
           }
-        />
-
-        <Route
-          path="/home/users"
-          element={
-            <ProtectedRoute>
-              <Users />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route path="/home/hunts" element={<Home />} />
+          <Route path="/home/users" element={<Users />} />
+        </Route>
 
         {/* Route publique */}
         <Route
-          path="/home/authentification"
           element={
             <UnauthentRoute>
-              <Authentification />
+              <LayoutEmpty />
             </UnauthentRoute>
           }
-        />
+        >
+          <Route path="/home/authentification" element={<Authentification />} />
+        </Route>
       </Routes>
     </Router>
   );
