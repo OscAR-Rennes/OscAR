@@ -1,4 +1,4 @@
-import { CulturalCenterServiceImpl } from "../services/impl/CulturalCenterImpl";
+import { CulturalCenterServiceImpl } from "../services/impl/CulturalCenterImpl.js";
 import { Request, Response } from "express";
 
 export class CulturalCenterController {

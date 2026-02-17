@@ -1,11 +1,11 @@
-import { HuntService } from "../HuntService";
-import { CreateHuntRequestDTO } from "../../common-lib/dto/hunt/CreateHuntRequestDTO";
-import { CreateHuntResponseDTO } from "../../common-lib/dto/hunt/CreateHuntResponseDTO";
-import { huntMapper } from "../../mapper/HuntsMapper";
-import { HuntRepository } from "../../common-lib/repositories/HuntRepository";
-import { AppError } from "../../common-lib/errors/AppError";
-import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO";
-import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO";
+import { HuntService } from "../HuntService.js";
+import { CreateHuntRequestDTO } from "../../common-lib/dto/hunt/CreateHuntRequestDTO.js";
+import { CreateHuntResponseDTO } from "../../common-lib/dto/hunt/CreateHuntResponseDTO.js";
+import { huntMapper } from "../../mapper/HuntsMapper.js";
+import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
+import { AppError } from "../../common-lib/errors/AppError.js";
+import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
+import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
 
 const huntRepository = new HuntRepository();
 

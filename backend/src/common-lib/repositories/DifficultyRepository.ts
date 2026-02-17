@@ -1,5 +1,5 @@
-import { prisma } from "../config/prismaClient";
-import { DifficultyEntity } from "../entity/DifficultyEntity";
+import { prisma } from "../config/prismaClient.js";
+import { DifficultyEntity } from "../entity/DifficultyEntity.js";
 
 export class DifficultyRepository {
 

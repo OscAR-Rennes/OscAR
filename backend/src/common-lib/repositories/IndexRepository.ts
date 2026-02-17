@@ -1,7 +1,7 @@
-import { pool } from "../config/database";
-import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO";
-import { IndexEntity } from "../entity/IndexEntity";
-import { prisma } from "../config/prismaClient";
+import { pool } from "../config/database.js";
+import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO.js";
+import { IndexEntity } from "../entity/IndexEntity.js";
+import { prisma } from "../config/prismaClient.js";
 
 
 export class IndexRepository {

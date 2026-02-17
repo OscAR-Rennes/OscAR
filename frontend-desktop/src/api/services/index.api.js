@@ -5,6 +5,6 @@ export function addIndex(indexData) {
 }
 
 export function getAllIndexByHunt(hunt_id) {
-  return apiClient('/index/hunt', { method: 'POST', body: { "hunt_id": hunt_id } });
+  return apiClient(`/index/hunt/${hunt_id}`, { method: 'GET' });
 }
   

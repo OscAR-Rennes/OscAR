@@ -7,6 +7,7 @@
     "build": "tsc",
     "start": "node dist/app/server.js",
     "lint": "eslint . --ext .js,.mjs",
+    "postinstall": "prisma generate",
     "dev": "nodemon --watch src --ext ts --exec tsx src/app/server.ts"
   },
   "dependencies": {
@@ -25,11 +26,11 @@
     "resend": "^6.8.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "zustand": "^5.0.10"
+    "zustand": "^5.0.10",
+    "@prisma/client": "^7.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@prisma/client": "^7.4.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",

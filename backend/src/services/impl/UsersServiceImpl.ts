@@ -61,7 +61,7 @@ export class UsersServiceImpl implements UsersService {
           });
         }
         userToCreate = {
-          ...userToCreate,
+          ...userData,
           rights: [RoleEnum.HUNT_MANAGER],
         };
       }
@@ -115,9 +115,9 @@ export class UsersServiceImpl implements UsersService {
 
   }
 
-  async switchUsersStatus(ids: SwitchStatusUsersRequestDTO): Promise<boolean> {
+  async switchUsersStatus(ids: string[]): Promise<boolean> {
     try {
-      const updatedUsers = await this.userRepository.switchUsersStatus(ids.id);
+      const updatedUsers = await this.userRepository.switchUsersStatus(ids);
 
       if (updatedUsers.length === 0) {
         throw new AppError({

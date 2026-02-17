@@ -1,17 +1,16 @@
-import { pool } from "../config/database.js";
 import { NewUserRequestDTO } from "../dto/users/NewUserRequestDTO.js";
 import { UserEntity } from "../entity/UsersEntity.js";
 import bcrypt from "bcrypt";
 import { RoleEnum } from "../enum/roleEnum.js";
 import { PrismaClient } from "@prisma/client";
-import { prisma } from "../config/prismaClient";
+import { prisma } from "../config/prismaClient.js";
 
 
 export class UserRepository  {
   
   async findAll(): Promise<UserEntity[]> {
     const users = await prisma.users.findMany();
-    return users.map(user => new UserEntity(user));
+    return users.map((user: Partial<UserEntity>) => new UserEntity(user));
   }
 
   async create(
@@ -33,9 +32,9 @@ export class UserRepository  {
 
     await Promise.all(
       userData.rights.map(async name => {
-        const right = await prisma.rights.findUnique({ where: { name } });
+        const right = await client.rights.findUnique({ where: { name } });
         if (!right) throw new Error(`Right ${name} not found`);
-        await prisma.right_user.create({
+        await client.right_user.create({
           data: {
             user_id: userRecord.id,
             right_id: right.id,
@@ -52,7 +51,7 @@ export class UserRepository  {
         id_cultural_center: culturalcenter_id,
       },
     });
-    return users.map(user => new UserEntity(user));
+    return users.map((user: Partial<UserEntity>) => new UserEntity(user));
   }
 
 
@@ -70,7 +69,7 @@ export class UserRepository  {
 
     if (!user) return null;
 
-    const rights = user.right_user.map(ru => ru.rights.name);
+    const rights = user.right_user.map((ru: { rights: { name: any; }; }) => ru.rights.name);
 
     return new UserEntity({ ...user, rights });
   }
@@ -85,7 +84,7 @@ export class UserRepository  {
 
     if (!user) return null;
 
-    const rights = user.right_user.map(ru => ru.rights.name);
+    const rights = user.right_user.map((ru: { rights: { name: any; }; }) => ru.rights.name);
 
     return new UserEntity({ ...user, rights });
   }

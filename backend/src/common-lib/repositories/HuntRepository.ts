@@ -1,7 +1,7 @@
-import { prisma } from "../config/prismaClient";
-import { CreateHuntRequestDTO } from "../dto/hunt/CreateHuntRequestDTO";
-import { EditHuntRequestDTO } from "../dto/hunt/EditHuntRequestDTO";
-import { HuntEntity } from "../entity/HuntEntity";
+import { prisma } from "../config/prismaClient.js";
+import { CreateHuntRequestDTO } from "../dto/hunt/CreateHuntRequestDTO.js";
+import { EditHuntRequestDTO } from "../dto/hunt/EditHuntRequestDTO.js";
+import { HuntEntity } from "../entity/HuntEntity.js";
 
 export class HuntRepository {
 

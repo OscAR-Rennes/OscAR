@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { AddressEntity } from "../entity/AdrdressEntity";
+import { AddressEntity } from "../entity/AdrdressEntity.js";
 import { CreateAddressRequestDTO } from "../dto/address/CreateAddressRequestDTO.js";
-import { prisma } from "../config/prismaClient";
+import { prisma } from "../config/prismaClient.js";
 
 export class AddressRepository {
 

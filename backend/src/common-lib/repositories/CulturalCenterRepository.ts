@@ -1,8 +1,6 @@
-import { pool } from "../config/database.js";
 import { CreateCulturalCenterRequestDTO } from "../dto/culturalcenter/CreateCulturalCenterRequestDTO.js";
 import { CulturalCenterEntity } from "../entity/CulturalCenterEntity.js";
-import { SwitchStatusCulturalCenterRequestDTO } from "../dto/culturalcenter/SwitchStatusCulturalCenterRequestDTO.js";
-import { prisma } from "../config/prismaClient";
+import { prisma } from "../config/prismaClient.js";
 import { PrismaClient } from "@prisma/client";
 
 

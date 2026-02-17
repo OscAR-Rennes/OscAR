@@ -1,5 +1,5 @@
 import { CreateHuntRequestDTO } from "../common-lib/dto/hunt/CreateHuntRequestDTO.js";
-import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO";
+import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO.js";
 import { EditHuntRequestDTO } from "../common-lib/dto/hunt/EditHuntRequestDTO.js";
 import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO.js";
 import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponseDTO.js";

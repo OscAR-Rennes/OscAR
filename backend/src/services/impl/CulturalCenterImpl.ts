@@ -1,14 +1,13 @@
 
-import { pool } from "../../common-lib/config/database";
-import { prisma } from "../../common-lib/config/prismaClient";
-import { GetAllActiveCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllActiveCulturalCenterResponseDTO";
-import { GetAllCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllCulturalCenterResponseDTO";
-import { SwitchStatusCulturalCenterRequestDTO } from "../../common-lib/dto/culturalcenter/SwitchStatusCulturalCenterRequestDTO";
-import { AppError } from "../../common-lib/errors/AppError";
-import { CulturalCenterRepository } from "../../common-lib/repositories/CulturalCenterRepository";
-import { UserRepository } from "../../common-lib/repositories/UsersRepository";
-import { culturalCenterMapper } from "../../mapper/CulturalCenterMapper";
-import { CulturalCenterService } from "../CulturalCenterService";
+import { prisma } from "../../common-lib/config/prismaClient.js";
+import { GetAllActiveCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllActiveCulturalCenterResponseDTO.js";
+import { GetAllCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllCulturalCenterResponseDTO.js";
+import { SwitchStatusCulturalCenterRequestDTO } from "../../common-lib/dto/culturalcenter/SwitchStatusCulturalCenterRequestDTO.js";
+import { AppError } from "../../common-lib/errors/AppError.js";
+import { CulturalCenterRepository } from "../../common-lib/repositories/CulturalCenterRepository.js";
+import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
+import { culturalCenterMapper } from "../../mapper/CulturalCenterMapper.js";
+import { CulturalCenterService } from "../CulturalCenterService.js";
 
 const culturalCenterRepository = new CulturalCenterRepository();
 const userRepository = new UserRepository();
@@ -41,10 +40,10 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
         }
     }
 
-    async switchCulturalCenterStatus(ids: SwitchStatusCulturalCenterRequestDTO): Promise<boolean> {
+    async switchCulturalCenterStatus(ids: string[]): Promise<boolean> {
     try {
       await prisma.$transaction(async (tx) => {
-        const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids.id);
+        const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids);
 
         for (const center of centers) {
           if (center.isActive === false) {
