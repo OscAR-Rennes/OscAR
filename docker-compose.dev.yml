@@ -30,9 +30,9 @@ services:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
     environment:
-      - NODE_ENV=development
-      - FRONT_URL=http://frontend-desktop:3000
-      - DATABASE_URL=postgresql://oscAR:oscARpassword@postgres:5432/oscARdb
+      DATABASE_URL: "postgresql://oscAR:oscARpassword@postgres:5432/oscARdb"
+      NODE_ENV: development
+      FRONT_URL: "http://frontend-desktop:3000"
     dns:
       - 8.8.8.8
       - 1.1.1.1
