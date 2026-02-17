@@ -33,4 +33,15 @@ export class IndexServiceImpl implements IndexService {
             });
         }
     }
+
+    async deleteIndex(indexId: string): Promise<void> {
+        try {
+            await indexRepository.delete(indexId);
+        } catch (error: any) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la suppression de l\'index',
+                statusCode: 500,
+            });
+        }
+    }
 }

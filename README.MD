@@ -41,6 +41,7 @@ Les services seront accessibles aux adresses suivantes :
 
 - Frontend Web : [http://localhost:3000](http://localhost:3000)
 - Backend API : [http://localhost:5000](http://localhost:5000)
+- Postgres : [http://localhost:5432](http://localhost:5432)
 
 ---
 

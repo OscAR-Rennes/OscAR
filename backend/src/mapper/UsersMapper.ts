@@ -1,9 +1,10 @@
 import { UserEntity } from "../common-lib/entity/UsersEntity.js";
 import { LightUserDTO } from "../common-lib/dto/users/LightUserDTO.js";
 import { NewUserResponseDTO } from "../common-lib/dto/users/NewUserResponseDTO.js";
+import { users } from "@prisma/client";
 
 export const userMapper = {
-  toLightDTO(entity: UserEntity): LightUserDTO {
+  toLightDTO(entity: users): LightUserDTO {
     return {
       id: entity.id,
       email: entity.email,
@@ -12,7 +13,7 @@ export const userMapper = {
     };
   },
 
-  toDTONewUser(entity: UserEntity): NewUserResponseDTO {
+  toDTONewUser(entity: users): NewUserResponseDTO {
     return {
       id: entity.id,
       username: entity.username
