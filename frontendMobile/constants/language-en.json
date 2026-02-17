@@ -1,0 +1,170 @@
+{
+  "connection": {
+    "title": "LOOTOPIA",
+    "subtitle": "The hunt awaits you!",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "************",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign In",
+    "noAccountText": "Don't have an account yet ?",
+    "signUpLink": "Sign up !",
+    "backButton": "Back to menu"
+  },
+  "hunt": {
+    "pageTitle": "My Hunts",
+    "currentHuntsTitle": "Current Hunts (0)",
+    "currentHuntsPlaceholderMessage": "Log in to see your current hunts !",
+    "completedHuntsTitle": "Completed Hunts (0)",
+    "completedHuntsPlaceholderMessage": "Log in to save your progress !",
+    "connectButtonText": "Log in →",
+    "currentHuntsAuthMessage": "Displaying current hunts for authenticated users coming soon",
+    "completedHuntsAuthMessage": "Displaying completed hunts for authenticated users coming soon"
+  },
+  "huntDetails": {
+    "backToMenu": "Back to menu",
+    "stepsTitle": "Hunt Steps",
+    "noSteps": "No steps found for this hunt.",
+    "startHunt": "Start the hunt"
+  },
+  "index": {
+    "languageSelection": "Language Selection",
+    "title": "Map of the world",
+    "searchPlaceholder": "Search for a cultural center"
+  },
+  "profil": {
+    "profilePicturePlaceholder": "Username",
+    "totalPointsTitle": "Total Points",
+    "totalPointsValue": "0",
+    "statsHuntLabel": "Hunts",
+    "statsCulturalCenterLabel": "Cultural Center",
+    "statsFriendsLabel": "Friends",
+    "modifyProfileButton": "Edit My Profile",
+    "logoutButton": "Logout"
+  },
+  "profilModify": {
+    "backButton": "Back to Profile",
+    "firstNameLabel": "First Name",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Doe",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your@email.com",
+    "saveButton": "Save Changes",
+    "sensitiveZoneLabel": "Sensitive Zone",
+    "modifyPasswordButton": "Change My Password"
+  },
+  "modifyPassword": {
+    "title": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "saveChanges": "Save Changes",
+    "cancel": "← Cancel",
+    "placeholder": "********"
+  },
+  "social": {
+    "friendRequestsTitle": "Friend Requests (0)",
+    "friendRequestsPlaceholderMessage": "Log in to add friends and see their progress !",
+    "friendsLeaderboardTitle": "Friends Leaderboard",
+    "globalLeaderboardTitle": "Global Leaderboard",
+    "globalLeaderboardMessage": "List of top players coming soon",
+    "connectButtonText": "Log in →",
+    "seeMoreButtonText": "See more",
+    "friendRequestsListMessage": "Friend requests list coming soon",
+    "friendsListMessage": "Friends list coming soon"
+  },
+  "socialFriends": {
+    "backButton": "Back to Social",
+    "leaderboardTitle": "Friends Leaderboard",
+    "leaderboardPlaceholder": "Detailed list of friends coming soon"
+  },
+  "socialLeaderboard": {
+    "backButton": "Back to Social",
+    "leaderboardTitle": "Global Leaderboard",
+    "leaderboardPlaceholder": "List of top players coming soon"
+  },
+  "culturalCenter": {
+    "backToMenu": "Back to menu",
+    "missingInfo": "Cultural center information is missing.",
+    "hunts": "Hunts",
+    "leaderboard": "Leaderboard",
+    "noHunts": "No hunts available for this cultural center.",
+    "centerLeaderboard": "Center leaderboard coming soon",
+    "unknown": "Unknown"
+  },
+  "culturalCenterModal": {
+    "viewCenter": "View center"
+  },
+  "currentStep": {
+    "backToMenu": "Back to Menu",
+    "pointsEarned": "Points Earned",
+    "stepsRemaining": "Steps Remaining",
+    "scanButton": "Scan / AR Camera",
+    "informationText": "Use your camera to scan the artwork or location !",
+    "huntCompleted": "Congratulations! You have completed the treasure hunt!"
+  },
+  "forgotPasswordSend": {
+    "title": "LOOTOPIA",
+    "subtitle": "The hunt awaits you!",
+    "securityCodeLabel": "Security Code",
+    "securityCodePlaceholder": "XXXXXX",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "************",
+    "confirmPasswordLabel": "Confirm Password",
+    "resetButton": "Reset",
+    "cancelButton": "Cancel"
+  },
+  "forgotPassword": {
+    "title": "LOOTOPIA",
+    "subtitle": "The hunt awaits you!",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "resetButton": "Send reset code",
+    "backButton": "Back to login"
+  },
+  "inscription": {
+    "title": "LOOTOPIA",
+    "subtitle": "The hunt awaits you !",
+    "pseudoLabel": "Username",
+    "pseudoPlaceholder": "JohnDoe",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "************",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "************",
+    "signUpButton": "Sign Up",
+    "alreadyHaveAccountText": "Already have an account ?",
+    "signInLink": "Sign in !",
+    "backButton": "Back to menu"
+  },
+  "bottomNavbar": {
+    "maps": "Maps",
+    "hunt": "Hunts",
+    "social": "Social",
+    "connection": "Connection",
+    "profile": "Profile"
+  },
+  "addFriends": {
+    "addFriends": "Add Friends",
+    "inviteFriends": "Invite your friends to see your progress!",
+    "pseudoPlaceholder": "Username",
+    "pseudoHint": "Enter the username of the friend to add",
+    "sendRequest": "Send Friend Request",
+    "back": "← Back"
+  },
+  "huntList": {
+    "steps": "steps",
+    "points": "Points"
+  },
+  "successStepModal": {
+    "bravo": "Congratulations !",
+    "foundMessage": "You found it !",
+    "nextStepButton": "Go to the next step →",
+    "completedHunt": "You have completed the hunt !",
+    "pointsEarned": "points earned",
+    "returnToMenu": "Return to menu →"
+  }
+}

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Modal, TouchableWithoutFeedback } from 'react-native';
 import { globalStyles, theme } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import HeaderNavbar from '../components/ui/header-navbar';
@@ -11,23 +10,15 @@ import { Ionicons } from '@expo/vector-icons';
 import ModifyPassword from '../components/modify-password';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLanguage } from '../context/LanguageContext';
-
-// Icon mapping
-const ICONS = {
-    "image-placeholder.svg": require('../assets/icon/image-placeholder.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
+import { getIconUri } from './icon-mapping';
 
 export default function ProfilModifyScreen() {
     const router = useRouter();
-    const { language } = useLanguage(); // Retrieve current language
+    const { language } = useLanguage();
     const [showModifyPassword, setShowModifyPassword] = useState(false);
-    const texts = STATIC_TEXTS[language]; // Retrieve translated texts
+    const texts = STATIC_TEXTS[language];
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -51,7 +42,6 @@ export default function ProfilModifyScreen() {
                     </View>
                 </View>
 
-                {/* Form Fields */}
                 <View>
                     {/* First Name */}
                     <View style={{ marginBottom: theme.SPACING.medium }}>
@@ -115,28 +105,6 @@ export default function ProfilModifyScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        backButton: "Retour au Profil",
-        firstNameLabel: "Prénom",
-        firstNamePlaceholder: "Jean",
-        lastNameLabel: "Nom",
-        lastNamePlaceholder: "Dupont",
-        emailLabel: "Adresse email",
-        emailPlaceholder: "votre@email.com",
-        saveButton: "Enregistrer les modifications",
-        sensitiveZoneLabel: "Zone sensible",
-        modifyPasswordButton: "Modifier mon mot de passe",
-    },
-    en: {
-        backButton: "Back to Profile",
-        firstNameLabel: "First Name",
-        firstNamePlaceholder: "John",
-        lastNameLabel: "Last Name",
-        lastNamePlaceholder: "Doe",
-        emailLabel: "Email Address",
-        emailPlaceholder: "your@email.com",
-        saveButton: "Save Changes",
-        sensitiveZoneLabel: "Sensitive Zone",
-        modifyPasswordButton: "Change My Password",
-    },
+    en: translations.profilModify,
+    fr: translationsFr.profilModify
 };

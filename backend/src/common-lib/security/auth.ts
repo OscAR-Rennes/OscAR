@@ -1,7 +1,6 @@
 import { SignJWT } from "jose";
 import { jwtVerify } from "jose";
 import { AuthResponseDTO } from "../dto/auth/AuthResponseDTO.js";
-import { NextFunction } from "express";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
@@ -10,7 +9,7 @@ export async function generateToken(user: AuthResponseDTO) {
     id: user.id.toString(),
     username: user.username, //to delete
     rights: user.rights,
-    cultural_center: user.id_cultural_center,
+    id_cultural_center: user.id_cultural_center,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("2h")

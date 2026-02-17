@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
+import { logoutUser } from "../../api/services/auth.api";
 import Table from "../../common/components/table/Table";
-import { RoleEnum } from "../../common/enum/RolesEnum";
-import { useCheckRights } from "../../common/components/security/CheckRights";
 import { useAuthStore } from "../../common/store/authStore";
-import { activateDeactivateUsers, getAllUsers, getUsersByCulturalCenter } from "../../api/services/users.api";
-import { activateDeactivateCulturalCenter, getAllCulturalCenters } from "../../api/services/culturalcenter.api";
 import { useUsersnData } from "./users.data";
 
 
@@ -22,9 +18,23 @@ export default function Users() {
     handleActivateDeactivateUsers
   } = useUsersnData();
 
+  const clearUser = useAuthStore((state) => state.clearUser);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const handleLogout = async () => {
+      await logoutUser();
+      clearUser();
+  };
+
   return (
     <>
       <h1>Lootopia V0.0.1 - Users management</h1>
+      <button
+          type="button"
+          onClick={handleLogout}
+          disabled={!isAuthenticated}
+        >
+          Se déconnecter
+        </button>
 
       { isAdmin && (
         <>
@@ -61,7 +71,6 @@ export default function Users() {
           />
         </>
       )}
-
     </>
   );
 }

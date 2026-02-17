@@ -2,25 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { theme } from '../constants/theme';
 import { SvgUri } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
+import { getIconUri } from '../app/icon-mapping';
 
-// Icon mapping
-const ICONS = {
-    "group.svg": require('../assets/icon/group.svg'),
-    "send.svg": require('../assets/icon/send.svg'),
-    "plus.svg": require('../assets/icon/plus.svg'),
-    "user.svg": require('../assets/icon/user.svg'),
-} as const;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: keyof typeof ICONS): string {
-    const iconSource = ICONS[iconName];
-    return Asset.fromModule(iconSource).uri || '';
-}
-
-// AddFriends component
 export default function AddFriends() {
     const [isVisible, setIsVisible] = useState(false);
     const { language } = useLanguage();
@@ -63,8 +50,8 @@ export default function AddFriends() {
                                     </LinearGradient>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={{ marginTop: theme.SPACING.medium, alignSelf: 'center' }} onPress={() => setIsVisible(false)}>
-                                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.back}</Text>
+                                <TouchableOpacity style={{ marginTop: theme.SPACING.large, alignSelf: 'center' }} onPress={() => setIsVisible(false)}>
+                                    <Text style={{ fontSize: theme.FONT_SIZES.label, color: theme.COLORS.textSecondary }}>{texts.back}</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
@@ -77,20 +64,6 @@ export default function AddFriends() {
 
 // Translated static texts
 const STATIC_TEXTS = {
-    fr: {
-        addFriends: 'Ajouter des amis',
-        inviteFriends: 'Invitez vos amis à voir votre progression !',
-        pseudoPlaceholder: 'Pseudo',
-        pseudoHint: 'Entrez le pseudo de l’ami à ajouter',
-        sendRequest: "Envoyer la demande d'amis",
-        back: '← Retour',
-    },
-    en: {
-        addFriends: 'Add Friends',
-        inviteFriends: 'Invite your friends to see your progress!',
-        pseudoPlaceholder: 'Username',
-        pseudoHint: 'Enter the username of the friend to add',
-        sendRequest: 'Send Friend Request',
-        back: '← Back',
-    },
+    en: translations.addFriends,
+    fr: translationsFr.addFriends
 };

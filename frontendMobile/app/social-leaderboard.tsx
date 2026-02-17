@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { theme } from '../constants/theme';
-import { Asset } from 'expo-asset';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HeaderNavbar from '@/components/ui/header-navbar';
@@ -9,30 +8,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNavbar from '@/components/ui/bottom-navbar';
 import SectionTitle from '../components/section-title';
 import { useLanguage } from '../context/LanguageContext';
+import translations from '../constants/language-en.json';
+import translationsFr from '../constants/language-fr.json';
+import { getIconUri } from './icon-mapping';
 
-// Icon mapping
-const ICONS = {
-    "trophy.svg": require('../assets/icon/trophy.svg'),
-} as const;
-
-// Define the type for the keys of ICONS
-type IconName = keyof typeof ICONS;
-
-// Function to get the URI of the SVG icon
-function getIconUri(iconName: IconName): string {
-    const iconSource = ICONS[iconName];
-    if (!iconSource) {
-        console.error(`Icon "${iconName}" not found in ICONS mapping.`);
-        return '';
-    }
-    return Asset.fromModule(iconSource).uri || '';
-}
-
-// Social Leaderboard screen
 export default function SocialLeaderboardScreen() {
     const router = useRouter();
-    const { language } = useLanguage(); // Retrieve the current language
-    const texts = STATIC_TEXTS[language]; // Retrieve the translated texts
+    const { language } = useLanguage();
+    const texts = STATIC_TEXTS[language];
 
     return (
         <SafeAreaView style={{backgroundColor: theme.COLORS.background, flex: 1}}>
@@ -68,14 +51,6 @@ export default function SocialLeaderboardScreen() {
 
 // Translations of static texts
 const STATIC_TEXTS = {
-    fr: {
-        backButton: "Retour au Social",
-        leaderboardTitle: "Classement Global",
-        leaderboardPlaceholder: "Liste des meilleurs joueurs à venir",
-    },
-    en: {
-        backButton: "Back to Social",
-        leaderboardTitle: "Global Leaderboard",
-        leaderboardPlaceholder: "List of top players coming soon",
-    },
+    en: translations.socialLeaderboard,
+    fr: translationsFr.socialLeaderboard
 };

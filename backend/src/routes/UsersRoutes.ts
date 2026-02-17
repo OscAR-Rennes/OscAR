@@ -86,7 +86,7 @@ usersRoutes.post(
  *                 $ref: "#/components/schemas/LightUserDTO"
  */
 usersRoutes.get(
-    "/users/culturalcenter/:culturalcenter_id",
+    "/users/culturalcenter",
     authMiddleware,
     requireRole([RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => usersController.getByCenterCultural(req, res, next)

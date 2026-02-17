@@ -4,5 +4,5 @@ export interface CreateAddressRequestDTO {
   latitude: number;
   longitude: number;
   street?: string;
-  street_number?: number;
+  street_number?: string;
 }

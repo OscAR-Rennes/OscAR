@@ -1,11 +1,10 @@
-import { AppError } from "../../common-lib/errors/AppError";
-import { IndexService } from "../IndexService";
-import { IndexRepository } from "../../common-lib/repositories/IndexRepository";
-import { CreateIndexRequestDTO } from "../../common-lib/dto/index/CreateIndexRequestDTO";
-import { CreateIndexResponseDTO } from "../../common-lib/dto/index/CreateIndexResponseDTO";
-import { indexMapper } from "../../mapper/IndexMapper";
-import { GetIndexByHuntRequestDTO } from "../../common-lib/dto/index/GetIndexByHuntRequestDTO";
-import { GetIndexByHuntResponseDTO } from "../../common-lib/dto/index/GetIndexByHuntResponseDTO";
+import { AppError } from "../../common-lib/errors/AppError.js";
+import { IndexService } from "../IndexService.js";
+import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
+import { CreateIndexRequestDTO } from "../../common-lib/dto/index/CreateIndexRequestDTO.js";
+import { CreateIndexResponseDTO } from "../../common-lib/dto/index/CreateIndexResponseDTO.js";
+import { indexMapper } from "../../mapper/IndexMapper.js";
+import { GetIndexByHuntResponseDTO } from "../../common-lib/dto/index/GetIndexByHuntResponseDTO.js";
 
 const indexRepository = new IndexRepository();
 

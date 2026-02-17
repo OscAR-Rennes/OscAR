@@ -8,8 +8,8 @@ export function getAllUsers() {
   return apiClient('/users');
 }
 
-export function getUsersByCulturalCenter(culturalcenterId) {
-  return apiClient(`/users/culturalcenter/${culturalcenterId}`)
+export function getUsersByCulturalCenter() {
+  return apiClient(`/users/culturalcenter`)
 }
 
 export function activateDeactivateUsers(ids) {

@@ -1,0 +1,170 @@
+{
+  "connection": {
+    "title": "LOOTOPIA",
+    "subtitle": "La chasse vous attend !",
+    "emailLabel": "Email",
+    "emailPlaceholder": "votre@email.com",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "************",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signInButton": "Se connecter",
+    "noAccountText": "Vous n'avez pas encore de compte ?",
+    "signUpLink": "Inscrivez-vous !",
+    "backButton": "Retour au menu"
+  },
+  "hunt": {
+    "pageTitle": "Mes Chasses",
+    "currentHuntsTitle": "Chasses en cours (0)",
+    "currentHuntsPlaceholderMessage": "Connectez-vous pour pouvoir voir vos chasses en cours !",
+    "completedHuntsTitle": "Chasses complétées (0)",
+    "completedHuntsPlaceholderMessage": "Connectez-vous pour pouvoir enregistrer votre progression !",
+    "connectButtonText": "Se connecter →",
+    "currentHuntsAuthMessage": "Affichage des chasses en cours pour les utilisateurs connectés à venir",
+    "completedHuntsAuthMessage": "Affichage des chasses complétées pour les utilisateurs connectés à venir"
+  },
+  "huntDetails": {
+    "backToMenu": "Retour au menu",
+    "stepsTitle": "Étapes de la Chasse",
+    "noSteps": "Aucune étape trouvée pour cette chasse.",
+    "startHunt": "Démarrer la chasse"
+  },
+  "index": {
+    "languageSelection": "Sélection de la langue",
+    "title": "Carte du monde",
+    "searchPlaceholder": "Recherchez un centre culturel"
+  },
+  "profil": {
+    "profilePicturePlaceholder": "Pseudo",
+    "totalPointsTitle": "Total des points",
+    "totalPointsValue": "0",
+    "statsHuntLabel": "Chasses",
+    "statsCulturalCenterLabel": "Centre Culturel",
+    "statsFriendsLabel": "Amis",
+    "modifyProfileButton": "Modifier mon profil",
+    "logoutButton": "Déconnexion"
+  },
+  "profilModify": {
+    "backButton": "Retour au Profil",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Jean",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Dupont",
+    "emailLabel": "Adresse email",
+    "emailPlaceholder": "votre@email.com",
+    "saveButton": "Enregistrer les modifications",
+    "sensitiveZoneLabel": "Zone sensible",
+    "modifyPasswordButton": "Modifier mon mot de passe"
+  },
+  "modifyPassword": {
+    "title": "Modifier le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmez le nouveau mot de passe",
+    "saveChanges": "Enregistrer la modification",
+    "cancel": "← Annuler",
+    "placeholder": "********"
+  },
+  "social": {
+    "friendRequestsTitle": "Demandes d'amis (0)",
+    "friendRequestsPlaceholderMessage": "Connectez-vous pour pouvoir ajouter des amis et voir leur progression !",
+    "friendsLeaderboardTitle": "Classement des Amis",
+    "globalLeaderboardTitle": "Classement Global",
+    "globalLeaderboardMessage": "Liste des meilleurs joueurs à venir",
+    "connectButtonText": "Se connecter →",
+    "seeMoreButtonText": "Voir plus",
+    "friendRequestsListMessage": "Liste des demandes d'amis à venir",
+    "friendsListMessage": "Liste des amis à venir"
+  },
+  "socialFriends": {
+    "backButton": "Retour au Social",
+    "leaderboardTitle": "Classement des Amis",
+    "leaderboardPlaceholder": "Liste détaillée des amis à venir"
+  },
+  "socialLeaderboard": {
+    "backButton": "Retour au Social",
+    "leaderboardTitle": "Classement Global",
+    "leaderboardPlaceholder": "Liste des meilleurs joueurs à venir"
+  },
+  "culturalCenter": {
+    "backToMenu": "Retour au menu",
+    "missingInfo": "Les informations du centre culturel sont manquantes.",
+    "hunts": "Chasses",
+    "leaderboard": "Classement",
+    "noHunts": "Aucune chasse disponible pour ce centre culturel.",
+    "centerLeaderboard": "Classement du centre à venir",
+    "unknown": "Inconnu"
+  },
+  "culturalCenterModal": {
+    "viewCenter": "Voir le centre"
+  },
+  "currentStep": {
+    "backToMenu": "Retour au Menu",
+    "pointsEarned": "Points gagnés",
+    "stepsRemaining": "Étapes restantes",
+    "scanButton": "Scanner / Caméra RA",
+    "informationText": "Utilisez votre caméra pour scanner l’oeuvre ou le lieu !",
+    "huntCompleted": "Félicitations ! Vous avez terminé la chasse au trésor !"
+  },
+  "forgotPasswordSend": {
+    "title": "LOOTOPIA",
+    "subtitle": "La chasse vous attend !",
+    "securityCodeLabel": "Code de sécurité",
+    "securityCodePlaceholder": "XXXXXX",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "************",
+    "confirmPasswordLabel": "Confirmez le mot de passe",
+    "resetButton": "Réinitialiser",
+    "cancelButton": "Annuler"
+  },
+  "forgotPassword": {
+    "title": "LOOTOPIA",
+    "subtitle": "La chasse vous attend !",
+    "emailLabel": "Email",
+    "emailPlaceholder": "votre@email.com",
+    "resetButton": "Envoyer le code",
+    "backButton": "Retour à la connexion"
+  },
+  "inscription": {
+    "title": "LOOTOPIA",
+    "subtitle": "La chasse vous attend !",
+    "pseudoLabel": "Pseudo",
+    "pseudoPlaceholder": "JeanDupont",
+    "emailLabel": "Email",
+    "emailPlaceholder": "votre@email.com",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "************",
+    "confirmPasswordLabel": "Confirmez le mot de passe",
+    "confirmPasswordPlaceholder": "************",
+    "signUpButton": "S'inscrire",
+    "alreadyHaveAccountText": "Vous avez déjà un compte ?",
+    "signInLink": "Connectez-vous !",
+    "backButton": "Retour au menu"
+  },
+  "addFriends": {
+    "addFriends": "Ajouter des amis",
+    "inviteFriends": "Invitez vos amis à voir votre progression !",
+    "pseudoPlaceholder": "Pseudo",
+    "pseudoHint": "Entrez le pseudo de l’ami à ajouter",
+    "sendRequest": "Envoyer la demande d'amis",
+    "back": "← Retour"
+  },
+  "bottomNavbar": {
+    "maps": "Carte",
+    "hunt": "Chasses",
+    "social": "Social",
+    "connection": "Connexion",
+    "profile": "Profil"
+  },
+  "huntList": {
+    "steps": "étapes",
+    "points": "Points"
+  },
+  "successStepModal": {
+    "bravo": "Bravo !",
+    "foundMessage": "Vous avez trouvé !",
+    "nextStepButton": "Passer à l’étape suivante →",
+    "completedHunt": "Vous avez complété la chasse !",
+    "pointsEarned": "points gagnés",
+    "returnToMenu": "Retour au menu →"
+  }
+}

@@ -9,8 +9,8 @@ const difficultyRepository = new DifficultyRepository();
 export class DifficultyServiceImpl implements DifficultyService {
   async getAllDifficulty() {
     try {
-        const users = await difficultyRepository.getAll();
-        return users.map(difficultyMapper.toLightDTO);
+        const difficulties = await difficultyRepository.getAll();
+        return difficulties.map(difficultyMapper.toLightDTO);
     } catch (error: any) {
         throw new AppError({
         userMessage: 'Erreur lors de la récupération des difficultées',
