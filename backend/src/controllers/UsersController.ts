@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UsersServiceImpl } from "../services/impl/UsersServiceImpl.js";
+import logger from "../common-lib/utils/logger.js";
 
 export class UsersController  {
 
@@ -11,49 +12,56 @@ export class UsersController  {
 
   async getAll(req: Request, res: Response, next: any) {
     try {
-      console.log("Getting all users");
       const users = await this.usersService.getAllUsers();
+      logger.debug("All users retrieved", { route: req.originalUrl, userId: req.user?.id, count: users.length });
       res.status(200).json(users);
     } catch (err) {
+      logger.error("Error getting all users", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
     }
   }
 
   async createUser(req: Request, res: Response, next: any) {
     try {
-      console.log("Creating user");
       const userData = req.body;
       const newUser = await this.usersService.createUserWeb(userData);
+      logger.info("User created successfully", { route: req.originalUrl, userId: newUser.id });
       res.status(201).json(newUser);
     } catch (err) {
+      logger.error("Error creating user", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
     }
   }
 
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
-      console.log("Getting all user by cultural center")
       const culturalcenter_id = req.user?.id_cultural_center;
       if (!culturalcenter_id) {
+        logger.warn("User's cultural center ID missing", { route: req.originalUrl, userId: req.user?.id });
         throw new Error("Centre culturel de l'utilisateur introuvable");
       }
       const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id)
+      logger.debug("Users retrieved by cultural center", { route: req.originalUrl, userId: req.user?.id, count: users.length });
       res.status(201).json(users)
     } catch (err) {
+      logger.error("Error getting all users by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err)
     }
   }
 
   async switchStatus(req: Request, res: Response, next:any) {
     try {
-      console.log("Switch users Status")
+      logger.info("Switch users Status")
       const ids = req.body.ids
       const result = await this.usersService.switchUsersStatus(ids)
-       if (!result) {
-          return res.status(500).json({ message: "Impossible de changer le statut des utilisateurs" });
-        }
-        return res.status(200).json({ success: true });
+      if (!result) {
+        logger.warn("Switch users status failed", { route: req.originalUrl, count: Array.isArray(ids) ? ids.length : 0 });
+        return res.status(500).json({ message: "Impossible de changer le statut des utilisateurs" });
+      }
+      logger.info("Users status switched successfully", { route: req.originalUrl, count: Array.isArray(ids) ? ids.length : 0, userId: req.user?.id });
+      return res.status(200).json({ success: true });
     } catch (err){
+      logger.error("Error switching users status", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err)
     }
   }

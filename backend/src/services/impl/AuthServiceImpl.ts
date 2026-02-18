@@ -19,6 +19,7 @@ export class AuthServiceImpl implements AuthService {
     try {
       user = await userRepository.findByCredentials(userData.email);
     } catch (err) {
+      logger.error(`Database error during user authentication for email ${userData.email}`, { errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined});
       throw new AppError({
         userMessage: "Problème de connexion à la base de données",
         statusCode: 503,
@@ -43,7 +44,6 @@ export class AuthServiceImpl implements AuthService {
 
     const isValid = await bcrypt.compare(userData.password, user.password);
     if (!isValid) {
-      logger.warn(`Failed login attempt for user ${userData.email}`);
       throw new AppError({
         userMessage: "Identifiants invalides",
         statusCode: 401,

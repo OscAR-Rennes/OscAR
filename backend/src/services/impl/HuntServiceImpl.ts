@@ -7,6 +7,7 @@ import { AppError } from "../../common-lib/errors/AppError.js";
 import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
 import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import logger from "../../common-lib/utils/logger.js";
 
 const huntRepository = new HuntRepository();
 
@@ -57,6 +58,7 @@ export class HuntServiceImpl implements HuntService {
                 (userRights.includes('CULTURAL_CENTER_MANAGER') && existingHunt.cultural_center_id === userId);
 
             if (!hasRights) {
+                logger.warn(`User does not have rights to edit hunt with ID: ${huntData.id}`);
                 throw new AppError({
                     userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
                     statusCode: 403,

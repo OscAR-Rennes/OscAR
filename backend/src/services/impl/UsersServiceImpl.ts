@@ -7,6 +7,7 @@ import AppError from "../../common-lib/errors/AppError.js";
 import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UsersService } from "../UsersService.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
+import logger from "../../common-lib/utils/logger.js";
 
 export class UsersServiceImpl implements UsersService {
 
@@ -40,11 +41,12 @@ export class UsersServiceImpl implements UsersService {
           });
         }
         const address = await this.addressRepository.create(userData.newCulturalCenter.address, tx);
-
+        logger.info("Address created for new cultural center", { addressId: address.id });
         const culturalCenter = await this.culturalCenterRepository.create(
           { ...userData.newCulturalCenter, address_id: address.id},
           tx
         );
+        logger.info(`Cultural center created`, { culturalCenterId: culturalCenter.id });
         userToCreate = {
           ...userToCreate,
           rights: [RoleEnum.CULTURAL_CENTER_MANAGER],
@@ -70,12 +72,20 @@ export class UsersServiceImpl implements UsersService {
       if (error instanceof AppError) throw error;
 
       if (error.code === "P2002") {
+        let field = error.meta?.target?.[0];
+
+        if (!field && typeof error.message === "string") {
+          const match = error.message.match(/\(`(.+)`\)/);
+          if (match) field = match[1];
+        }
+
+        field = field || "un champ unique";
+        console.log(error)
         throw new AppError({
-          userMessage: "Conflit de contrainte d'unicité",
+          userMessage: `Conflit d'unicité sur: ${field}`,
           statusCode: 409,
         });
       }
-
       throw new AppError({
         userMessage: "Erreur lors de la création de l'utilisateur",
         statusCode: 500,
@@ -117,7 +127,6 @@ export class UsersServiceImpl implements UsersService {
   async switchUsersStatus(ids: string[]): Promise<boolean> {
     try {
       const updatedUsers = await this.userRepository.switchUsersStatus(ids);
-
       if (updatedUsers.length === 0) {
         throw new AppError({
           userMessage: "Aucun utilisateur trouvé pour les IDs fournis",
@@ -126,7 +135,7 @@ export class UsersServiceImpl implements UsersService {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof AppError) {
         throw error;
       }
