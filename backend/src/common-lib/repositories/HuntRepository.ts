@@ -31,4 +31,18 @@ export class HuntRepository {
     });
     return huntRecord;
   }
+
+  async getByCulturalCenter(culturalcenter_id: string): Promise<hunts[]> {
+    const hunts = await prisma.hunts.findMany({
+      where: { cultural_center_id: culturalcenter_id },
+    });
+    return hunts;
+  }
+
+  async getByCreator(creator_id: string): Promise<hunts[]> {
+    const hunts = await prisma.hunts.findMany({
+      where: { creator_id },
+    });
+    return hunts;
+  }
 }

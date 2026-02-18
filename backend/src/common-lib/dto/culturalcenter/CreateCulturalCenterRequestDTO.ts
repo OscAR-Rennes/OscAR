@@ -1,4 +1,4 @@
-import { CreateAddressRequestDTO } from "../address/CreateAddressRequestDTO";
+import { CreateAddressRequestDTO } from "../address/CreateAddressRequestDTO.js";
 
 export interface CreateCulturalCenterRequestDTO {
     name: string;

@@ -1,4 +1,3 @@
-import { pool } from "../config/database.js";
 import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO.js";
 import { prisma } from "../config/prismaClient.js";
 import { index } from "@prisma/client";

@@ -56,4 +56,18 @@ export class HuntsController  {
       next(err);
     }
   }
+
+  async getHuntByCulturalCenter(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      if (!user) {
+        throw new Error("User not found in request");
+      }
+      const hunts = await this.huntsService.getHuntByCulturalCenter(user);
+      res.status(200).json(hunts);
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
 };

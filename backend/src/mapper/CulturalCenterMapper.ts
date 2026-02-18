@@ -1,7 +1,7 @@
-import { CulturalCenterEntity } from "../common-lib/entity/CulturalCenterEntity.js";
+import { cultural_centers } from "@prisma/client";
 
 export const culturalCenterMapper = {
-    toLightDTO(culturalCenter: CulturalCenterEntity) {  
+    toLightDTO(culturalCenter: cultural_centers) {  
         return {
             id: culturalCenter.id,
             name: culturalCenter.name,
@@ -9,7 +9,7 @@ export const culturalCenterMapper = {
         };
     },
 
-    toLightWithouActiveDTO(culturalCenter: CulturalCenterEntity) {
+    toLightWithouActiveDTO(culturalCenter: cultural_centers) {
         return {
             id: culturalCenter.id,
             name: culturalCenter.name,
