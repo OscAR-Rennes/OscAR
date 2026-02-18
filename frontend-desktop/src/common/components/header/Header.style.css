@@ -1,9 +1,13 @@
 .header-bar {
     width: 100%;
-    height: 48px;
+    height: 3.5rem;
     background: #4953d3;
     display: flex;
     align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 .header-title {
@@ -13,24 +17,44 @@
 }
 
 .header-menu-burger {
-    width: 24px;
-    height: 24px;
+    width: 2rem;
+    height: 2rem;
+    margin-left: 1.5rem;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    color: #ffffff;
 }
 
 .separator-header {
-    color: white;
+    color: #ffffff;
 }
-
+    
 .user-rights {
-    color: white;
+    color: #ffffff;
     padding-left: 16px;
 }
 
 .header-user-icon {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
+    margin-left: 0.5rem;
+    margin-right: 1.5rem;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-name {
+    color: #fff;
+    font-size: 1rem;
     margin-left: auto;
-    margin-right: 16px;
-    color: #ffffff;   
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    letter-spacing: 0.08rem;
+    margin-right: 0.5rem;
 }
