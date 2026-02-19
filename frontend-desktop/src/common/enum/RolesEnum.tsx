@@ -1,6 +1,6 @@
 export enum RoleEnum {
-    ADMIN = 'ADMIN',
-    HUNT_MANAGER = 'HUNT_MANAGER',
-    CULTURAL_CENTER_MANAGER = 'CULTURAL_CENTER_MANAGER',
-    USER = 'USER',
+    ADMIN = 'Administrateur',
+    HUNT_MANAGER = 'Manageur de chasse',
+    CULTURAL_CENTER_MANAGER = 'Manageur de centre culturel',
+    USER = 'Utilisateur',
 }
