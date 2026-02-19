@@ -7,6 +7,7 @@ import { generateToken } from "../../common-lib/security/auth.js";
 import bcrypt from "bcrypt";
 import AppError from "../../common-lib/errors/AppError.js";
 import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
+import logger from "../../common-lib/utils/logger.js";
 
 const userRepository = new UserRepository();
 
@@ -18,6 +19,7 @@ export class AuthServiceImpl implements AuthService {
     try {
       user = await userRepository.findByCredentials(userData.email);
     } catch (err) {
+      logger.error(`Database error during user authentication for email ${userData.email}`, { errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined});
       throw new AppError({
         userMessage: "Problème de connexion à la base de données",
         statusCode: 503,

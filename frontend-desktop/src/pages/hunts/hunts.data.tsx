@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getAllDifficulty } from "../../api/services/difficulty.api";
 import { addIndex, getAllIndexByHunt } from "../../api/services/index.api";
-import { addHunt, getAllHunts } from "../../api/services/hunt.api";
+import { addHunt, getHuntsByCulturalCenter } from "../../api/services/hunt.api";
 import { addStep } from "../../api/services/step.api";
 import { CreateHuntDto } from "../../api/models/hunts/AddHuntDto";
 import { CreateIndexDto } from "../../api/models/index/AddIndexDto";
@@ -36,7 +36,7 @@ export function useHomeData() {
   }, [selectedHuntId]);
 
   const refreshHunts = async () => {
-    const huntsData = await getAllHunts();
+    const huntsData = await getHuntsByCulturalCenter();
     setHunts(huntsData);
   };
 

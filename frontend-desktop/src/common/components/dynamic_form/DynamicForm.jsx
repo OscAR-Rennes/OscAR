@@ -22,12 +22,15 @@ export default function DynamicForm({
         return acc;
       }, {})
     );
-  }, [resetSignal]);
+  }, [resetSignal, fields]);
 
   const handleChange = (name, type, value) => {
     const parsed = type === "number" ? (value === "" ? "" : Number(value)) : value;
 
-    setValues((prev) => ({ ...prev, [name]: parsed }));
+    setValues((prev) => {
+      const newValues = { ...prev, [name]: parsed };
+      return newValues;
+    });
 
     if (onFieldChange) {
       onFieldChange(name, parsed);
@@ -44,7 +47,7 @@ export default function DynamicForm({
       return (
         <select
           name={field.name}
-          required={field.required}
+          required={typeof field.required === "function" ? field.required(values) : field.required}
           value={values[field.name]}
           onChange={(e) => handleChange(field.name, field.type, e.target.value)}
         >
@@ -58,12 +61,23 @@ export default function DynamicForm({
       );
     }
 
+    if (field.type === "checkbox") {
+      return (
+        <input
+          type="checkbox"
+          name={field.name}
+          checked={!!values[field.name]}
+          onChange={(e) => handleChange(field.name, field.type, e.target.checked)}
+        />
+      );
+    }
+
     return (
       <input
         type={field.type}
         name={field.name}
         placeholder={field.placeholder}
-        required={field.required}
+        required={typeof field.required === "function" ? field.required(values) : field.required}
         value={values[field.name]}
         onChange={(e) => handleChange(field.name, field.type, e.target.value)}
       />
@@ -72,15 +86,21 @@ export default function DynamicForm({
 
   return (
     <form className="dynamic-form-container" onSubmit={handleSubmit}>
-      {fields.map((field) => (
-        <div key={field.name} className="dynamic-form-field">
-          <label>
-            {field.label}
-            {field.required && " *"}
-          </label>
-          {renderField(field)}
-        </div>
-      ))}
+      {fields.map((field) => {
+        if (field.showIf && !field.showIf(values)) return null;
+
+        return (
+          <div key={field.name} className="dynamic-form-field">
+            <label>
+              {field.label}
+              {typeof field.required === "function"
+                ? field.required(values) && " *"
+                : field.required && " *"}
+            </label>
+            {renderField(field)}
+          </div>
+        );
+      })}
       <p>* champs obligatoires</p>
       <button type="submit">{submitLabel}</button>
     </form>

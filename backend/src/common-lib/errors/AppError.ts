@@ -11,7 +11,7 @@ export class AppError extends Error {
   public readonly route?: string;
 
   constructor({ userMessage, statusCode = 400, details, route}: AppErrorParams & { route?: string }) {
-      super();
+      super(userMessage);
     Object.setPrototypeOf(this, new.target.prototype);
     this.name = this.constructor.name;
     this.statusCode = statusCode;

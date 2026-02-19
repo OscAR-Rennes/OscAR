@@ -1,0 +1,86 @@
+2026-02-18 20:13:08 [INFO] Server is running on port 5000
+2026-02-18 20:13:17 [ERROR] Unique constraint violation during user creation: error=PrismaClientKnownRequestError: 
+Invalid `client.users.create()` invocation in
+/app/src/common-lib/repositories/UsersRepository.ts:23:43
+
+  20 
+  21 const hashedPassword = await bcrypt.hash(userData.password, 10);
+  22 
+→ 23 const userRecord = await client.users.create(
+Unique constraint failed on the fields: (`email`)
+2026-02-18 20:13:17 [ERROR] Error creating user route=/api/users/web errorMessage=Conflit de contrainte d'unicité errorStack=AppError: Conflit de contrainte d'unicité
+    at <anonymous> (/app/src/services/impl/UsersServiceImpl.ts:76:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async UsersController.createUser (/app/src/controllers/UsersController.ts:27:23)
+2026-02-18 20:15:05 [INFO] Server is running on port 5000
+2026-02-18 20:17:45 [INFO] Server is running on port 5000
+2026-02-18 20:17:54 [ERROR] Error creating user route=/api/users/web errorMessage=Cannot read properties of undefined (reading 'join') errorStack=TypeError: Cannot read properties of undefined (reading 'join')
+    at <anonymous> (/app/src/services/impl/UsersServiceImpl.ts:76:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async UsersController.createUser (/app/src/controllers/UsersController.ts:27:23)
+2026-02-18 20:19:20 [INFO] Server is running on port 5000
+2026-02-18 20:19:29 [ERROR] Error creating user route=/api/users/web errorMessage=Conflit d'unicité sur: un champ unique errorStack=AppError: Conflit d'unicité sur: un champ unique
+    at <anonymous> (/app/src/services/impl/UsersServiceImpl.ts:76:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async UsersController.createUser (/app/src/controllers/UsersController.ts:27:23)
+2026-02-18 20:20:39 [INFO] Server is running on port 5000
+2026-02-18 20:20:55 [ERROR] Error creating user route=/api/users/web errorMessage=Conflit d'unicité sur: un champ unique errorStack=AppError: Conflit d'unicité sur: un champ unique
+    at <anonymous> (/app/src/services/impl/UsersServiceImpl.ts:77:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async UsersController.createUser (/app/src/controllers/UsersController.ts:27:23)
+2026-02-18 20:22:32 [INFO] Server is running on port 5000
+2026-02-18 20:22:40 [INFO] Server is running on port 5000
+2026-02-18 20:22:49 [ERROR] Error creating user route=/api/users/web errorMessage=Conflit d'unicité sur: email errorStack=AppError: Conflit d'unicité sur: email
+    at <anonymous> (/app/src/services/impl/UsersServiceImpl.ts:84:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async UsersController.createUser (/app/src/controllers/UsersController.ts:27:23)
+2026-02-18 20:23:56 [INFO] Server is running on port 5000
+2026-02-18 20:24:00 [INFO] Server is running on port 5000
+2026-02-18 20:26:59 [INFO] Server is running on port 5000
+2026-02-18 20:27:48 [INFO] User authenticated userId=d7b03e4f-8253-4cad-9633-a3053807ae15 route=/api/auth/login/web
+2026-02-18 20:28:35 [INFO] Server is running on port 5000
+2026-02-18 20:29:48 [INFO] Server is running on port 5000
+2026-02-18 20:30:01 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:30:01 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:30:02 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:30:02 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:30:02 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:30:02 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:30:02 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:30:02 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:30:04 [INFO] User logged out route=/api/auth/logout userId=d7b03e4f-8253-4cad-9633-a3053807ae15 ip=::ffff:172.18.0.1
+2026-02-18 20:30:04 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=6
+2026-02-18 20:30:04 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=6
+2026-02-18 20:30:45 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-18 20:30:45 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:30:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-18 20:30:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-18 20:30:59 [INFO] User authenticated route=/api/auth/login/web userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:30:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-18 20:30:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-18 20:31:20 [INFO] Index retrieved by hunt route=/api/index/hunt/9ed2954a-5da7-4d4f-af8e-d9f0ccbeece6 huntId=9ed2954a-5da7-4d4f-af8e-d9f0ccbeece6
+2026-02-18 20:31:25 [INFO] Index retrieved by hunt route=/api/index/hunt/c5671f4d-2741-4ab7-8307-b53d3ce222f3 huntId=c5671f4d-2741-4ab7-8307-b53d3ce222f3
+2026-02-18 20:31:44 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:31:44 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:31:44 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:31:44 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:31:44 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:31:44 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:31:44 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:31:44 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:31:49 [INFO] Switch users Status
+2026-02-18 20:31:49 [INFO] Users status switched successfully route=/api/users/switchactivation count=1 userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:31:49 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:31:51 [INFO] Users deactivated for cultural center b596f039-9601-4c1e-a524-87d17a5e7607 culturalCenterId=b596f039-9601-4c1e-a524-87d17a5e7607
+2026-02-18 20:31:51 [INFO] Cultural centers status switched successfully route=/api/culturalcenter/switchactivation count=1 userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:31:51 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:31:51 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:31:54 [INFO] Managers activated for cultural center b596f039-9601-4c1e-a524-87d17a5e7607 culturalCenterId=b596f039-9601-4c1e-a524-87d17a5e7607
+2026-02-18 20:31:54 [INFO] Cultural centers status switched successfully route=/api/culturalcenter/switchactivation count=1 userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:31:54 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-18 20:31:54 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-18 20:31:56 [INFO] Switch users Status
+2026-02-18 20:31:56 [INFO] Users status switched successfully route=/api/users/switchactivation count=1 userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-18 20:31:56 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22

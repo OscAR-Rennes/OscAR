@@ -5,6 +5,7 @@ import { CreateIndexRequestDTO } from "../../common-lib/dto/index/CreateIndexReq
 import { CreateIndexResponseDTO } from "../../common-lib/dto/index/CreateIndexResponseDTO.js";
 import { indexMapper } from "../../mapper/IndexMapper.js";
 import { GetIndexByHuntResponseDTO } from "../../common-lib/dto/index/GetIndexByHuntResponseDTO.js";
+import logger from "../../common-lib/utils/logger.js";
 
 const indexRepository = new IndexRepository();
 

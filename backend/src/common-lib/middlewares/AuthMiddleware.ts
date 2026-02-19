@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { jwtVerify } from "jose";
-import { AuthResponseDTO } from "../dto/auth/AuthResponseDTO";
+import { AuthResponseDTO } from "../dto/auth/AuthResponseDTO.js";
 import AppError from "../errors/AppError.js";
 import { RoleEnum } from "../enum/roleEnum.js";
 

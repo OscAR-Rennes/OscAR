@@ -1,4 +1,4 @@
-import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO";
+import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO.js";
 
 declare global {
   namespace Express {

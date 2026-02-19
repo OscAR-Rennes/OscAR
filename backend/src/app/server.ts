@@ -16,6 +16,8 @@ import indexRoutes from '../routes/IndexRoutes.js';
 import culturalCenterRoutes from '../routes/CulturalCenterRoutes.js';
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "../swagger/swagger.js";
+import { requestLogger } from '../common-lib/middlewares/LoggerMiddleware.js';
+import logger from '../common-lib/utils/logger.js';
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -26,6 +28,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(requestLogger);
 
 app.use('/api', usersRoutes);
 app.use('/api', authRoutes);
@@ -57,5 +60,5 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`);
+  logger.info(`Server is running on port ${port}`);
 });

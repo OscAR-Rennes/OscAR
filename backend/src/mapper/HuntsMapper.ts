@@ -1,18 +1,18 @@
-import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO";
-import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO";
-import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponseDTO";
-import { HuntEntity } from "../common-lib/entity/HuntEntity";
+import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO.js";
+import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO.js";
+import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
+import { hunts } from "@prisma/client";
 
 export const huntMapper = {
 
-  toCreateResponseDto(entity: HuntEntity): CreateHuntResponseDTO {
+  toCreateResponseDto(entity: hunts): CreateHuntResponseDTO {
     return {
       id: entity.id,
       title: entity.title
     };
   },
 
-  toLightDTO(entity: HuntEntity): GetAllHuntResponseDTO {
+  toLightDTO(entity: hunts): GetAllHuntResponseDTO {
       return {
         id: entity.id,
         title: entity.title,
@@ -20,7 +20,7 @@ export const huntMapper = {
       };
     },
 
-  toEditResponseDto(entity: HuntEntity): EditHuntResponseDTO {
+  toEditResponseDto(entity: hunts): EditHuntResponseDTO {
     return {
       id: entity.id,
       title: entity.title

@@ -1,7 +1,7 @@
 import { CreateCulturalCenterRequestDTO } from "../dto/culturalcenter/CreateCulturalCenterRequestDTO.js";
-import { CulturalCenterEntity } from "../entity/CulturalCenterEntity.js";
 import { prisma } from "../config/prismaClient.js";
 import { PrismaClient } from "@prisma/client";
+import { cultural_centers } from "@prisma/client";
 
 
 export class CulturalCenterRepository  {
@@ -9,7 +9,7 @@ export class CulturalCenterRepository  {
     async create(
         data: CreateCulturalCenterRequestDTO,
         prismaClient?: PrismaClient
-    ): Promise<CulturalCenterEntity> {
+    ): Promise<cultural_centers> {
         const client = prismaClient || prisma;
         const formattedData = {
             name: data.name,
@@ -18,19 +18,19 @@ export class CulturalCenterRepository  {
             picture_path: data.picture_path ?? null,
         };
         const culturalCenterRecord = await client.cultural_centers.create({ data: formattedData });
-        return new CulturalCenterEntity(culturalCenterRecord);
+        return culturalCenterRecord;
     }
 
-     async getAllActive(): Promise<CulturalCenterEntity[]> {
+     async getAllActive(): Promise<cultural_centers[]> {
         const centers = await prisma.cultural_centers.findMany({
         where: { isActive: true },
         });
-        return centers.map(c => new CulturalCenterEntity(c));
+        return centers;
     }
 
-    async getAll(): Promise<CulturalCenterEntity[]> {
+    async getAll(): Promise<cultural_centers[]> {
         const centers = await prisma.cultural_centers.findMany();
-        return centers.map(c => new CulturalCenterEntity(c));
+        return centers;
     }
 
 

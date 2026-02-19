@@ -1,4 +1,4 @@
-import { CreateCulturalCenterRequestDTO } from "../culturalcenter/CreateCulturalCenterRequestDTO";
+import { CreateCulturalCenterRequestDTO } from "../culturalcenter/CreateCulturalCenterRequestDTO.js";
 
 export interface NewUserRequestDTO {
   username: string;

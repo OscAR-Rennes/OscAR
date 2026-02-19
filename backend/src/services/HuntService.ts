@@ -1,3 +1,4 @@
+import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO.js";
 import { CreateHuntRequestDTO } from "../common-lib/dto/hunt/CreateHuntRequestDTO.js";
 import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO.js";
 import { EditHuntRequestDTO } from "../common-lib/dto/hunt/EditHuntRequestDTO.js";
@@ -7,5 +8,6 @@ import { GetAllHuntResponseDTO } from "../common-lib/dto/hunt/GetAllHuntResponse
 export interface HuntService {
   createHunt(huntData: CreateHuntRequestDTO, userId: string, userCulturalCenterId: string): Promise<CreateHuntResponseDTO>;
   getAllHunt(): Promise<GetAllHuntResponseDTO[]>;
+  getHuntByCulturalCenter(user: AuthResponseDTO): Promise<GetAllHuntResponseDTO[]>;
   editHunt(huntData: EditHuntRequestDTO, userId: string, userRights: string[]): Promise<EditHuntResponseDTO>;
 }

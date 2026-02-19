@@ -1,4 +1,3 @@
-import { UserEntity } from "../common-lib/entity/UsersEntity.js";
 import { LightUserDTO } from "../common-lib/dto/users/LightUserDTO.js";
 import { NewUserResponseDTO } from "../common-lib/dto/users/NewUserResponseDTO.js";
 import { users } from "@prisma/client";

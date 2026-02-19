@@ -6,6 +6,8 @@ import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js"
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
 import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
+import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import logger from "../../common-lib/utils/logger.js";
 
 const huntRepository = new HuntRepository();
 
@@ -56,9 +58,10 @@ export class HuntServiceImpl implements HuntService {
                 (userRights.includes('CULTURAL_CENTER_MANAGER') && existingHunt.cultural_center_id === userId);
 
             if (!hasRights) {
+                logger.warn(`User does not have rights to edit hunt with ID: ${huntData.id}`);
                 throw new AppError({
-                userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
-                statusCode: 403,
+                    userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
+                    statusCode: 403,
                 });
             }
 
@@ -70,5 +73,56 @@ export class HuntServiceImpl implements HuntService {
                 statusCode: 500
             })
         }
+    }
+
+    async getHuntByCulturalCenter(user: AuthResponseDTO): Promise<GetAllHuntResponseDTO[]> {
+        try {
+            if (user.rights.includes('ADMIN')) {
+                return (await huntRepository.getAll()).map(huntMapper.toLightDTO);
+            }
+
+            if (user.rights.includes('HUNT_MANAGER')) {
+                return (await huntRepository.getByCreator(user.id)).map(huntMapper.toLightDTO);
+            }
+
+            if (
+                user.rights.includes('CULTURAL_CENTER_MANAGER') &&
+                user.id_cultural_center
+            ) {
+                return (await huntRepository.getByCulturalCenter(user.id_cultural_center)).map(huntMapper.toLightDTO);
+            }
+
+            throw new AppError({
+                userMessage: "Vous n'avez pas les droits pour accéder aux chasses",
+                statusCode: 403,
+            });
+        } catch (error) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des chasses',
+                statusCode: error instanceof AppError ? error.statusCode : 500
+            });
+        }
+    }
+
+    private async resolveHuntsByRights(user: AuthResponseDTO) {
+        if (user.rights.includes('ADMIN')) {
+            return huntRepository.getAll();
+        }
+
+        if (user.rights.includes('HUNT_MANAGER')) {
+            return huntRepository.getByCreator(user.id);
+        }
+
+        if (
+            user.rights.includes('CULTURAL_CENTER_MANAGER') &&
+            user.id_cultural_center
+        ) {
+            return huntRepository.getByCulturalCenter(user.id_cultural_center);
+        }
+
+        throw new AppError({
+            userMessage: "Vous n'avez pas les droits pour accéder aux chasses",
+            statusCode: 403,
+        });
     }
 }

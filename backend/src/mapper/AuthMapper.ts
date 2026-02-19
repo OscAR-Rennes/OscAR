@@ -1,5 +1,5 @@
-import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO";
-import { UserEntity } from "../common-lib/entity/UsersEntity";
+import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO.js";
+import { UserEntity } from "../common-lib/entity/UsersEntity.js";
 
 export const authMapper = {
 

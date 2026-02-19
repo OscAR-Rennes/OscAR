@@ -7,3 +7,7 @@ export function addHunt(huntData) {
 export function getAllHunts() {
   return apiClient('/hunt');
 }
+
+export function getHuntsByCulturalCenter() {
+  return apiClient(`/hunt/culturalcenter`);
+}

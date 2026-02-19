@@ -6,6 +6,7 @@ import { SwitchStatusCulturalCenterRequestDTO } from "../../common-lib/dto/cultu
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { CulturalCenterRepository } from "../../common-lib/repositories/CulturalCenterRepository.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
+import logger from "../../common-lib/utils/logger.js";
 import { culturalCenterMapper } from "../../mapper/CulturalCenterMapper.js";
 import { CulturalCenterService } from "../CulturalCenterService.js";
 
@@ -48,8 +49,10 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
         for (const center of centers) {
           if (center.isActive === false) {
             await userRepository.deactivateUsersByCenter(center.id);
+            logger.info(`Users deactivated for cultural center ${center.id}`, { culturalCenterId: center.id });
           } else {
             await userRepository.activateManagersByCenter(center.id);
+            logger.info(`Managers activated for cultural center ${center.id}`, { culturalCenterId: center.id });
           }
         }
       });
