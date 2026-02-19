@@ -12,10 +12,10 @@
 
 .sidebar {
     position: fixed;
-    top: 48px; /* Décale la sidebar sous le header */
+    top: 3rem; /* Décale la sidebar sous le header */
     left: 0;
     width: 15rem;
-    height: calc(100vh - 48px); /* Ajuste la hauteur pour ne pas passer sous la navbar */
+    height: calc(100vh - 3rem); /* Ajuste la hauteur pour ne pas passer sous la navbar */
     background: #fff;
     display: flex;
     flex-direction: column;

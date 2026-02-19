@@ -12,8 +12,8 @@
 
 .header-title {
     color: white;
-    font-size: 18px;
-    padding: 16px;
+    font-size: 1.125rem;
+    padding: 1rem;
 }
 
 .header-menu-burger {
@@ -34,7 +34,7 @@
     
 .user-rights {
     color: #ffffff;
-    padding-left: 16px;
+    padding-left: 1rem;
 }
 
 .header-user-icon {
