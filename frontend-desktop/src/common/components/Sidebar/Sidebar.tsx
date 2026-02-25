@@ -1,8 +1,8 @@
-
 import React from "react";
 import '../Sidebar/Sidebar.style.css';
 import { RoleEnum } from "../../enum/RolesEnum";
 import { useAuthStore } from "../../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 const menuItemsBase = [
   { icon: <img src={require("../../assets/icon/dashboard.svg").default} alt="Dashboard"/>, label: "Tableau de bord" },
@@ -17,11 +17,12 @@ const settingsIcon = <img src={require("../../assets/icon/settings.svg").default
 
 const Sidebar = () => {
   const userRights = useAuthStore((state) => state.user.rights);
+  const navigate = useNavigate();
 
   const menuItems = [...menuItemsBase];
   if (
-    userRights.includes(RoleEnum.ADMIN) ||
-    userRights.includes(RoleEnum.CULTURAL_CENTER_MANAGER)
+    userRights.includes('ADMIN') ||
+    userRights.includes('CULTURAL_CENTER_MANAGER')
   ) {
     menuItems.push({
       icon: <img src={require("../../assets/icon/culturalCenter.svg").default} alt="Cultural Center" />,
@@ -39,7 +40,15 @@ const Sidebar = () => {
                 {item.section}
               </li>
             ) : (
-              <li key={idx} className="sidebar-item">
+              <li
+                key={idx}
+                className="sidebar-item"
+                onClick={() => {
+                  if (item.label === "Comptes") {
+                    navigate("/home/accounts");
+                  }
+                }}
+              >
                 <span className="sidebar-icon">{item.icon}</span>
                 <span className="sidebar-label">{item.label}</span>
               </li>
@@ -53,6 +62,10 @@ const Sidebar = () => {
           </li>
         </div>
       </nav>
+      <div className="sidebar-navigation">
+        <button onClick={() => navigate('/')}>
+        </button>
+      </div>
     </div>
   );
 };

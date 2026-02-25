@@ -1,0 +1,24 @@
+.accounts-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 16px;
+}
+.accounts-table th, .accounts-table td {
+	border-bottom: 1px solid #ddd;
+	padding: 12px 8px;
+	text-align: left;
+}
+.accounts-avatar {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	background: #2563eb;
+	border-radius: 3px;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+.accounts-link {
+	color: #2563eb;
+	cursor: pointer;
+	text-decoration: underline;
+}

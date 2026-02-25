@@ -12,6 +12,7 @@ import Notification from "./common/components/notification/Notification";
 import Users from "./pages/users";
 import Layout from "./common/components/layout/Layout";
 import LayoutEmpty from "./common/components/layout/LayoutEmpty";
+import Accounts from "./pages/accounts";
 
 export default function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -40,6 +41,7 @@ export default function App() {
         >
           <Route path="/home/hunts" element={<Home />} />
           <Route path="/home/users" element={<Users />} />
+          <Route path="/home/accounts" element={<Accounts />} />
         </Route>
 
         {/* Route publique */}

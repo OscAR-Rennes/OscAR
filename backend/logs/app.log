@@ -84,3 +84,420 @@ Unique constraint failed on the fields: (`email`)
 2026-02-18 20:31:56 [INFO] Switch users Status
 2026-02-18 20:31:56 [INFO] Users status switched successfully route=/api/users/switchactivation count=1 userId=d7b03e4f-8253-4cad-9633-a3053807ae15
 2026-02-18 20:31:56 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-23 20:21:43 [INFO] Server is running on port 5000
+2026-02-23 20:21:53 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-02-23 20:21:53 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-02-25 18:10:45 [INFO] Server is running on port 5000
+2026-02-25 18:11:34 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-02-25 18:11:34 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-02-25 18:11:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 18:11:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:11:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:11:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:20:44 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:44 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:44 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:44 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:20:44 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:44 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:20:44 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:44 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:20:50 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:50 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:53 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:53 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:53 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:53 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:20:53 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:53 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:20:53 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:20:53 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:29:03 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:29:03 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:29:03 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:29:10 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:29:10 [WARN] User's cultural center ID missing route=/api/users/culturalcenter userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:29:10 [ERROR] Error getting all users by cultural center route=/api/users/culturalcenter errorMessage=Centre culturel de l'utilisateur introuvable errorStack=Error: Centre culturel de l'utilisateur introuvable
+    at UsersController.getByCenterCultural (/app/src/controllers/UsersController.ts:41:15)
+    at <anonymous> (/app/src/routes/UsersRoutes.ts:92:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-02-25 18:31:38 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:31:38 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:31:38 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:31:38 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:31:40 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:31:40 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:31:40 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:31:40 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:32:33 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:32:37 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:32:53 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:35:29 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:35:29 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:35:29 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:35:29 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:35:58 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:35:58 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:36:11 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:36:11 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:38:53 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:38:53 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:38:54 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:38:54 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:39:22 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:39:22 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:39:22 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:39:22 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:40:09 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:40:09 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:40:16 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:40:16 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:40:16 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:40:16 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:40:17 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:40:17 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:40:39 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:40:39 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:40:39 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:40:39 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 18:40:41 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:40:41 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:41:10 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:43:39 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:44:18 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:44:22 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:47:27 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:47:47 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:48:15 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:48:20 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:51:32 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:51:36 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:56:02 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:56:02 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:56:02 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:56:02 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:58:48 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:58:51 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:58:51 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 18:58:51 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 18:58:51 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:00:29 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:00:29 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:02:30 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:02:43 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:02:43 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:02:43 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:02:43 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:02:47 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:02:47 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:06:19 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:06:19 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:19 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:19 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:19 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:19 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:19 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:19 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:19 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:25 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:06:25 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:25 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:25 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:25 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:25 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:25 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:25 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:25 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:06:42 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:06:42 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:42 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:42 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:42 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:42 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:42 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:42 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:42 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:57 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:57 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:06:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:06:58 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:06:58 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:06:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:58 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:06:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:06:58 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:09:15 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:09:15 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:09:15 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:09:15 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:09:15 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:09:15 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:09:15 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:09:15 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:09:15 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:09:19 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:09:24 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:10:41 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:11:42 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:11:47 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:12:04 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:12:19 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:12:32 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:12:37 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:12:47 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:14:05 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:14:05 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:14:05 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:14:05 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:14:06 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:14:06 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:15:09 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:15:09 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:15:10 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:15:10 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:15:11 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:15:11 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:16:54 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:55 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:59 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:16:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:59 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:59 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:59 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:59 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:16:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:59 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:16:59 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:17:00 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:00 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:17:00 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:17:00 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:00 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:17:00 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:17:10 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:17:10 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:21 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:21 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:21 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:21 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:17:21 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:17:21 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:21 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:21 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:21 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:21 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:17:21 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:17:21 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:05 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:05 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:10 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:18:28 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:28 [WARN] Authentication failed route=/api/auth/login/web ip=::ffff:172.18.0.1 errorMessage=Identifiants invalides errorStack=AppError: Identifiants invalides
+    at AuthServiceImpl.connectUser (/app/src/services/impl/AuthServiceImpl.ts:47:13)
+    at async AuthController.authentificateUser (/app/src/controllers/AuthController.ts:30:22)
+2026-02-25 19:18:33 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:33 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:48 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:18:38 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:26:04 [INFO] Server is running on port 5000
+2026-02-25 19:26:14 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 19:26:14 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 19:26:14 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:26:14 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 19:26:16 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:26:16 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:26:50 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:26:57 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 19:27:07 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:48:35 [INFO] Server is running on port 5000
+2026-02-25 20:48:44 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-25 20:48:44 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 20:48:44 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 20:48:44 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-02-25 20:48:46 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:48:46 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:49:06 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 20:49:06 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 20:49:06 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:49:06 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:49:27 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 20:49:27 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-02-25 20:49:27 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:49:27 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
+2026-02-25 20:52:18 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=21
