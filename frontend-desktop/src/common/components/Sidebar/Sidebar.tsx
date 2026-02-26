@@ -1,15 +1,13 @@
-import React from "react";
-import '../Sidebar/Sidebar.style.css';
-import { RoleEnum } from "../../enum/RolesEnum";
+import './Sidebar.style.css';
 import { useAuthStore } from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 
 const menuItemsBase = [
-  { icon: <img src={require("../../assets/icon/dashboard.svg").default} alt="Dashboard"/>, label: "Tableau de bord" },
-  { icon: <img src={require("../../assets/icon/accounts.svg").default} alt="Accounts"/>, label: "Comptes" },
+  { icon: <img src={require("../../assets/icon/dashboard.svg").default} alt="Dashboard"/>, label: "Tableau de bord", path: "/home/dashboard" },
+  { icon: <img src={require("../../assets/icon/accounts.svg").default} alt="Accounts"/>, label: "Comptes", path: "/home/accounts" },
   { section: "Gestionnaire de chasse" },
-  { icon: <img src={require("../../assets/icon/hunts.svg").default} alt="Hunts"/>, label: "Chasses" },
-  { icon: <img src={require("../../assets/icon/locationPointer.svg").default} alt="Pointers"/>, label: "Etapes" },
+  { icon: <img src={require("../../assets/icon/hunts.svg").default} alt="Hunts"/>, label: "Chasses", path: "/home/hunts" },
+  { icon: <img src={require("../../assets/icon/locationPointer.svg").default} alt="Steps"/>, label: "Etapes", path: "/home/steps" },
   //{ icon: <img src={require("../../assets/icon/difficulty.svg").default} alt="Difficulty"/>, label: "Difficulté" },
 ];
 
@@ -25,8 +23,19 @@ const Sidebar = () => {
     userRights.includes('CULTURAL_CENTER_MANAGER')
   ) {
     menuItems.push({
+      icon: <img src={require("../../assets/icon/accounts.svg").default} alt="Users" />,
+      label: "Utilisateurs",
+      path: "/home/users"
+    });
+  }
+
+  if (
+    userRights.includes('ADMIN') 
+  ) {
+    menuItems.push({
       icon: <img src={require("../../assets/icon/culturalCenter.svg").default} alt="Cultural Center" />,
       label: "Centre culturel",
+      path: "/home/cultural-center"
     });
   }
 
@@ -44,9 +53,7 @@ const Sidebar = () => {
                 key={idx}
                 className="sidebar-item"
                 onClick={() => {
-                  if (item.label === "Comptes") {
-                    navigate("/home/accounts");
-                  }
+                  navigate(item.path);
                 }}
               >
                 <span className="sidebar-icon">{item.icon}</span>

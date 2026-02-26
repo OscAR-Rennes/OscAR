@@ -39,4 +39,10 @@ stepsRoutes.post(
     (req, res, next) => stepsController.createStep(req, res, next)
 );
 
+stepsRoutes.get(
+    "/step/culturalcenter",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.getStepsByCulturalCenter(req, res, next)
+);
 export default stepsRoutes;

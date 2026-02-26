@@ -8,9 +8,7 @@ import { useAuthStore } from "../../common/store/authStore";
 export function useUsersnData() {
 
     const [selectedUsersRows, setSelectedUsersRows] = useState([]);
-    const [selectedCulturalCentersRows, setSelectedCulturalCenterssRows] = useState([]);
     const [users, setUsers] = useState([]);
-    const [culturalCenters, setCulturalCenters] = useState([])
 
     const checkRights = useCheckRights();
 
@@ -30,11 +28,6 @@ export function useUsersnData() {
             );
 
             setUsers(usersData)
-
-            if (isAdmin) {
-            const culturalCentersData = await getAllCulturalCenters()
-            setCulturalCenters(culturalCentersData)
-            }
         }
 
         fetchData()
@@ -50,12 +43,6 @@ export function useUsersnData() {
         setUsers(usersData)
     };
 
-    const refreshCulturalCenters = async () => {
-        if (isAdmin) {
-        const culturalCentersData = await getAllCulturalCenters()
-        setCulturalCenters(culturalCentersData)
-        }
-    };  
 
     // Colonne des tables
     const userColumns = 
@@ -69,25 +56,7 @@ export function useUsersnData() {
             }
         ]
 
-    const culturalCentersColumns = 
-        [
-            { key: "name", label: "Name" },
-            {
-            key: "isActive",
-            label: "Status",
-            render: (row: { isActive: boolean; }) => (row.isActive ? "🟢 Actif" : "🔴 Inactif"),
-            }
-        ]
-
-
     // Handlers
-    const handleActivateDeactivateCulturalCenters = async () => {
-        const ids = selectedCulturalCentersRows.map(row => row.id);
-        await activateDeactivateCulturalCenter(ids)
-        setSelectedCulturalCenterssRows([])
-        refreshCulturalCenters()
-        refreshUsers()
-    };
 
     const handleActivateDeactivateUsers = async () => {
         const ids = selectedUsersRows.map(row => row.id);
@@ -99,15 +68,11 @@ export function useUsersnData() {
         isAdmin,
 
         users,
-        culturalCenters,
 
         setSelectedUsersRows,
-        setSelectedCulturalCenterssRows,
 
         userColumns,
-        culturalCentersColumns,
 
-        handleActivateDeactivateCulturalCenters,
         handleActivateDeactivateUsers
     }
 

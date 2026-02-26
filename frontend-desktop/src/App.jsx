@@ -13,6 +13,9 @@ import Users from "./pages/users";
 import Layout from "./common/components/layout/Layout";
 import LayoutEmpty from "./common/components/layout/LayoutEmpty";
 import Accounts from "./pages/accounts";
+import Hunts from "./pages/hunts";
+import CulturalCenters from "./pages/culturalcenters";
+import Steps from "./pages/steps";
 
 export default function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -39,9 +42,13 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/home/hunts" element={<Home />} />
+          <Route path="/home/hunts" element={<Hunts />} />
           <Route path="/home/users" element={<Users />} />
           <Route path="/home/accounts" element={<Accounts />} />
+          <Route path="/home/dashboard" element={<div>Tableau de bord</div>} />
+          <Route path="/home/steps" element={<Steps />} />
+          <Route path="/home/settings" element={<div>Paramètres</div>} />
+          <Route path="/home/cultural-center" element={<CulturalCenters />} />
         </Route>
 
         {/* Route publique */}

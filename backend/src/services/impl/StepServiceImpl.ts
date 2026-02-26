@@ -8,6 +8,9 @@ import { IndexRepository } from "../../common-lib/repositories/IndexRepository.j
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import { IndexServiceImpl } from "./IndexServiceImpl.js";
 import logger from "../../common-lib/utils/logger.js";
+import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
+import { GetAllStepsResponseDTO } from "../../common-lib/dto/step/GetAllStepResponseDTO.js";
 
 const indexServiceImpl = new IndexServiceImpl();
 const stepRepository = new StepRepository();
@@ -42,7 +45,7 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-        async deleteStep(stepId: string): Promise<void> {
+    async deleteStep(stepId: string): Promise<void> {
         try {
             await prisma.$transaction(async (tx) => {
                 const step = await stepRepository.getStepById(stepId);
@@ -60,6 +63,35 @@ export class StepServiceImpl implements StepService {
             throw new AppError({
                 userMessage: 'Erreur lors de la suppression de l\'étape',
                 statusCode: 500,
+            });
+        }
+    }
+
+    async getStepsByCulturalCenter(user: AuthResponseDTO): Promise<GetAllStepsResponseDTO[]> {
+        try {
+            if (user.rights.includes('ADMIN')) {
+                return (await stepRepository.getAll()).map(stepMapper.toLightDTO);
+            }
+
+            if (user.rights.includes('HUNT_MANAGER')) {
+                return (await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO);
+            }
+
+            if (
+                user.rights.includes('CULTURAL_CENTER_MANAGER') &&
+                user.id_cultural_center
+            ) {
+                return (await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO);
+            }
+
+            throw new AppError({
+                userMessage: "Vous n'avez pas les droits pour accéder aux étapes",
+                statusCode: 403,
+            });
+        } catch (error) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des étapes',
+                statusCode: error instanceof AppError ? error.statusCode : 500
             });
         }
     }
