@@ -1,6 +1,6 @@
 import React from "react";
 import { useAccountsData } from "./accounts.data";
-import "./accounts.style.css";
+import "../../common/components/table/Table.style.css";
 import { RoleEnum } from "../../common/enum/RolesEnum";
 
 export default function Accounts() {

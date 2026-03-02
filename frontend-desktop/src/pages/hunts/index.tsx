@@ -8,6 +8,7 @@
 import { use, useEffect, useState } from "react";
 import { getHuntsByCulturalCenter } from "../../api/services/hunt.api";
 import Table from "../../common/components/table/Table";
+import "../../common/components/table/Table.style.css";
 
 // export default function Home() {
 //   const {
@@ -97,11 +98,12 @@ export default function Hunts() {
   return (
     <>
       <h1>Lootopia V0.0.1 - Hunt management</h1>
-      <Table
-        data={hunts}
-        columns={huntsColumns}
-        onRowSelect={(rows) => setSelectedHuntsRows(rows)}
-      />
+      <h2>Table des chasses</h2>
+        <Table
+          data={hunts}
+          columns={huntsColumns}
+          onRowSelect={(rows) => setSelectedHuntsRows(rows)}
+        />
     </>
   );
 }
