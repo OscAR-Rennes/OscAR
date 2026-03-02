@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import Table from "../../common/components/table/Table";
-import { getStepsByCulturalCenter } from "../../api/services/step.api";
-import "../../common/components/table/Table.style.css";
+import Table from "../../../common/components/table/Table";
+import { getStepsByCulturalCenter } from "../../../api/services/step.api";
+import "../../../common/components/table/Table.style.css";
+import { useNavigate } from "react-router-dom";
 
-export default function Steps() {
+export default function StepsList() {
   
   const [steps, setSteps] = useState([]);
   const [selectedStepsRows, setSelectedStepsRows] = useState([]);
+  const navigate = useNavigate();
 
   const stepsColumns = 
     [
@@ -31,6 +33,14 @@ export default function Steps() {
           data={steps}
           columns={stepsColumns}
           onRowSelect={(rows) => setSelectedStepsRows(rows)}
+          renderActionButton={() => (
+              <button 
+              className="table-btn" 
+              onClick={() => navigate("/home/steps/create")}
+              >
+                Créer une étape
+              </button>
+            )}
         />
     </>
   );
