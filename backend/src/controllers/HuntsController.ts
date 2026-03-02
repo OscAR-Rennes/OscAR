@@ -61,13 +61,34 @@ export class HuntsController  {
     try {
       const user = req.user;
       if (!user) {
-        logger.warn("User missing in request for getHuntByCulturalCenter", { route: req.originalUrl });
+        logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
       const hunts = await this.huntsService.getHuntByCulturalCenter(user);
       res.status(200).json(hunts);
     } catch (err) {
       logger.error("Error getting hunts by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async getHuntById(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const id = req.params.id;
+      if (!user) {
+        logger.warn("User missing in request for getting hunt", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+      const hunt = await this.huntsService.getHuntById(user, id)
+      if (!hunt) {
+        logger.warn(`Hunt with id ${id} not found`, { route: req.originalUrl })
+        res.status(404)
+      }
+      logger.info(`Hunt with id ${id} retrieved succesfully`, { route: req.originalUrl })
+      res.status(200).json(hunt)
+    } catch (err) {
+      logger.error("Error getting hunts by id", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
     }
   }

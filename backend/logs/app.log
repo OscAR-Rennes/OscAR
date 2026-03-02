@@ -950,3 +950,91 @@ Unique constraint failed on the fields: (`email`)
 2026-02-26 16:52:50 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
 2026-02-26 16:52:57 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
 2026-02-26 16:52:57 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-26 16:54:06 [INFO] Server is running on port 5000
+2026-02-26 16:54:07 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-26 16:54:07 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-26 16:56:31 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 16:56:31 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 16:56:31 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:56:31 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:56:32 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 16:56:32 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 16:56:36 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:56:36 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:56:42 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:56:42 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:57:01 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:57:01 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:57:05 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 16:57:05 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 16:57:08 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:57:08 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:57:21 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 16:57:21 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 17:02:19 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 17:02:19 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 17:02:20 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 17:02:20 [DEBUG] All users retrieved route=/api/users userId=d7b03e4f-8253-4cad-9633-a3053807ae15 count=22
+2026-02-26 17:02:21 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-26 17:02:21 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=6
+2026-02-27 19:44:21 [INFO] Server is running on port 5000
+2026-02-27 19:44:26 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=6
+2026-02-27 19:44:26 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=6
+2026-02-27 19:49:47 [INFO] Server is running on port 5000
+2026-02-27 19:49:52 [INFO] Server is running on port 5000
+2026-02-27 19:50:13 [INFO] Server is running on port 5000
+2026-02-27 19:50:16 [INFO] Server is running on port 5000
+2026-02-27 19:51:36 [INFO] Server is running on port 5000
+2026-02-27 19:52:42 [INFO] Server is running on port 5000
+2026-02-27 19:53:30 [INFO] Server is running on port 5000
+2026-02-27 19:53:45 [INFO] Server is running on port 5000
+2026-02-27 19:53:55 [INFO] Server is running on port 5000
+2026-02-27 19:54:00 [INFO] Server is running on port 5000
+2026-02-27 19:54:05 [INFO] Server is running on port 5000
+2026-02-27 19:54:14 [INFO] Server is running on port 5000
+2026-02-27 19:54:16 [INFO] Server is running on port 5000
+2026-02-27 19:56:07 [INFO] Server is running on port 5000
+2026-02-27 19:56:36 [INFO] Server is running on port 5000
+2026-02-27 20:03:14 [INFO] Server is running on port 5000
+2026-02-27 20:03:21 [INFO] Server is running on port 5000
+2026-02-27 20:03:26 [INFO] Server is running on port 5000
+2026-02-27 20:03:31 [INFO] Server is running on port 5000
+2026-02-27 20:03:39 [INFO] Server is running on port 5000
+2026-02-27 20:03:41 [INFO] Server is running on port 5000
+2026-02-27 20:03:44 [INFO] Server is running on port 5000
+2026-02-27 20:04:12 [INFO] Server is running on port 5000
+2026-02-27 20:04:51 [INFO] Server is running on port 5000
+2026-02-27 20:04:56 [INFO] Server is running on port 5000
+2026-02-27 20:05:31 [INFO] Server is running on port 5000
+2026-02-27 20:06:25 [INFO] Server is running on port 5000
+2026-02-27 20:06:35 [INFO] Server is running on port 5000
+2026-02-27 20:06:58 [INFO] Server is running on port 5000
+2026-02-27 20:07:13 [INFO] Server is running on port 5000
+2026-02-27 20:07:31 [INFO] Server is running on port 5000
+2026-02-27 20:09:00 [INFO] Server is running on port 5000
+2026-02-27 20:09:06 [INFO] Server is running on port 5000
+2026-02-27 20:09:58 [INFO] Server is running on port 5000
+2026-02-27 20:10:18 [INFO] Server is running on port 5000
+2026-02-27 20:10:40 [INFO] Server is running on port 5000
+2026-02-27 20:10:52 [INFO] Server is running on port 5000
+2026-02-27 20:11:13 [INFO] Server is running on port 5000
+2026-02-27 20:11:56 [INFO] Server is running on port 5000
+2026-02-27 20:12:51 [INFO] Server is running on port 5000
+2026-02-27 20:12:55 [INFO] Server is running on port 5000
+2026-02-27 20:14:23 [INFO] Server is running on port 5000
+2026-02-27 20:14:49 [INFO] Server is running on port 5000
+2026-02-27 20:15:05 [INFO] Server is running on port 5000
+2026-02-27 20:17:02 [INFO] Server is running on port 5000
+2026-02-27 20:21:37 [INFO] Server is running on port 5000
+2026-02-27 20:21:45 [INFO] Server is running on port 5000
+2026-02-27 20:22:12 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-02-27 20:22:12 [INFO] User authenticated route=/api/auth/login/web userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-02-27 20:22:18 [ERROR] Error getting hunts by id route=/api/hunt/getbyid/12 errorMessage=Erreur lors de la récupération des chasses errorStack=AppError: Erreur lors de la récupération des chasses
+    at HuntServiceImpl.getHuntById (/app/src/services/impl/HuntServiceImpl.ts:137:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async HuntsController.getHuntById (/app/src/controllers/HuntsController.ts:83:20)
+2026-02-27 20:22:19 [ERROR] Error getting hunts by id route=/api/hunt/getbyid/12 errorMessage=Erreur lors de la récupération des chasses errorStack=AppError: Erreur lors de la récupération des chasses
+    at HuntServiceImpl.getHuntById (/app/src/services/impl/HuntServiceImpl.ts:137:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async HuntsController.getHuntById (/app/src/controllers/HuntsController.ts:83:20)
+2026-02-27 20:26:49 [INFO] Hunt with id 85efc64a-1dd9-451e-a597-0477f13269d8 retrieved succesfully route=/api/hunt/getbyid/85efc64a-1dd9-451e-a597-0477f13269d8

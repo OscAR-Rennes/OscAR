@@ -1,4 +1,4 @@
-export interface GetAllStepsResponseDTO {
+export interface LightStepDTO {
     id: string
     title: string;
     description: string;

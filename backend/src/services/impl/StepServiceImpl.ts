@@ -9,8 +9,7 @@ import { prisma } from "../../common-lib/config/prismaClient.js";
 import { IndexServiceImpl } from "./IndexServiceImpl.js";
 import logger from "../../common-lib/utils/logger.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
-import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
-import { GetAllStepsResponseDTO } from "../../common-lib/dto/step/GetAllStepResponseDTO.js";
+import { LightStepDTO } from "../../common-lib/dto/step/LightStepDTO.js";
 
 const indexServiceImpl = new IndexServiceImpl();
 const stepRepository = new StepRepository();
@@ -67,7 +66,7 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepsByCulturalCenter(user: AuthResponseDTO): Promise<GetAllStepsResponseDTO[]> {
+    async getStepsByCulturalCenter(user: AuthResponseDTO): Promise<LightStepDTO[]> {
         try {
             if (user.rights.includes('ADMIN')) {
                 return (await stepRepository.getAll()).map(stepMapper.toLightDTO);

@@ -81,4 +81,11 @@ huntsRoutes.get(
     (req, res, next) => huntsController.getHuntByCulturalCenter(req, res, next)
 );
 
+huntsRoutes.get(
+    "/hunt/getbyid/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => huntsController.getHuntById(req, res, next)
+)
+
 export default huntsRoutes;
