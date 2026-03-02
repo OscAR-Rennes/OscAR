@@ -3,7 +3,6 @@ import Table from "../../common/components/table/Table";
 import { useAuthStore } from "../../common/store/authStore";
 import { useUsersnData } from "./culturalcenter.data";
 
-
 export default function CulturalCenters() {
 
   const {
@@ -28,15 +27,18 @@ export default function CulturalCenters() {
       { isAdmin && (
         <>
           <h2>Table centre culturels</h2>
-          <button
-            onClick={handleActivateDeactivateCulturalCenters}
-          >
-            Désactiver / Réactiver
-          </button>
           <Table
             data={culturalCenters}
             columns={culturalCentersColumns}
             onRowSelect={(rows) => setSelectedCulturalCenterssRows(rows)}
+            renderActionButton={() => (
+              <button
+                className="table-btn"
+                onClick={handleActivateDeactivateCulturalCenters}
+              >
+                Désactiver / Réactiver
+              </button>
+            )}
           />
         </>
       )}

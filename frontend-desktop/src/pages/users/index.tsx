@@ -27,15 +27,18 @@ export default function Users() {
               ? "Table des utilisateurs"
               : "Table des utilisateurs du centre culturel"}
           </h2>          
-          <button
-            onClick={handleActivateDeactivateUsers}
-          >
-            Désactiver / Réactiver
-          </button>
           <Table
             data={users}
             columns={userColumns}
-            onRowSelect={(rows) => setSelectedUsersRows(rows)}
+            onRowSelect={setSelectedUsersRows}
+            renderActionButton={() => (
+              <button 
+              className="table-btn" 
+              onClick={handleActivateDeactivateUsers}
+              >
+                Désactiver / Réactiver
+              </button>
+            )}
           />
         </>
       )}

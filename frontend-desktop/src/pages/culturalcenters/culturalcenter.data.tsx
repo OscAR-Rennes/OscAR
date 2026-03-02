@@ -4,6 +4,7 @@ import { RoleEnum } from "../../common/enum/RolesEnum";
 import { activateDeactivateCulturalCenter, getAllCulturalCenters } from "../../api/services/culturalcenter.api";
 import { activateDeactivateUsers, getAllUsers, getUsersByCulturalCenter } from "../../api/services/users.api";
 import { useAuthStore } from "../../common/store/authStore";
+import "../../common/components/table/Table.style.css";
 
 export function useUsersnData() {
 
