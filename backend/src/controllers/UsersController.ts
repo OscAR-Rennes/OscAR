@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UsersServiceImpl } from "../services/impl/UsersServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { RoleEnum } from "../common-lib/enum/roleEnum.js";
 
 export class UsersController  {
 
@@ -36,13 +37,20 @@ export class UsersController  {
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
       const culturalcenter_id = req.user?.id_cultural_center;
-      if (!culturalcenter_id) {
+      if (!culturalcenter_id && !req.user?.rights.includes(RoleEnum.ADMIN)) {
         logger.warn("User's cultural center ID missing", { route: req.originalUrl, userId: req.user?.id });
         throw new Error("Centre culturel de l'utilisateur introuvable");
       }
-      const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id)
-      logger.debug("Users retrieved by cultural center", { route: req.originalUrl, userId: req.user?.id, count: users.length });
-      res.status(201).json(users)
+      if (culturalcenter_id) {
+        const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id)
+        logger.debug("Users retrieved by cultural center", { route: req.originalUrl, userId: req.user?.id, count: users.length });
+        res.status(200).json(users)
+      }
+      if (req.user?.rights.includes(RoleEnum.ADMIN)) {
+        const users = await this.usersService.getAllUsers();
+        logger.debug("All users retrieved for admin", { route: req.originalUrl, userId: req.user?.id, count: users.length });
+        res.status(200).json(users)
+      }
     } catch (err) {
       logger.error("Error getting all users by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err)

@@ -1,14 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { getAllDifficulty } from "../../api/services/difficulty.api";
-import { addIndex, getAllIndexByHunt } from "../../api/services/index.api";
-import { addHunt, getHuntsByCulturalCenter } from "../../api/services/hunt.api";
-import { addStep } from "../../api/services/step.api";
-import { CreateHuntDto } from "../../api/models/hunts/AddHuntDto";
-import { CreateIndexDto } from "../../api/models/index/AddIndexDto";
-import { CreateStepDto } from "../../api/models/steps/AddStepDto";
+import { addIndex, getAllIndexByHunt } from "../../../api/services/index.api";
+import { getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
+import { addStep } from "../../../api/services/step.api";
+import { CreateIndexDto } from "../../../api/models/index/AddIndexDto";
+import { CreateStepDto } from "../../../api/models/steps/AddStepDto";
 
-export function useHomeData() {
-  const [difficulties, setDifficulties] = useState([]);
+export function useStepsData() {
   const [hunts, setHunts] = useState([]);
   const [selectedHuntId, setSelectedHuntId] = useState(null);
   const [indexesForHunt, setIndexesForHunt] = useState([]);
@@ -16,8 +13,6 @@ export function useHomeData() {
   // Fetch difficulties + hunts au chargement
   useEffect(() => {
     const fetchData = async () => {
-      const diff = await getAllDifficulty();
-      setDifficulties(diff);
       refreshHunts();
     };
     fetchData();
@@ -41,21 +36,6 @@ export function useHomeData() {
   };
 
   // Champs des formulaires
-  const addHuntFields = useMemo(() => [
-    { name: "title", label: "Titre de la chasse", type: "text", required: true },
-    { name: "description", label: "Description de la chasse", type: "text", required: true },
-    { name: "points", label: "Points de la chasse", type: "number", required: true },
-    { name: "latitude", label: "Latitude", type: "number", required: true },
-    { name: "longitude", label: "Longitude", type: "number", required: true },
-    { name: "picture_path", label: "Image", type: "text", required: false },
-    {
-      name: "difficulty_id",
-      label: "Difficulté",
-      type: "select",
-      required: true,
-      options: difficulties.map(d => ({ label: d.name, value: d.id }))
-    }
-  ], [difficulties]);
 
   const addStepFields = useMemo(() => [
     { name: "title", label: "Titre", type: "text", required: true },
@@ -93,11 +73,6 @@ export function useHomeData() {
   ], [hunts]);
 
   // Handlers
-  const handleAddHunt = async (data: CreateHuntDto) => {
-    const hunt =await addHunt(data);
-    console.log("Chasse créée:", hunt);
-    await refreshHunts();
-  };
 
   const handleAddStep = async (data: CreateStepDto) => {
     const step = await addStep(data);
@@ -110,17 +85,14 @@ export function useHomeData() {
   };
 
   return {
-    difficulties,
     hunts,
     indexesForHunt,
     selectedHuntId,
     setSelectedHuntId,
 
-    addHuntFields,
     addStepFields,
     addIndexFields,
 
-    handleAddHunt,
     handleAddStep,
     handleAddIndex
   };

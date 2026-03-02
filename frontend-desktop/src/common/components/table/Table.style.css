@@ -1,0 +1,91 @@
+.table-footer select {
+  font-size: 0.94rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid #bdbdbd;
+  background: #fff;
+  color: #444;
+  margin: 0 0.25rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.table-footer select:focus {
+  border: 1.5px solid #4953d3;
+}
+.table-footer span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.table-row-count-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+.table-row-count {
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  padding-left: 1rem;
+}
+.table-row-count-wrapper > div {
+  margin-right: 1rem;
+}
+
+.table-footer {
+  margin-top: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.125rem;
+  font-size: 0.94rem;
+  color: #444;
+  padding-bottom: 0.75rem;
+}
+
+.table-btn {
+  min-width: 5.6rem;
+  font-size: 0.94rem;
+  padding: 0.44rem 1.125rem;
+  border-radius: 0.25rem;
+  border: none;
+  background: #4953d3;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.table-btn:disabled {
+  background: #bdbdbd;
+  color: #fff;
+  cursor: not-allowed;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+}
+
+table input[type="checkbox"] {
+  width: 1.3rem;
+  height: 1.3rem;
+  accent-color: #4953d3;
+  border-radius: 0.5rem;
+  border: 1.5px solid #4953d3;
+  background: #ffffff;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 1rem;
+}
+
+table input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 2px #4953d3aa;
+  outline: none;
+  border: 1.5px solid #2d3691;
+}

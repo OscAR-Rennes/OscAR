@@ -34,4 +34,37 @@ export class StepRepository {
     return stepRecords;
   }
 
+  async getAll(): Promise<steps[]> {
+      const steps = await prisma.steps.findMany();
+      return steps;
+  }
+
+  async getByHuntCreator(userId: string) {
+    return prisma.steps.findMany({
+      where: {
+        hunts: {
+          creator_id: userId
+        }
+      },
+      include: {
+        hunts: true,
+        index: true
+      }
+    });
+  }
+
+  async getByCulturalCenter(culturalCenterId: string) {
+    return prisma.steps.findMany({
+      where: {
+        hunts: {
+          cultural_center_id: culturalCenterId
+        }
+      },
+      include: {
+        hunts: true,
+        index: true
+      }
+    });
+  }
+
 }

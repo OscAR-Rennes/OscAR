@@ -4,12 +4,15 @@ import { CreateHuntResponseDTO } from "../../common-lib/dto/hunt/CreateHuntRespo
 import { huntMapper } from "../../mapper/HuntsMapper.js";
 import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
 import { AppError } from "../../common-lib/errors/AppError.js";
-import { GetAllHuntResponseDTO } from "../../common-lib/dto/hunt/GetAllHuntResponseDTO.js";
+import { LightHuntDTO } from "../../common-lib/dto/hunt/LightHuntDTO.js";
 import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import logger from "../../common-lib/utils/logger.js";
+import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
+import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 
 const huntRepository = new HuntRepository();
+const userRpository = new UserRepository();
 
 export class HuntServiceImpl implements HuntService {
 
@@ -30,7 +33,7 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getAllHunt(): Promise<GetAllHuntResponseDTO[]> {
+    async getAllHunt(): Promise<LightHuntDTO[]> {
         try {
             const hunts = await huntRepository.getAll();
             return hunts.map(huntMapper.toLightDTO);
@@ -75,7 +78,7 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntByCulturalCenter(user: AuthResponseDTO): Promise<GetAllHuntResponseDTO[]> {
+    async getHuntByCulturalCenter(user: AuthResponseDTO): Promise<LightHuntDTO[]> {
         try {
             if (user.rights.includes('ADMIN')) {
                 return (await huntRepository.getAll()).map(huntMapper.toLightDTO);
@@ -104,25 +107,37 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    private async resolveHuntsByRights(user: AuthResponseDTO) {
-        if (user.rights.includes('ADMIN')) {
-            return huntRepository.getAll();
-        }
+    async getHuntById(user: AuthResponseDTO, id: string): Promise<LightHuntDTO | null> {
+        try {
+            const hunt = await huntRepository.getByID(id)
+            if (!hunt) {
+                return null
+            }
+            if (user.rights.includes(RoleEnum.ADMIN)) {
+                return huntMapper.toLightDTO(hunt)
+            }
+            if (user.rights.includes(RoleEnum.CULTURAL_CENTER_MANAGER)) {
+                const creator = await userRpository.findById(hunt.id)
+                if (creator?.id_cultural_center === user.id_cultural_center) {
+                    return huntMapper.toLightDTO(hunt)
+                }
+            }
+            if (user.rights.includes(RoleEnum.HUNT_MANAGER) && hunt.creator_id === user.id) {
+                return huntMapper.toLightDTO(hunt)
+            }
+            throw new AppError({
+                userMessage: "Vous n'avez pas les droits pour accéder à cette chasse",
+                statusCode: 403,
+            });
 
-        if (user.rights.includes('HUNT_MANAGER')) {
-            return huntRepository.getByCreator(user.id);
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des chasses',
+                statusCode: error instanceof AppError ? error.statusCode : 500
+            });
         }
-
-        if (
-            user.rights.includes('CULTURAL_CENTER_MANAGER') &&
-            user.id_cultural_center
-        ) {
-            return huntRepository.getByCulturalCenter(user.id_cultural_center);
-        }
-
-        throw new AppError({
-            userMessage: "Vous n'avez pas les droits pour accéder aux chasses",
-            statusCode: 403,
-        });
     }
 }
