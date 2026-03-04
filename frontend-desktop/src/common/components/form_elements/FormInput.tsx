@@ -1,0 +1,38 @@
+import { FormField } from "./Components/FormField";
+import { FormItem } from "./Components/FormItem";
+import { FormLabel } from "./Components/FormLabel";
+import { FormError } from "./Components/FormError";
+import { InputNumber } from "./UI/InputNumber";
+import { Input } from "./UI/Input";
+
+export function FormInput({
+  name,
+  label,
+  required = false,
+  type = "text",
+}) {
+
+    const rules = required
+        ? { required: "Ce champ est obligatoire" }
+        : {};
+
+    return (
+        <FormField
+        name={name}
+        rules={rules}
+        render={({ field }) => (
+            <FormItem>
+            <FormLabel>{label}</FormLabel>
+
+            {type === "number" ? (
+                <InputNumber {...field} />
+            ) : (
+                <Input {...field} />
+            )}
+
+            <FormError name={name} />
+            </FormItem>
+        )}
+        />
+    );
+}
