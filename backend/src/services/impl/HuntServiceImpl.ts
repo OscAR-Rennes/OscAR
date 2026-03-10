@@ -12,6 +12,7 @@ import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 import { FullHuntDTO } from "../../common-lib/dto/hunt/FullHuntDTO.js";
 import { hunts } from "@prisma/client";
+import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 
 const huntRepository = new HuntRepository();
 const userRepository = new UserRepository();
@@ -120,7 +121,7 @@ export class HuntServiceImpl implements HuntService {
             return null;
             }
 
-            await this.assertUserCanAccessHunt(user, hunt);
+            await assertUserCanAccessHunt(user, hunt, userRepository);
 
             return huntMapper.toFullResponseDto(hunt);
 
@@ -132,35 +133,5 @@ export class HuntServiceImpl implements HuntService {
             statusCode: 500,
             });
         }
-    }
-    
-    private async assertUserCanAccessHunt(
-    user: AuthResponseDTO,
-    hunt: hunts
-    ): Promise<void> {
-
-    if (user.rights.includes(RoleEnum.ADMIN)) {
-        return;
-    }
-
-    if (user.rights.includes(RoleEnum.CULTURAL_CENTER_MANAGER)) {
-        const creator = await userRepository.findById(hunt.creator_id);
-
-        if (creator?.id_cultural_center === user.id_cultural_center) {
-        return;
-        }
-    }
-
-    if (
-        user.rights.includes(RoleEnum.HUNT_MANAGER) &&
-        hunt.creator_id === user.id
-    ) {
-        return;
-    }
-
-    throw new AppError({
-        userMessage: "Vous n'avez pas les droits pour accéder à cette chasse",
-        statusCode: 403,
-    });
     }
 }

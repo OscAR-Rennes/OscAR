@@ -1199,3 +1199,51 @@ Unique constraint failed on the fields: (`email`)
 2026-03-02 19:14:24 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=5
 2026-03-02 19:14:24 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=5
 2026-03-02 19:14:24 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=5
+2026-03-10 19:51:14 [INFO] Server is running on port 5000
+2026-03-10 19:51:48 [INFO] Server is running on port 5000
+2026-03-10 19:53:46 [INFO] Server is running on port 5000
+2026-03-10 19:54:33 [INFO] Server is running on port 5000
+2026-03-10 19:54:55 [INFO] Server is running on port 5000
+2026-03-10 19:54:59 [INFO] Server is running on port 5000
+2026-03-10 19:55:03 [INFO] Server is running on port 5000
+2026-03-10 19:55:10 [INFO] Server is running on port 5000
+2026-03-10 19:56:18 [INFO] Server is running on port 5000
+2026-03-10 19:56:28 [INFO] Server is running on port 5000
+2026-03-10 19:57:42 [INFO] Server is running on port 5000
+2026-03-10 19:58:01 [INFO] Server is running on port 5000
+2026-03-10 19:58:12 [INFO] Server is running on port 5000
+2026-03-10 19:58:56 [INFO] Server is running on port 5000
+2026-03-10 19:59:07 [INFO] Server is running on port 5000
+2026-03-10 19:59:18 [INFO] Server is running on port 5000
+2026-03-10 20:00:27 [INFO] Server is running on port 5000
+2026-03-10 20:01:30 [INFO] Server is running on port 5000
+2026-03-10 20:01:57 [INFO] Server is running on port 5000
+2026-03-10 20:03:23 [INFO] Server is running on port 5000
+2026-03-10 20:03:25 [INFO] Server is running on port 5000
+2026-03-10 20:03:49 [INFO] Server is running on port 5000
+2026-03-10 20:04:34 [INFO] Server is running on port 5000
+2026-03-10 20:04:56 [INFO] Server is running on port 5000
+2026-03-10 20:05:31 [INFO] Server is running on port 5000
+2026-03-10 20:05:34 [INFO] Server is running on port 5000
+2026-03-10 20:05:59 [INFO] Server is running on port 5000
+2026-03-10 20:06:23 [INFO] Server is running on port 5000
+2026-03-10 20:06:30 [INFO] Server is running on port 5000
+2026-03-10 20:06:35 [INFO] Server is running on port 5000
+2026-03-10 20:06:39 [INFO] Server is running on port 5000
+2026-03-10 20:07:01 [INFO] Server is running on port 5000
+2026-03-10 20:07:36 [INFO] Server is running on port 5000
+2026-03-10 20:07:39 [INFO] Server is running on port 5000
+2026-03-10 20:08:36 [INFO] Server is running on port 5000
+2026-03-10 20:08:38 [INFO] Server is running on port 5000
+2026-03-10 20:08:40 [INFO] Server is running on port 5000
+2026-03-10 20:17:37 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=6
+2026-03-10 20:17:37 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=6
+2026-03-10 20:17:57 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-03-10 20:17:57 [INFO] User authenticated route=/api/auth/login/web userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-03-10 20:18:19 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-03-10 20:18:19 [DEBUG] Get current user route=/api/auth/me userId=d7b03e4f-8253-4cad-9633-a3053807ae15
+2026-03-10 20:18:19 [WARN] Hunt with id 2788e83d-9652-425c-86df-03ef2f83c8ec not found route=/api/hunt/getbyid/2788e83d-9652-425c-86df-03ef2f83c8ec
+2026-03-10 20:18:19 [INFO] Hunt with id 2788e83d-9652-425c-86df-03ef2f83c8ec retrieved succesfully route=/api/hunt/getbyid/2788e83d-9652-425c-86df-03ef2f83c8ec
+2026-03-10 20:18:19 [WARN] Hunt with id 2788e83d-9652-425c-86df-03ef2f83c8ec not found route=/api/hunt/getbyid/2788e83d-9652-425c-86df-03ef2f83c8ec
+2026-03-10 20:18:19 [INFO] Hunt with id 2788e83d-9652-425c-86df-03ef2f83c8ec retrieved succesfully route=/api/hunt/getbyid/2788e83d-9652-425c-86df-03ef2f83c8ec
+2026-03-10 20:18:49 [INFO] Step with id 2788e83d-9652-425c-86df-03ef2f83c8ec retrieved succesfully route=/api/step/getById/2788e83d-9652-425c-86df-03ef2f83c8ec

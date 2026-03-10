@@ -10,10 +10,14 @@ import { IndexServiceImpl } from "./IndexServiceImpl.js";
 import logger from "../../common-lib/utils/logger.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { LightStepDTO } from "../../common-lib/dto/step/LightStepDTO.js";
+import { FullStepDTO } from "../../common-lib/dto/step/FullStepDTO.js";
+import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
+import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 
 const indexServiceImpl = new IndexServiceImpl();
 const stepRepository = new StepRepository();
 const indexRepository = new IndexRepository();
+const userRepository = new UserRepository();
 
 export class StepServiceImpl implements StepService {
 
@@ -94,4 +98,31 @@ export class StepServiceImpl implements StepService {
             });
         }
     }
+
+    async getStepById(
+    user: AuthResponseDTO,
+    id: string
+    ): Promise<FullStepDTO | null> {
+    try {
+        const step = await stepRepository.getById(id);
+
+        if (!step) {
+        return null;
+        }
+
+        await assertUserCanAccessHunt(user, step.hunts, userRepository);
+
+        return stepMapper.toFullResponseDto(step);
+
+    } catch (error) {
+        if (error instanceof AppError) throw error;
+
+        throw new AppError({
+        userMessage: "Erreur lors de la récupération de l'étape",
+        statusCode: 500,
+        });
+    }
+    }
+
+    
 }

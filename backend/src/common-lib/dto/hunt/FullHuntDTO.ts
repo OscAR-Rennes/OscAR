@@ -1,4 +1,3 @@
-import { LightStepDTO } from "../step/LightStepDTO.js";
 
 export interface FullHuntDTO {
   id: string;
