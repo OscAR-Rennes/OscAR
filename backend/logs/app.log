@@ -1247,3 +1247,7 @@ Unique constraint failed on the fields: (`email`)
 2026-03-10 20:18:19 [WARN] Hunt with id 2788e83d-9652-425c-86df-03ef2f83c8ec not found route=/api/hunt/getbyid/2788e83d-9652-425c-86df-03ef2f83c8ec
 2026-03-10 20:18:19 [INFO] Hunt with id 2788e83d-9652-425c-86df-03ef2f83c8ec retrieved succesfully route=/api/hunt/getbyid/2788e83d-9652-425c-86df-03ef2f83c8ec
 2026-03-10 20:18:49 [INFO] Step with id 2788e83d-9652-425c-86df-03ef2f83c8ec retrieved succesfully route=/api/step/getById/2788e83d-9652-425c-86df-03ef2f83c8ec
+2026-03-14 15:30:57 [INFO] Server is running on port 5000
+2026-03-14 15:31:09 [INFO] Server is running on port 5000
+2026-03-14 15:31:17 [INFO] Server is running on port 5000
+2026-03-14 15:31:27 [INFO] Server is running on port 5000

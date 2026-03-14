@@ -2,7 +2,6 @@ import { hunts } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { CreateHuntRequestDTO } from "../dto/hunt/CreateHuntRequestDTO.js";
 import { EditHuntRequestDTO } from "../dto/hunt/EditHuntRequestDTO.js";
-import { HuntWithRelations } from "../../types/express.js";
 
 export class HuntRepository {
 
@@ -18,7 +17,7 @@ export class HuntRepository {
     return hunts;
   }
 
-  async getByID(id: string): Promise<HuntWithRelations | null> {
+  async getByID(id: string) {
     return prisma.hunts.findUnique({
       where: { id },
       include: {
