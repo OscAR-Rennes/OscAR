@@ -1,30 +1,18 @@
-import { useEffect, useState } from "react";
-import Table from "../../../common/components/table/Table";
-import { getStepsByCulturalCenter } from "../../../api/services/step.api";
-import "../../../common/components/table/Table.style.css";
 import { useNavigate } from "react-router-dom";
+import Table from "../../../common/components/table/Table";
+import "../../../common/components/table/Table.style.css";
+import { useStepsData } from "./steps.data";
 
 export default function StepsList() {
-  
-  const [steps, setSteps] = useState([]);
-  const [selectedStepsRows, setSelectedStepsRows] = useState([]);
+
+  const {
+    steps,
+    stepsColumns,
+    setSelectedStepsRows,
+  } = useStepsData();
+
   const navigate = useNavigate();
 
-  const stepsColumns = 
-    [
-        { key: "title", label: "Nom de l'étape" },
-        { key: "description", label: "Description"},
-    ]
-
-  useEffect(() => {
-    const fetchSteps = async () => {
-      const stepsData = await getStepsByCulturalCenter();
-      setSteps(stepsData);
-    };
-    fetchSteps();
-  },[]);
-
-  
   return (
     <>
       <h1>Lootopia V0.0.1 - Steps management</h1>

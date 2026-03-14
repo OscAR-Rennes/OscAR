@@ -1,30 +1,20 @@
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
 import Table from "../../../common/components/table/Table";
 import "../../../common/components/table/Table.style.css";
 import { useNavigate } from "react-router-dom";
+import { useHuntsData } from "./hunts.data";
 
 export default function HuntsList() {
-  
-  const [hunts, setHunts] = useState([]);
-  const [selectedHuntsRows, setSelectedHuntsRows] = useState([]);
 
   const navigate = useNavigate();
 
-  const huntsColumns = 
-    [
-        { key: "title", label: "Nom de la chasse" },
-        { key: "description", label: "Description"},
-    ]
-
-  useEffect(() => {
-    const fetchHunts = async () => {
-      const huntsData = await getHuntsByCulturalCenter();
-      setHunts(huntsData);
-    };
-    fetchHunts();
-  },[]);
+  const {
+    hunts,
+    huntsColumns,
+    setSelectedHuntsRows,
+  } = useHuntsData();
 
   
   return (

@@ -17,6 +17,8 @@ import CulturalCenters from "./pages/culturalcenters";
 import StepsList from "./pages/steps/list";
 import HuntsCreation from "./pages/hunts/create";
 import StepsCreation from "./pages/steps/create";
+import HuntConsultation from "./pages/hunts/consult";
+import StepConsultation from "./pages/steps/consult";
 
 export default function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -51,10 +53,10 @@ export default function App() {
           <Route path="/home/settings" element={<div>Paramètres</div>} />
           <Route path="/home/cultural-center" element={<CulturalCenters />} />
           <Route path="/home/hunts/create" element={<HuntsCreation />} />
-          <Route path="/home/hunts/:id" element={<div>Détails de la chasse</div>} />
+          <Route path="/home/hunts/:id" element={<HuntConsultation />} />
           <Route path="/home/hunts/:id/edit" element={<div>Modifier la chasse</div>} />
           <Route path="/home/steps/create" element={<StepsCreation />} />
-          <Route path="/home/steps/:id" element={<div>Détails de l'étape</div>} />
+          <Route path="/home/steps/:id" element={<StepConsultation />} />
           <Route path="/home/steps/:id/edit" element={<div>Modifier l'étape</div>} />
         </Route>
 
