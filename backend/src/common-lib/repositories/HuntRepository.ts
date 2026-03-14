@@ -17,11 +17,37 @@ export class HuntRepository {
     return hunts;
   }
 
-  async getByID(id: string): Promise<hunts | null> {
-    const hunt = await prisma.hunts.findUnique({
+  async getByID(id: string) {
+    return prisma.hunts.findUnique({
       where: { id },
+      include: {
+        users: {
+          select: {
+            id: true,
+            username: true,
+            id_cultural_center: true,
+          },
+        },
+        cultural_centers: {
+          select : {
+            id: true,
+            name: true
+          }
+        },
+        difficulty: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        steps: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
     });
-    return hunt;
   }
 
   async edit(huntData: EditHuntRequestDTO): Promise<hunts> {

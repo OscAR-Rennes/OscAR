@@ -38,4 +38,25 @@ export class StepsController  {
     }
   }
 
+  async getStepById(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const id = req.params.id;
+      if (!user) {
+        logger.warn("User missing in request for getting steps", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+      const step = await this.stepService.getStepById(user, id)
+      if (!step) {
+        logger.warn(`Step with id ${id} not found`, { route: req.originalUrl })
+        res.status(404)
+      }
+      logger.info(`Step with id ${id} retrieved succesfully`, { route: req.originalUrl })
+      res.status(200).json(step)
+    } catch (err) {
+      logger.error("Error getting steps by id", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
 };

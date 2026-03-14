@@ -67,4 +67,24 @@ export class StepRepository {
     });
   }
 
+  async getById(id: string) {
+    return prisma.steps.findUnique({
+      where: { id },
+      include: {
+        hunts: {
+          include: {
+            cultural_centers: true,
+            users: {
+              select: {
+                id: true,
+                username: true
+              }
+            }
+          }
+        },
+        index: true
+      }
+    });
+  }
+
 }

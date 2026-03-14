@@ -45,4 +45,11 @@ stepsRoutes.get(
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => stepsController.getStepsByCulturalCenter(req, res, next)
 );
+
+stepsRoutes.get(
+    "/step/getbyid/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.getStepById(req, res, next)
+)
 export default stepsRoutes;
