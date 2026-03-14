@@ -1199,3 +1199,4 @@ Unique constraint failed on the fields: (`email`)
 2026-03-02 19:14:24 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=5
 2026-03-02 19:14:24 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=5
 2026-03-02 19:14:24 [DEBUG] All cultural centers retrieved route=/api/culturalcenter count=5
+2026-03-10 22:43:17 [INFO] Server is running on port 5000

@@ -24,6 +24,14 @@ export class CulturalCenterRepository  {
      async getAllActive(): Promise<cultural_centers[]> {
         const centers = await prisma.cultural_centers.findMany({
         where: { isActive: true },
+        include: {
+            address: {
+                select: {
+                    longitude: true,
+                    latitude: true,
+                }
+            }
+        }
         });
         return centers;
     }

@@ -1,4 +1,4 @@
-export interface GetAllActiveCulturalCenterResponseDTO {
+export interface CulturalCenterLight {
     id: string;
     name: string;
     address: {

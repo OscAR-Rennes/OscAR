@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { theme } from '../../constants/theme';
@@ -11,9 +11,11 @@ import LanguageButton from '../../components/language-button';
 import mapInitialValues from '../../constants/map-initial-values.json';
 import { Address } from '../../common/dto/IAddress';
 import { CulturalCenter } from '../../common/dto/ICulturalCenter';
+import { CulturalCenterLight } from '../../common/dto/ICulturalCenterLight'
 import { getIconUri } from '../icon-mapping';
 import translations from '../../constants/language-en.json';
 import translationsFr from '../../constants/language-fr.json';
+import { getActiveCulturalCenter } from '../../api/services/culturalcenter.api'
 
 export default function MapsScreen() {
     const { language, setLanguage } = useLanguage();
@@ -25,10 +27,30 @@ export default function MapsScreen() {
     const [isFlatListVisible, setFlatListVisible] = useState<boolean>(false);
     
     const [modalVisible, setModalVisible] = useState<boolean>(false);
-    const [selectedCenter, setSelectedCenter] = useState<CulturalCenter | null>(null);
+    const [selectedCenter, setSelectedCenter] = useState<CulturalCenterLight | null>(null);
+
+    const [lightCulturalCenterData, setLightCultutalCenterData] = useState<CulturalCenterLight[]>([])
 
     const culturalCenters: CulturalCenter[] = culturalCentersData.cultural_centers;
     const addresses: Address[] = culturalCentersData.address;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const culturalCentersData = await getActiveCulturalCenter();
+            setLightCultutalCenterData(culturalCentersData)
+        };
+        fetchData()
+    }, [])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const culturalCenterData = await
+        }
+
+        if (selectedCenter && selectedCenter.id) {
+            fetchData
+        }
+    }, [selectedCenter])
 
     // Handle search input changes
     const handleSearch = (query: string) => {
@@ -46,12 +68,11 @@ export default function MapsScreen() {
     };
 
     // Handle cultural center selection from the list
-    const handleCenterSelect = (center: CulturalCenter) => {
-        const address = addresses.find(addr => addr.id === center.address_id);
-        if (address && mapRef.current) {
+    const handleCenterSelect = (center: CulturalCenterLight) => {
+        if (mapRef.current) {
             mapRef.current.animateToRegion({
-                latitude: address.latitude,
-                longitude: address.longitude,
+                latitude: Number(center.address.latitude),
+                longitude: Number(center.address.longitude),
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01,
             });
@@ -117,13 +138,11 @@ export default function MapsScreen() {
 
                         {/* Map View */}
                         <MapView ref={mapRef} style={{ flex: 1 }} initialRegion={mapInitialValues.initialRegion} >
-                            {culturalCenters.map(center => {
-                                const address = addresses.find(addr => addr.id === center.address_id);
-                                if (!address) return null;
+                            { lightCulturalCenterData.length > 0 && lightCulturalCenterData.map(center => {
                                 return (
                                     <Marker
                                         key={center.id}
-                                        coordinate={{ latitude: address.latitude, longitude: address.longitude }}
+                                        coordinate={{ latitude: Number(center.address.latitude), longitude: Number(center.address.longitude) }}
                                         onPress={() => {
                                             setModalVisible(true);
                                             setSelectedCenter(center);
