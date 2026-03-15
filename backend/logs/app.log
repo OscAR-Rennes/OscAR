@@ -1265,3 +1265,27 @@ Unique constraint failed on the fields: (`email`)
 2026-03-04 19:08:47 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
 2026-03-04 19:09:01 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
 2026-03-04 19:09:01 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:46:19 [INFO] Server is running on port 5000
+2026-03-13 18:46:37 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-13 18:46:37 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-13 18:46:52 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-03-13 18:46:52 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-13 18:46:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:46:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:50:16 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:50:21 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:50:26 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:50:31 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:51:28 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:51:32 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:51:38 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 18:51:43 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 19:30:43 [INFO] Server is running on port 5000
+2026-03-13 19:30:59 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-13 19:30:59 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-13 19:31:01 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 19:31:01 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 19:35:59 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-13 19:35:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 19:35:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-13 19:35:59 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242

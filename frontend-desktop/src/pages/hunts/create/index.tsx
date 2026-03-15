@@ -7,12 +7,22 @@ import { useState } from "react";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+
+const containerStyle = { width: '100%', height: '400px' };
+const center = { lat: 48.8584, lng: 2.2945 };
 
 export default function HuntsCreation() {
   const {
     addHuntFields,
     handleAddHunt,
   } = useHomeData();
+
+  // Google Maps API loader
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyCBC3gboWueiURoFHxsZbo87CqpBC8no2g',
+  });
 
   const [resetHuntForm, setResetHuntForm] = useState(0);
   const [formState, setFormState] = useState({
@@ -30,6 +40,15 @@ export default function HuntsCreation() {
     const { name, value } = e.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleMapClick = (e) => {
+    setLocation({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    });
+  };
+
+  const [location, setLocation] = useState({ lat: '', lng: '' });
 
   return (
     <>
@@ -83,6 +102,16 @@ export default function HuntsCreation() {
           label="Points"
           type="number"
         />
+        <FormInput
+          name="longitude"
+          label="Longitude"
+          type="number"
+        />
+        <FormInput
+          name="latitude"
+          label="Latitude"
+          type="number"
+        />
 
         <FormSelect
           name="difficultyId"
@@ -98,6 +127,23 @@ export default function HuntsCreation() {
           Save
         </Button>
       </Form>
+
+      <div>
+        {isLoaded && (
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={location.lat && location.lng ? { lat: parseFloat(location.lat), lng: parseFloat(location.lng) } : center}
+            zoom={12}
+            onClick={handleMapClick}
+          >
+            {location.lat && location.lng && (
+              <Marker position={{ lat: parseFloat(location.lat), lng: parseFloat(location.lng) }} />
+            )}
+          </GoogleMap>
+        )}
+        <input value={location.lat} placeholder="Latitude" readOnly />
+        <input value={location.lng} placeholder="Longitude" readOnly />
+      </div>
     </>
   );
 }
