@@ -34,4 +34,23 @@ export class IndexController  {
     }
   }
 
+  async deleteIndex(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const id = req.params.id;
+
+      if (!user) {
+        logger.warn("User missing in request for deleting index", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+
+      await this.indexService.deleteIndex(user, id);
+      logger.info(`Index with id ${id} deleted successfully`, { route: req.originalUrl, deletedBy: user.id });
+      res.status(204).send();
+    } catch (err) {
+      logger.error("Error deleting index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
 };

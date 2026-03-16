@@ -13,9 +13,11 @@ import { UserRepository } from "../../common-lib/repositories/UsersRepository.js
 import { FullHuntDTO } from "../../common-lib/dto/hunt/FullHuntDTO.js";
 import { hunts } from "@prisma/client";
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
+import { prisma } from "../../common-lib/config/prismaClient.js";
+import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
+import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
 
 const huntRepository = new HuntRepository();
-const userRepository = new UserRepository();
 
 export class HuntServiceImpl implements HuntService {
 
@@ -115,6 +117,7 @@ export class HuntServiceImpl implements HuntService {
         id: string
         ): Promise<FullHuntDTO | null> {
         try {
+            const userRepository = new UserRepository();
             const hunt = await huntRepository.getByID(id);
 
             if (!hunt) {
@@ -131,6 +134,41 @@ export class HuntServiceImpl implements HuntService {
             throw new AppError({
             userMessage: "Erreur lors de la récupération de la chasse",
             statusCode: 500,
+            });
+        }
+    }
+
+    async deleteHunt(user: AuthResponseDTO, id: string): Promise<void> {
+        try {
+            const userRepository = new UserRepository();
+            const hunt = await huntRepository.getByID(id);
+
+            if (!hunt) {
+                throw new AppError({
+                    userMessage: "Chasse non trouvée",
+                    statusCode: 404,
+                });
+            }
+
+            await assertUserCanAccessHunt(user, hunt, userRepository);
+
+            await prisma.$transaction(async (tx) => {
+                const stepRepository = new StepRepository();
+                const indexRepository = new IndexRepository();
+                await stepRepository.deleteByHuntId(id, tx);
+                await indexRepository.deleteByHuntId(id, tx);
+                await huntRepository.delete(id, tx);
+            });
+
+            logger.info(`Hunt deleted successfully with ID: ${id}`, { huntId: id, deletedBy: user.id });
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
+            throw new AppError({
+                userMessage: "Erreur lors de la suppression de la chasse",
+                statusCode: 500,
             });
         }
     }
