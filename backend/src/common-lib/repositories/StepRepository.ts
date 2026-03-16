@@ -4,43 +4,39 @@ import { CreateStepRequestDTO } from "../dto/step/CreateStepRequestDTO.js";
 
 export class StepRepository {
 
-  private getDb(tx?: Prisma.TransactionClient) {
-    return tx ?? prisma;
-  }
-
-  async create(stepData: CreateStepRequestDTO, tx?: Prisma.TransactionClient): Promise<steps> {
-    const stepRecord = await this.getDb(tx).steps.create({
+  async create(stepData: CreateStepRequestDTO): Promise<steps> {
+    const stepRecord = await prisma.steps.create({
       data: { ...stepData },
     });
     return stepRecord;
   }
 
   async delete(stepId: string, tx?: Prisma.TransactionClient): Promise<void> {
-    await this.getDb(tx).steps.delete({
+    await (tx ?? prisma).steps.delete({
       where: { id: stepId },
     });
   }
 
   async deleteByIndexId(indexId: string, tx?: Prisma.TransactionClient): Promise<void> {
-    await this.getDb(tx).steps.deleteMany({
+    await (tx ?? prisma).steps.deleteMany({
       where: { index_id: indexId },
     });
   }
 
   async deleteByHuntId(huntId: string, tx?: Prisma.TransactionClient): Promise<void> {
-    await this.getDb(tx).steps.deleteMany({
+    await (tx ?? prisma).steps.deleteMany({
       where: { hunt_id: huntId },
     });
   }
 
   async countByIndexId(indexId: string, tx?: Prisma.TransactionClient): Promise<number> {
-    return this.getDb(tx).steps.count({
+    return (tx ?? prisma).steps.count({
       where: { index_id: indexId },
     });
   }
 
-  async getByIdWithHunt(id: string, tx?: Prisma.TransactionClient) {
-    return this.getDb(tx).steps.findUnique({
+  async getByIdWithHunt(id: string) {
+    return prisma.steps.findUnique({
       where: { id },
       include: {
         hunts: true,
@@ -49,7 +45,7 @@ export class StepRepository {
   }
 
   async getStepById(stepId: string): Promise<steps> {
-    const stepRecord = await this.getDb().steps.findUnique({
+    const stepRecord = await prisma.steps.findUnique({
       where: { id: stepId },
     });
     if (!stepRecord) {
@@ -59,19 +55,19 @@ export class StepRepository {
   }
 
   async getStepsByIndexId(indexId: string): Promise<steps[]> {
-    const stepRecords = await this.getDb().steps.findMany({
+    const stepRecords = await prisma.steps.findMany({
       where: { index_id: indexId },
     });
     return stepRecords;
   }
 
   async getAll(): Promise<steps[]> {
-      const steps = await this.getDb().steps.findMany();
+      const steps = await prisma.steps.findMany();
       return steps;
   }
 
   async getByHuntCreator(userId: string) {
-    return this.getDb().steps.findMany({
+    return prisma.steps.findMany({
       where: {
         hunts: {
           creator_id: userId
@@ -85,7 +81,7 @@ export class StepRepository {
   }
 
   async getByCulturalCenter(culturalCenterId: string) {
-    return this.getDb().steps.findMany({
+    return prisma.steps.findMany({
       where: {
         hunts: {
           cultural_center_id: culturalCenterId
@@ -99,7 +95,7 @@ export class StepRepository {
   }
 
   async getById(id: string) {
-    return this.getDb().steps.findUnique({
+    return prisma.steps.findUnique({
       where: { id },
       include: {
         hunts: {

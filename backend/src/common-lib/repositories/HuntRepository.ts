@@ -5,24 +5,20 @@ import { EditHuntRequestDTO } from "../dto/hunt/EditHuntRequestDTO.js";
 
 export class HuntRepository {
 
-  private getDb(tx?: Prisma.TransactionClient) {
-    return tx ?? prisma;
-  }
-
-  async create(huntData: CreateHuntRequestDTO, tx?: Prisma.TransactionClient): Promise<hunts> {
-    const huntRecord = await this.getDb(tx).hunts.create({
+  async create(huntData: CreateHuntRequestDTO): Promise<hunts> {
+    const huntRecord = await prisma.hunts.create({
       data: { ...huntData },
     });
     return huntRecord;
   }
 
   async getAll(): Promise<hunts[]> {
-    const hunts = await this.getDb().hunts.findMany();
+    const hunts = await prisma.hunts.findMany();
     return hunts;
   }
 
-  async getByID(id: string, tx?: Prisma.TransactionClient) {
-    return this.getDb(tx).hunts.findUnique({
+  async getByID(id: string) {
+    return prisma.hunts.findUnique({
       where: { id },
       include: {
         users: {
@@ -54,14 +50,14 @@ export class HuntRepository {
     });
   }
 
-  async getByIdRaw(id: string, tx?: Prisma.TransactionClient) {
-    return this.getDb(tx).hunts.findUnique({
+  async getByIdRaw(id: string) {
+    return prisma.hunts.findUnique({
       where: { id },
     });
   }
 
-  async edit(huntData: EditHuntRequestDTO, tx?: Prisma.TransactionClient): Promise<hunts> {
-    const huntRecord = await this.getDb(tx).hunts.update({
+  async edit(huntData: EditHuntRequestDTO): Promise<hunts> {
+    const huntRecord = await prisma.hunts.update({
       where: { id: huntData.id },
       data: { ...huntData },
     });
@@ -69,27 +65,27 @@ export class HuntRepository {
   }
 
   async updateIsActive(id: string, isActive: boolean, tx?: Prisma.TransactionClient): Promise<hunts> {
-    return this.getDb(tx).hunts.update({
+    return (tx ?? prisma).hunts.update({
       where: { id },
       data: { isactive: isActive },
     });
   }
 
   async delete(id: string, tx?: Prisma.TransactionClient): Promise<void> {
-    await this.getDb(tx).hunts.delete({
+    await (tx ?? prisma).hunts.delete({
       where: { id },
     });
   }
 
   async getByCulturalCenter(culturalcenter_id: string): Promise<hunts[]> {
-    const hunts = await this.getDb().hunts.findMany({
+    const hunts = await prisma.hunts.findMany({
       where: { cultural_center_id: culturalcenter_id },
     });
     return hunts;
   }
 
   async getByCreator(creator_id: string): Promise<hunts[]> {
-    const hunts = await this.getDb().hunts.findMany({
+    const hunts = await prisma.hunts.findMany({
       where: { creator_id },
     });
     return hunts;
