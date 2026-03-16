@@ -10,5 +10,5 @@ export interface HuntService {
   getAllHunt(): Promise<LightHuntDTO[]>;
   getHuntByCulturalCenter(user: AuthResponseDTO): Promise<LightHuntDTO[]>;
   editHunt(huntData: EditHuntRequestDTO, userId: string, userRights: string[]): Promise<EditHuntResponseDTO>;
-  getHuntById(user: AuthResponseDTO, id: string): Promise<LightHuntDTO | null>;
+  getHuntById(id: string): Promise<LightHuntDTO | null>;
 }

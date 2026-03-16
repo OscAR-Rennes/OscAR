@@ -74,13 +74,8 @@ export class HuntsController  {
 
   async getHuntById(req: Request, res: Response, next: any) {
     try {
-      const user = req.user;
       const id = req.params.id;
-      if (!user) {
-        logger.warn("User missing in request for getting hunt", { route: req.originalUrl });
-        throw new Error("User not found in request");
-      }
-      const hunt = await this.huntsService.getHuntById(user, id)
+      const hunt = await this.huntsService.getHuntById(id)
       if (!hunt) {
         logger.warn(`Hunt with id ${id} not found`, { route: req.originalUrl })
         res.status(404)

@@ -47,4 +47,20 @@ export class CulturalCenterController {
             next(err)
         }
     }
+
+    async getActiveById(req: Request, res: Response, next:any) {
+        try {
+            const id = req.params.id;
+            const result = await this.culturalCenterService.getActiveById(id)
+            if (!result) {
+                logger.warn(`Cultural Center with id ${id} not found`, { route: req.originalUrl })
+                res.status(404)
+            }
+            logger.info(`Cultural Center with id ${id} retrieved succesfully`, { route: req.originalUrl })
+            res.status(200).json(result)
+        } catch (err){
+            logger.error("Error getting Cultural Center by id", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+            next(err)
+        }
+    }
 }

@@ -111,7 +111,6 @@ export class HuntServiceImpl implements HuntService {
     }
 
     async getHuntById(
-        user: AuthResponseDTO,
         id: string
         ): Promise<FullHuntDTO | null> {
         try {
@@ -121,7 +120,6 @@ export class HuntServiceImpl implements HuntService {
             return null;
             }
 
-            await assertUserCanAccessHunt(user, hunt, userRepository);
 
             return huntMapper.toFullResponseDto(hunt);
 

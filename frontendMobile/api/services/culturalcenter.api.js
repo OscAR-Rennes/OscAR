@@ -4,10 +4,6 @@ export function getActiveCulturalCenter() {
   return apiClient('/culturalcenter/active');
 }
 
-export function getAllCulturalCenters() {
-  return apiClient('/culturalcenter')
-}
-
-export function activateDeactivateCulturalCenter(ids) {
-  return apiClient('/culturalcenter/switchactivation', {method: 'PUT', body: {ids}})
+export function getCulturalCenterById(id) {
+  return apiClient(`/culturalcenter/active/getById/${id}`);
 }

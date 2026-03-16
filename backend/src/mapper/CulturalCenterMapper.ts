@@ -1,5 +1,6 @@
 import { cultural_centers } from "@prisma/client";
 import { GetAllActiveCulturalCenterResponseDTO } from "../common-lib/dto/culturalcenter/GetAllActiveCulturalCenterResponseDTO.js";
+import { FullCulturalCenterDTO } from "../common-lib/dto/culturalcenter/FullCulturalCenterDTO.js";
 
 export const culturalCenterMapper = {
     toLightDTO(culturalCenter: cultural_centers) {  
@@ -20,6 +21,20 @@ export const culturalCenterMapper = {
             },
             description: culturalCenter.description,
             picture_path: culturalCenter.picture_path
+        }
+    },
+
+    toFullResponse(culturalCenter: any): FullCulturalCenterDTO {
+        return {
+            id: culturalCenter.id,
+            name: culturalCenter.name,
+            description: culturalCenter.description,
+            picture_path: culturalCenter.picture_path ?? undefined,
+            isActive: culturalCenter.isActive,
+            address: {
+                longitude: culturalCenter.address.longitude,
+                latitude: culturalCenter.address.latitude
+            }
         }
     }
 };

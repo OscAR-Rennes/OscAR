@@ -1,4 +1,4 @@
-export interface CulturalCenter {
+export interface FullCulturalCenterDTO {
     id: string;
     name: string;
     description: string;

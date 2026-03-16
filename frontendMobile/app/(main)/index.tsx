@@ -31,9 +31,6 @@ export default function MapsScreen() {
 
     const [lightCulturalCenterData, setLightCultutalCenterData] = useState<CulturalCenterLight[]>([])
 
-    const culturalCenters: CulturalCenter[] = culturalCentersData.cultural_centers;
-    const addresses: Address[] = culturalCentersData.address;
-
     useEffect(() => {
         const fetchData = async () => {
             const culturalCentersData = await getActiveCulturalCenter();

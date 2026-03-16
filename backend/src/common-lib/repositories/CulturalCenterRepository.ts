@@ -55,4 +55,19 @@ export class CulturalCenterRepository  {
         `;
         return updatedCenters;
     }
+
+    async getById(id: string): Promise<cultural_centers | null> {
+        const center = await prisma.cultural_centers.findUnique({
+            where: { id },
+            include: {
+                address: {
+                    select: {
+                        longitude: true,
+                        latitude: true,
+                    }
+                }
+            }
+        })
+        return center
+    }
 }

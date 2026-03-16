@@ -83,8 +83,6 @@ huntsRoutes.get(
 
 huntsRoutes.get(
     "/hunt/getbyid/:id",
-    authMiddleware,
-    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => huntsController.getHuntById(req, res, next)
 )
 
