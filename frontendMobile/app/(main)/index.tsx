@@ -23,7 +23,7 @@ export default function MapsScreen() {
 
     const mapRef = useRef<MapView | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredCenters, setFilteredCenters] = useState<CulturalCenter[]>([]);
+    const [filteredCenters, setFilteredCenters] = useState<CulturalCenterLight[]>([]);
     const [isFlatListVisible, setFlatListVisible] = useState<boolean>(false);
     
     const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -42,16 +42,6 @@ export default function MapsScreen() {
         fetchData()
     }, [])
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const culturalCenterData = await
-        }
-
-        if (selectedCenter && selectedCenter.id) {
-            fetchData
-        }
-    }, [selectedCenter])
-
     // Handle search input changes
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -60,7 +50,7 @@ export default function MapsScreen() {
             setFlatListVisible(false);
             return;
         }
-        const results = culturalCenters.filter(center =>
+        const results = lightCulturalCenterData.filter(center =>
             center.name.toLowerCase().includes(query.toLowerCase())
         );
         setFilteredCenters(results);
@@ -158,7 +148,7 @@ export default function MapsScreen() {
                                 visible={modalVisible}
                                 culturalCenterName={selectedCenter.name}
                                 culturalCenterDescription={selectedCenter.description}
-                                culturalCenterImage={selectedCenter.picture_path}
+                                culturalCenterImage={selectedCenter.picture_path ?? ""}
                                 culturalCenterId={selectedCenter.id}
                                 onClose={() => setModalVisible(false)}
                                 onViewCenter={() => {

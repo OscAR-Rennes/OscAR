@@ -1,5 +1,6 @@
-const API_URL = process.env.REACT_APP_API_URL;
-import { useNotificationStore } from '../common/store/notificationStore';
+import Constants from "expo-constants";
+
+const API_URL = "http://192.168.1.18:5000/api" //Constants.expoConfig?.extra?.apiUrl;
 
 export async function apiClient(
   path,
@@ -38,7 +39,6 @@ export async function apiClient(
       }
     }
 
-    useNotificationStore.getState().addNotification(errorMessage, errorDetails, statusCode);
     return null;
   }
 

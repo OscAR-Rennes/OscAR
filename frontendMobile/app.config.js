@@ -6,6 +6,7 @@ export default {
     extra: {
       googleApiKey: process.env.GOOGLE_API_KEY,
       deeplApiKey: process.env.DEEPL_API_KEY,
+      apiUrl: "http://192.168.1.42:5000/api",
     },
   },
 };

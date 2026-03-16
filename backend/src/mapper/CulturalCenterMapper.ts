@@ -17,7 +17,9 @@ export const culturalCenterMapper = {
             address: {
                 longitude: culturalCenter.address.longitude,
                 latitude: culturalCenter.address.latitude
-            }
+            },
+            description: culturalCenter.description,
+            picture_path: culturalCenter.picture_path
         }
     }
 };

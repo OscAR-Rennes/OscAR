@@ -5,4 +5,6 @@ export interface GetAllActiveCulturalCenterResponseDTO {
         longitude: string;
         latitude: string;
     }
+    description: string;
+    picture_path?:string;
 }
