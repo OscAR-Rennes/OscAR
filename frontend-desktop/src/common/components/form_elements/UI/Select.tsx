@@ -12,6 +12,7 @@ type SelectProps = {
 export function Select({ value, onChange, options }: SelectProps) {
   return (
     <select
+      className="osc-form-control"
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
     >

@@ -10,7 +10,7 @@ export function FormError({ name }) {
   if (!error) return null;
 
   return (
-    <p>
+    <p className="osc-form-error">
       {error.message?.toString()}
     </p>
   );

@@ -1,3 +1,3 @@
 export function FormItem({ children }) {
-  return <div>{children}</div>;
+  return <div className="osc-form-item">{children}</div>;
 }

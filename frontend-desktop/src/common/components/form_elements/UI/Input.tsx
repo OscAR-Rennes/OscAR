@@ -3,8 +3,8 @@ import { forwardRef } from "react";
 export const Input = forwardRef<
   HTMLInputElement,
   React.ComponentProps<"input">
->((props, ref) => {
-  return <input ref={ref} {...props} />;
+>(({ className = "", ...props }, ref) => {
+  return <input ref={ref} className={`osc-form-control ${className}`.trim()} {...props} />;
 });
 
 Input.displayName = "Input";

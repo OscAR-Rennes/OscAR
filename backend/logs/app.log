@@ -1289,3 +1289,34 @@ Unique constraint failed on the fields: (`email`)
 2026-03-13 19:35:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
 2026-03-13 19:35:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
 2026-03-13 19:35:59 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:11:00 [INFO] Server is running on port 5000
+2026-03-17 18:11:19 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:11:19 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:11:21 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:11:21 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:27:17 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:28:21 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:28:36 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:29:45 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:30:23 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:30:26 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:30:44 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:36:09 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:36:20 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:36:25 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:36:30 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:36:41 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:39:45 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:39:45 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:41:07 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:43:25 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:43:25 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:45:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:53:10 [INFO] Server is running on port 5000
+2026-03-17 18:53:29 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:53:29 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:54:57 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:54:57 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-17 18:54:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:54:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-17 18:59:04 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3

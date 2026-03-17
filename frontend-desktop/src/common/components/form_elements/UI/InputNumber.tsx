@@ -6,8 +6,8 @@ type InputNumberProps =
 export const InputNumber = forwardRef<
   HTMLInputElement,
   InputNumberProps
->((props, ref) => {
-  return <input type="number" ref={ref} {...props} />;
+>(({ className = "", ...props }, ref) => {
+  return <input type="number" ref={ref} className={`osc-form-control ${className}`.trim()} {...props} />;
 });
 
 InputNumber.displayName = "InputNumber";

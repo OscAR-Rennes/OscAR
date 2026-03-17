@@ -1,54 +1,12 @@
-import { CreateHuntDto } from "../../../api/models/hunts/AddHuntDto";
-import DynamicForm from "../../../common/components/dynamic_form/DynamicForm";
-import TextInput from "../../../common/components/text_input/TextInput";
 import Button from '../../../common/components/button/Button';
-import { useHomeData } from "./hunts.data";
-import { useState } from "react";
+import { MapCoordinatesField, useHomeData } from "./hunts.data";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-
-const containerStyle = { width: '100%', height: '400px' };
-const center = { lat: 48.8584, lng: 2.2945 };
+import "../../../common/components/map/map.style.css";
 
 export default function HuntsCreation() {
-  const {
-    addHuntFields,
-    handleAddHunt,
-  } = useHomeData();
-
-  // Google Maps API loader
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyCBC3gboWueiURoFHxsZbo87CqpBC8no2g',
-  });
-
-  const [resetHuntForm, setResetHuntForm] = useState(0);
-  const [formState, setFormState] = useState({
-    title: "",
-    description: "",
-    creator_id: "",
-    difficulty_id: "",
-    points: "",
-    latitude: "",
-    longitude: "",
-    picture_path: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleMapClick = (e) => {
-    setLocation({
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    });
-  };
-
-  const [location, setLocation] = useState({ lat: '', lng: '' });
+  useHomeData();
 
   return (
     <>
@@ -89,6 +47,8 @@ export default function HuntsCreation() {
         defaultValues={{
           title: "",
           points: 0,
+          longitude: "",
+          latitude: "",
           description: "",
         }}
       >
@@ -122,28 +82,13 @@ export default function HuntsCreation() {
             { value: "3", label: "Hard" },
           ]}
         />
-
+        
         <Button type="submit">
-          Save
+          Sauvegarder
         </Button>
-      </Form>
 
-      <div>
-        {isLoaded && (
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={location.lat && location.lng ? { lat: parseFloat(location.lat), lng: parseFloat(location.lng) } : center}
-            zoom={12}
-            onClick={handleMapClick}
-          >
-            {location.lat && location.lng && (
-              <Marker position={{ lat: parseFloat(location.lat), lng: parseFloat(location.lng) }} />
-            )}
-          </GoogleMap>
-        )}
-        <input value={location.lat} placeholder="Latitude" readOnly />
-        <input value={location.lng} placeholder="Longitude" readOnly />
-      </div>
+        <MapCoordinatesField />
+      </Form>
     </>
   );
 }
