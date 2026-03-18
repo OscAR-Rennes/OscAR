@@ -1,12 +1,13 @@
 .osc-form {
-	background: #efefef;
-	border: 1px solid #dddddd;
-	border-radius: 2px;
-	padding: 10px;
-	margin-left: 2rem;
+	background: #ffffff;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+	padding: 16px;
+	margin-left: 1rem;
 	width: 45%;
 	display: grid;
 	gap: 10px;
+	margin-top: 24px;
 }
 
 .osc-form-item {
@@ -19,8 +20,8 @@
 
 .osc-form-label {
 	font-size: 0.95rem;
-	color: #4d4d4d;
-	line-height: 1.25;
+	color: #252525;
+	font-weight: bold;
 }
 
 .osc-form-control {
@@ -30,7 +31,7 @@
 	border: 1px solid #d7d7d7;
 	border-radius: 3px;
 	background: #e2e2e2;
-	color: #252525;
+	color: #000000;
 	font-size: 0.95rem;
 	outline: none;
 	box-sizing: border-box;
@@ -45,32 +46,13 @@
 	grid-column: 2;
 	margin: 0;
 	font-size: 0.78rem;
-	color: #b02424;
+	color: #ff0000;
 }
 
-.osc-form .osc-btn {
-	justify-self: start;
-	background: #7d7d7d;
-	border-radius: 2px;
-	padding: 0.4rem 1.1rem;
-	font-size: 0.9rem;
-}
-
-.osc-form .osc-btn:hover:not(:disabled) {
-	background: #666666;
-}
-
-@media (max-width: 780px) {
-	.osc-form {
-		width: 100%;
-		max-width: 100%;
-	}
-
-	.osc-form-item {
-		grid-template-columns: 1fr;
-	}
-
-	.osc-form-error {
-		grid-column: 1;
-	}
+.osc-form button {
+	margin-top: 1rem;
+	width: 30%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 }

@@ -10,8 +10,6 @@ export default function HuntsCreation() {
 
   return (
     <>
-      <h1>Lootopia V0.0.1 - Hunts Creation</h1>
-
       {/* <section>
         <h2>Ajouter une chasse</h2>
         <form onSubmit={async (e) => {
@@ -74,6 +72,12 @@ export default function HuntsCreation() {
           name="latitude"
           label="Latitude"
           type="number"
+          required = {true}
+        />
+
+        <FormInput
+          name="description"
+          label="Description"
           required = {true}
         />
 
