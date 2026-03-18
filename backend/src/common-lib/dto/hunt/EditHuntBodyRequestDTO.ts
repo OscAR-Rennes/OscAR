@@ -1,5 +1,4 @@
-export interface EditHuntRequestDTO {
-    id: string;
+export interface EditHuntBodyRequestDTO {
     title?: string;
     description?: string;
     difficulty_id?: string;

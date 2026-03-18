@@ -69,6 +69,13 @@ indexRoutes.get (
     (req, res, next) => indexController.getIndexByHunt(req, res, next)
 );
 
+indexRoutes.put(
+    "/index/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => indexController.editIndex(req, res, next)
+);
+
 indexRoutes.delete(
     "/index/:id",
     authMiddleware,

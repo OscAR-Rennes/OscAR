@@ -5,6 +5,8 @@ import { CreateIndexRequestDTO } from "../../common-lib/dto/index/CreateIndexReq
 import { CreateIndexResponseDTO } from "../../common-lib/dto/index/CreateIndexResponseDTO.js";
 import { indexMapper } from "../../mapper/IndexMapper.js";
 import { GetIndexByHuntResponseDTO } from "../../common-lib/dto/index/GetIndexByHuntResponseDTO.js";
+import { EditIndexRequestDTO } from "../../common-lib/dto/index/EditIndexRequestDTO.js";
+import { EditIndexResponseDTO } from "../../common-lib/dto/index/EditIndexResponseDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
@@ -36,6 +38,34 @@ export class IndexServiceImpl implements IndexService {
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des index de la chasse',
+                statusCode: 500,
+            });
+        }
+    }
+
+    async editIndex(indexData: EditIndexRequestDTO, user: AuthResponseDTO): Promise<EditIndexResponseDTO> {
+        try {
+            const userRepository = new UserRepository();
+            const existingIndex = await indexRepository.getByIdWithHunt(indexData.id);
+
+            if (!existingIndex) {
+                throw new AppError({
+                    userMessage: "Index non trouvé",
+                    statusCode: 404,
+                });
+            }
+
+            await assertUserCanAccessHunt(user, existingIndex.hunts, userRepository);
+
+            const editedIndex = await indexRepository.edit(indexData);
+            return indexMapper.toEditResponseDto(editedIndex);
+        } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
+            throw new AppError({
+                userMessage: "Erreur lors de la modification de l'index",
                 statusCode: 500,
             });
         }
