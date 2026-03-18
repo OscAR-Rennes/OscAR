@@ -1,13 +1,12 @@
 import './Sidebar.style.css';
 import { useAuthStore } from "../../store/authStore";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const menuItemsBase = [
   { icon: <img src={require("../../assets/icon/dashboard.svg").default} alt="Dashboard"/>, label: "Tableau de bord", path: "/home/dashboard" },
-  { icon: <img src={require("../../assets/icon/accounts.svg").default} alt="Accounts"/>, label: "Comptes", path: "/home/accounts" },
-  { section: "Gestionnaire de chasse" },
-  { icon: <img src={require("../../assets/icon/hunts.svg").default} alt="Hunts"/>, label: "Chasses", path: "/home/hunts" },
-  { icon: <img src={require("../../assets/icon/locationPointer.svg").default} alt="Steps"/>, label: "Etapes", path: "/home/steps" },
+  { section: "Entités" },
+  { icon: <img src={require("../../assets/icon/target.svg").default} alt="Hunts"/>, label: "Chasses", path: "/home/hunts" },
+  { icon: <img src={require("../../assets/icon/step.svg").default} alt="Steps"/>, label: "Etapes", path: "/home/steps" },
   //{ icon: <img src={require("../../assets/icon/difficulty.svg").default} alt="Difficulty"/>, label: "Difficulté" },
 ];
 
@@ -16,6 +15,7 @@ const settingsIcon = <img src={require("../../assets/icon/settings.svg").default
 const Sidebar = () => {
   const userRights = useAuthStore((state) => state.user.rights);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [...menuItemsBase];
   if (
@@ -23,7 +23,7 @@ const Sidebar = () => {
     userRights.includes('CULTURAL_CENTER_MANAGER')
   ) {
     menuItems.push({
-      icon: <img src={require("../../assets/icon/accounts.svg").default} alt="Users" />,
+      icon: <img src={require("../../assets/icon/group.svg").default} alt="Users" />,
       label: "Utilisateurs",
       path: "/home/users"
     });
@@ -33,7 +33,7 @@ const Sidebar = () => {
     userRights.includes('ADMIN') 
   ) {
     menuItems.push({
-      icon: <img src={require("../../assets/icon/culturalCenter.svg").default} alt="Cultural Center" />,
+      icon: <img src={require("../../assets/icon/pin.svg").default} alt="Cultural Center" />,
       label: "Centre culturel",
       path: "/home/cultural-center"
     });
@@ -51,12 +51,12 @@ const Sidebar = () => {
             ) : (
               <li
                 key={idx}
-                className="sidebar-item"
+                className={`sidebar-item${location.pathname === item.path ? " active" : ""}`}
                 onClick={() => {
                   navigate(item.path);
                 }}
               >
-                <span className="sidebar-icon">{item.icon}</span>
+                <span className={`sidebar-icon${item.path === "/home/steps" ? " sidebar-icon-steps" : ""}`}>{item.icon}</span>
                 <span className="sidebar-label">{item.label}</span>
               </li>
             )
