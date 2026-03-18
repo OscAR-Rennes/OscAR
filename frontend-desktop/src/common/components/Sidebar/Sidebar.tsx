@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const menuItemsBase = [
   { icon: <img src={require("../../assets/icon/dashboard.svg").default} alt="Dashboard"/>, label: "Tableau de bord", path: "/home/dashboard" },
-  { section: "Entités" },
+  { section: "Administration" },
   { icon: <img src={require("../../assets/icon/target.svg").default} alt="Hunts"/>, label: "Chasses", path: "/home/hunts" },
   { icon: <img src={require("../../assets/icon/step.svg").default} alt="Steps"/>, label: "Etapes", path: "/home/steps" },
   //{ icon: <img src={require("../../assets/icon/difficulty.svg").default} alt="Difficulty"/>, label: "Difficulté" },
