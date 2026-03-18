@@ -11,6 +11,7 @@ import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessH
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import logger from "../../common-lib/utils/logger.js";
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
+import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
 
 const indexRepository = new IndexRepository();
 
@@ -40,6 +41,7 @@ export class IndexServiceImpl implements IndexService {
         }
     }
 
+
     async deleteIndex(user: AuthResponseDTO, indexId: string): Promise<void> {
         try {
             const userRepository = new UserRepository();
@@ -53,14 +55,25 @@ export class IndexServiceImpl implements IndexService {
             }
 
             await assertUserCanAccessHunt(user, index.hunts, userRepository);
+            
+
 
             await prisma.$transaction(async (tx) => {
                 const stepRepository = new StepRepository();
-                await stepRepository.deleteByIndexId(indexId, tx);
-                await indexRepository.delete(indexId, tx);
-            });
+                const huntRepository = new HuntRepository();
+                
 
-            logger.info(`Index deleted successfully with ID: ${indexId}`, { indexId, huntId: index.hunt_id });
+                const indexesInHunt = await indexRepository.countByHuntId(index.hunt_id, tx);
+                await stepRepository.deleteByIndexId(indexId, tx);
+                
+                if (indexesInHunt === 1) {
+                    await huntRepository.updateIsActive(index.hunt_id, false, tx);
+                    logger.info(`Hunt disabled because its last index became empty: ${index.hunt_id}`, { huntId: index.hunt_id });
+                }
+
+                await indexRepository.delete(indexId, tx);
+                logger.info(`Index deleted successfully with ID: ${indexId}`, { indexId, huntId: index.hunt_id });
+            });
         } catch (error: any) {
             if (error instanceof AppError) {
                 throw error;

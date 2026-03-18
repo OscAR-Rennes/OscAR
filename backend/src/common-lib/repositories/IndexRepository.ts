@@ -67,8 +67,8 @@ export class IndexRepository {
         });
     }
 
-    async getByIdWithHunt(indexId: string) {
-        return prisma.index.findUnique({
+    async getByIdWithHunt(indexId: string, tx?: Prisma.TransactionClient) {
+        return (tx ?? prisma).index.findUnique({
             where: { id: indexId },
             include: {
                 hunts: true,

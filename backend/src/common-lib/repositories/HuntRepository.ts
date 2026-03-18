@@ -90,4 +90,5 @@ export class HuntRepository {
     });
     return hunts;
   }
+
 }
