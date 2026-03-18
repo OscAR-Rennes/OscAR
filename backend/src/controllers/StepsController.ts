@@ -59,4 +59,39 @@ export class StepsController  {
     }
   }
 
+  async deleteStep(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const id = req.params.id;
+
+      if (!user) {
+        logger.warn("User missing in request for deleting step", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+
+      await this.stepService.deleteStep(user, id);
+      logger.info(`Step with id ${id} deleted successfully`, { route: req.originalUrl, deletedBy: user.id });
+      res.status(204).send();
+    } catch (err) {
+      logger.error("Error deleting step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async getStepsByIndex(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const indexId = req.params.indexId;
+      if (!user) {
+        logger.warn("User missing in request for getting steps by index", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+      const steps = await this.stepService.getStepsByIndex(indexId);
+      logger.info(`Steps for index ${indexId} retrieved successfully`, { route: req.originalUrl });
+      res.status(200).json(steps);
+    } catch (err) {
+      logger.error("Error getting steps by index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
 };

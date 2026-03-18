@@ -6,6 +6,7 @@ import { LightStepDTO } from "../common-lib/dto/step/LightStepDTO.js";
 
 export interface StepService {
   createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO>;
+  deleteStep(user: AuthResponseDTO, stepId: string): Promise<void>;
   getStepsByCulturalCenter(user: AuthResponseDTO): Promise<LightStepDTO[]>;
   getStepById(user: AuthResponseDTO, id: string): Promise<FullStepDTO | null>;
 }

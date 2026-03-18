@@ -1,6 +1,6 @@
 import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO.js";
 import { prisma } from "../config/prismaClient.js";
-import { index } from "@prisma/client";
+import { Prisma, index } from "@prisma/client";
 
 
 export class IndexRepository {
@@ -49,9 +49,30 @@ export class IndexRepository {
         return indexRecords;
     }
 
-    async delete(indexId: string): Promise<void> {
-        await prisma.index.delete({
+    async delete(indexId: string, tx?: Prisma.TransactionClient): Promise<void> {
+        await (tx ?? prisma).index.delete({
             where: { id: indexId },
+        });
+    }
+
+    async deleteByHuntId(huntId: string, tx?: Prisma.TransactionClient): Promise<void> {
+        await (tx ?? prisma).index.deleteMany({
+            where: { hunt_id: huntId },
+        });
+    }
+
+    async countByHuntId(huntId: string, tx?: Prisma.TransactionClient): Promise<number> {
+        return (tx ?? prisma).index.count({
+            where: { hunt_id: huntId },
+        });
+    }
+
+    async getByIdWithHunt(indexId: string, tx?: Prisma.TransactionClient) {
+        return (tx ?? prisma).index.findUnique({
+            where: { id: indexId },
+            include: {
+                hunts: true,
+            },
         });
     }
 }
