@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 
-const API_URL = "http://192.168.1.18:5000/api" //Constants.expoConfig?.extra?.apiUrl;
+const API_URL = "http://10.101.0.56:5000/api" //Constants.expoConfig?.extra?.apiUrl;
 
 export async function apiClient(
   path,

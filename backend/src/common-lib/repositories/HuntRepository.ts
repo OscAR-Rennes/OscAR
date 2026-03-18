@@ -13,7 +13,18 @@ export class HuntRepository {
   }
 
   async getAll(): Promise<hunts[]> {
-    const hunts = await prisma.hunts.findMany();
+    const hunts = await prisma.hunts.findMany({
+      include: {
+        difficulty: {
+          select: {
+            name: true
+          }
+        },
+        _count: {
+          select: { steps: true }
+        }
+      }
+    });
     return hunts;
   }
 
@@ -61,6 +72,16 @@ export class HuntRepository {
   async getByCulturalCenter(culturalcenter_id: string): Promise<hunts[]> {
     const hunts = await prisma.hunts.findMany({
       where: { cultural_center_id: culturalcenter_id },
+      include: {
+        difficulty: {
+          select: {
+            name: true
+          }
+        },
+        _count: {
+          select: { steps: true }
+        }
+      }
     });
     return hunts;
   }
@@ -68,6 +89,16 @@ export class HuntRepository {
   async getByCreator(creator_id: string): Promise<hunts[]> {
     const hunts = await prisma.hunts.findMany({
       where: { creator_id },
+      include: {
+        difficulty: {
+          select: {
+            name: true
+          }
+        },
+        _count: {
+          select: { steps: true }
+        }
+      }
     });
     return hunts;
   }

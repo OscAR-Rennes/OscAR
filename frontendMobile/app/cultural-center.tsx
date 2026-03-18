@@ -11,7 +11,6 @@ import { useState, useRef } from 'react';
 import { Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import HuntList from '@/components/hunt-cc';
-import data from '@/assets/data.json';
 import { useLanguage } from '../context/LanguageContext';
 import { SvgUri } from 'react-native-svg';
 import translations from '../constants/language-en.json';
@@ -19,6 +18,8 @@ import translationsFr from '../constants/language-fr.json';
 import { getIconUri } from './icon-mapping';
 import { CulturalCenter } from '@/common/dto/ICulturalCenter';
 import { getCulturalCenterById } from '@/api/services/culturalcenter.api';
+import { getHuntsByCulturalCenter } from '@/api/services/hunt.api'
+import { LightHuntDto } from '@/common/dto/ILightHunt'
 
 const CulturalCenterScreen: React.FC = () => {
     const router = useRouter();
@@ -26,44 +27,21 @@ const CulturalCenterScreen: React.FC = () => {
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
-    // Handle cases where parameters might be arrays (if passed multiple times) or undefined
-    const centerId = Array.isArray(id) ? id[0] : id;
-
     const [culturalCenter, setCulturalCenter] = useState<CulturalCenter | null>(null)
+    const [hunts, setHunts] = useState<LightHuntDto[]>([])
 
     // Fetch Cultural Center information
     useEffect(() => {
         const fetchData = async () => {
             const data = await getCulturalCenterById(id)
+            const huntsData = await getHuntsByCulturalCenter(id)
+            setHunts(huntsData)
             setCulturalCenter(data)
         }
         if (id != null && id != "") {
             fetchData()
         }
-    }, [id])
-
-    // Fetch hunts related to the cultural center
-    const hunts = data.hunts
-        .filter(hunt => hunt.cultural_center_id === centerId)
-        .map(hunt => {
-            const difficulty = data.difficulty.find(d => d.id === hunt.difficulty_id);
-            const difficultyName = difficulty ? difficulty.name.toLowerCase() : 'textSecondary';
-            const difficultyColor = theme.COLORS[difficultyName as keyof typeof theme.COLORS] || theme.COLORS.textSecondary;
-
-            // Count the number of steps for the hunt
-            const stepsCount = data.steps.filter(step => step.hunt_id === hunt.id).length;
-
-            return {
-                id: hunt.id,
-                title: hunt.title,
-                difficulty: difficulty ? difficulty.name : texts.unknown,
-                difficultyColor: difficultyColor,
-                steps: stepsCount,
-                points: hunt.points,
-            };
-        });
-
-    
+    }, [])
 
     // State for active button
     const [activeButton, setActiveButton] = useState<'chasses' | 'classement'>('chasses');
@@ -136,7 +114,7 @@ const CulturalCenterScreen: React.FC = () => {
 
                 {/* Section Content */}
                 {activeButton === 'chasses' ? (
-                    hunts.length > 0 ? (
+                    hunts && hunts.length > 0 ? (
                         <HuntList hunts={hunts} />
                     ) : (
                         <Text style={{ color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.text, textAlign: 'center', marginTop: theme.SPACING.large }}>

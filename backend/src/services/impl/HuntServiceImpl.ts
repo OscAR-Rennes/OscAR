@@ -81,8 +81,12 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntByCulturalCenter(user: AuthResponseDTO): Promise<LightHuntDTO[]> {
+    async getHuntByCulturalCenter(id: string, user?: AuthResponseDTO): Promise<LightHuntDTO[]> {
         try {
+
+            if (!user) {
+                return (await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO);
+            }
             if (user.rights.includes('ADMIN')) {
                 return (await huntRepository.getAll()).map(huntMapper.toLightDTO);
             }

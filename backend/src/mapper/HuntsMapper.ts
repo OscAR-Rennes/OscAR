@@ -13,11 +13,15 @@ export const huntMapper = {
     };
   },
 
-  toLightDTO(entity: hunts): LightHuntDTO {
+  toLightDTO(entity: any): LightHuntDTO {
       return {
         id: entity.id,
         title: entity.title,
-        description: entity.description
+        points: entity.points,
+        difficulty: {
+          name: entity.difficulty.name
+        },
+        steps: entity._count.steps
       };
     },
 

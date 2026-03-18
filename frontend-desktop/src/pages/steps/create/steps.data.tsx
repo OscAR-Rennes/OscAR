@@ -4,11 +4,13 @@ import { getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
 import { addStep } from "../../../api/services/step.api";
 import { CreateIndexDto } from "../../../api/models/index/AddIndexDto";
 import { CreateStepDto } from "../../../api/models/steps/AddStepDto";
+import { useAuthStore } from "../../../common/store/authStore";
 
 export function useStepsData() {
   const [hunts, setHunts] = useState([]);
   const [selectedHuntId, setSelectedHuntId] = useState(null);
   const [indexesForHunt, setIndexesForHunt] = useState([]);
+  const user = useAuthStore((state) => state.user);
 
   // Fetch difficulties + hunts au chargement
   useEffect(() => {
@@ -31,7 +33,7 @@ export function useStepsData() {
   }, [selectedHuntId]);
 
   const refreshHunts = async () => {
-    const huntsData = await getHuntsByCulturalCenter();
+    const huntsData = await getHuntsByCulturalCenter(user.id_cultural_center);
     setHunts(huntsData);
   };
 
