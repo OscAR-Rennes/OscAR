@@ -78,4 +78,20 @@ export class StepsController  {
     }
   }
 
+  async getStepsByIndex(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const indexId = req.params.indexId;
+      if (!user) {
+        logger.warn("User missing in request for getting steps by index", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+      const steps = await this.stepService.getStepsByIndex(user, indexId);
+      logger.info(`Steps for index ${indexId} retrieved successfully`, { route: req.originalUrl });
+      res.status(200).json(steps);
+    } catch (err) {
+      logger.error("Error getting steps by index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
 };

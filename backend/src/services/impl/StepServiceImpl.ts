@@ -148,5 +148,16 @@ export class StepServiceImpl implements StepService {
     }
     }
 
+    async getStepsByIndex(indexId: string): Promise<LightStepDTO[]> {
+        try {
+            const steps = await stepRepository.getStepsByIndexId(indexId);
+            return steps.map(stepMapper.toLightDTO);
+        } catch (error) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des étapes par index',
+                statusCode: 500,
+            });
+        }
+    }
     
 }
