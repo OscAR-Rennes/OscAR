@@ -14,8 +14,9 @@ import HeaderNavbar from '@/components/ui/header-navbar';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-import { Step } from '../common/dto/IStep';
+import { LightStepDTO } from '../common/dto/ILightStep';
 import { getIconUri } from './icon-mapping';
+import { getStepByHunt } from '@/api/services/step.api'
 
 const CurrentStepScreen: React.FC = () => {
     const router = useRouter();
@@ -26,10 +27,10 @@ const CurrentStepScreen: React.FC = () => {
 
     const { language } = useLanguage(); // Retrieve current language
     const texts = STATIC_TEXTS[language]; // Retrieve translated texts
-
-    const steps = data.steps.filter((s: Step) => s.hunt_id === huntId); // Filter steps by hunt ID
+    const [steps, setSteps] = useState<LightStepDTO[]>([]);
     const currentStep = steps[currentStepIndex]; // Get the current step based on the index
 
+    
     const handleScanPress = () => {
         setShowSuccessModal(true);
     };
@@ -41,10 +42,21 @@ const CurrentStepScreen: React.FC = () => {
         if (currentStepIndex < steps.length - 1) {
             setCurrentStepIndex(currentStepIndex + 1); // Increment the step index
         } else {
-            // Redirect to menu or handle end of hunt
             router.push('/');
         }
     };
+
+
+    useEffect(() => {
+            const fetchData = async () => {
+                const data = await getStepByHunt(huntId)
+                setSteps(data)
+            }
+            if (huntId != null && huntId != "") {
+                fetchData()
+            }
+        }, [])
+
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>

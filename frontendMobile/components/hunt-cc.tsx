@@ -45,8 +45,6 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
             pathname: '/hunt-details',
             params: {
                 id: hunt.id,
-                title: hunt.title,
-                description: `Description for ${hunt.title}`
             },
         });
     };

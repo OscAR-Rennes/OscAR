@@ -12,8 +12,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
-import { Step } from '../common/dto/IStep';
+import { LightStepDTO } from '../common/dto/ILightStep';
 import { getIconUri } from './icon-mapping';
+import { getStepByHunt } from '@/api/services/step.api'
 
 const HuntDetailsScreen: React.FC = () => {
     const router = useRouter();
@@ -24,15 +25,17 @@ const HuntDetailsScreen: React.FC = () => {
     // Handle cases where parameters might be undefined
     const huntId = Array.isArray(id) ? id[0] : id;
 
-    const [steps, setSteps] = useState<Step[]>([]); // Explicitly define the type for steps
+    const [steps, setSteps] = useState<LightStepDTO[]>([]); // Explicitly define the type for steps
 
     useEffect(() => {
-        if (huntId) {
-            // Filter steps related to the hunt ID
-            const relatedSteps = data.steps.filter((step: Step) => step.hunt_id === huntId);
-            setSteps(relatedSteps);
+        const fetchData = async () => {
+            const data = await getStepByHunt(id)
+            setSteps(data)
         }
-    }, [huntId]);
+        if (id != null && id != "") {
+            fetchData()
+        }
+    }, [])
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -82,7 +85,6 @@ const HuntDetailsScreen: React.FC = () => {
                                 pathname: '/current-step',
                                 params: {
                                     stepId: steps[0].id,
-                                    huntId: huntId,
                                 },
                             });
                         }

@@ -123,7 +123,6 @@ export class StepServiceImpl implements StepService {
     }
 
     async getStepById(
-    user: AuthResponseDTO,
     id: string
     ): Promise<FullStepDTO | null> {
     try {
@@ -133,8 +132,6 @@ export class StepServiceImpl implements StepService {
         if (!step) {
         return null;
         }
-
-        await assertUserCanAccessHunt(user, step.hunts, userRepository);
 
         return stepMapper.toFullResponseDto(step);
 
@@ -155,6 +152,18 @@ export class StepServiceImpl implements StepService {
         } catch (error) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des étapes par index',
+                statusCode: 500,
+            });
+        }
+    }
+
+    async getStepsByHunt(id: string): Promise<LightStepDTO[]> {
+        try {
+            const steps = await stepRepository.getStepsByHuntId(id);
+            return steps.map(stepMapper.toLightDTO);
+        } catch (error) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des étapes par chasse',
                 statusCode: 500,
             });
         }

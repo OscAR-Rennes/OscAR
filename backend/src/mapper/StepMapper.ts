@@ -16,7 +16,8 @@ export const stepMapper = {
       return {
         id: entity.id,
         title: entity.title,
-        description: entity.description
+        description: entity.description,
+        points: entity.points
       };
     },
 

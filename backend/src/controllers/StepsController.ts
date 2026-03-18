@@ -40,13 +40,8 @@ export class StepsController  {
 
   async getStepById(req: Request, res: Response, next: any) {
     try {
-      const user = req.user;
       const id = req.params.id;
-      if (!user) {
-        logger.warn("User missing in request for getting steps", { route: req.originalUrl });
-        throw new Error("User not found in request");
-      }
-      const step = await this.stepService.getStepById(user, id)
+      const step = await this.stepService.getStepById(id)
       if (!step) {
         logger.warn(`Step with id ${id} not found`, { route: req.originalUrl })
         res.status(404)
@@ -88,6 +83,18 @@ export class StepsController  {
       }
       const steps = await this.stepService.getStepsByIndex(indexId);
       logger.info(`Steps for index ${indexId} retrieved successfully`, { route: req.originalUrl });
+      res.status(200).json(steps);
+    } catch (err) {
+      logger.error("Error getting steps by index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async getStepByHunt(req: Request, res: Response, next: any) {
+    try { 
+      const id = req.params.id;
+      const steps = await this.stepService.getStepsByHunt(id);
+      logger.info(`Steps for hunt ${id} retrieved successfully`, { route: req.originalUrl });
       res.status(200).json(steps);
     } catch (err) {
       logger.error("Error getting steps by index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
