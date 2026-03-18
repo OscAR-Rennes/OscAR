@@ -1,4 +1,4 @@
-import { hunts } from "@prisma/client";
+import { Prisma, hunts } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { CreateHuntRequestDTO } from "../dto/hunt/CreateHuntRequestDTO.js";
 import { EditHuntRequestDTO } from "../dto/hunt/EditHuntRequestDTO.js";
@@ -61,12 +61,31 @@ export class HuntRepository {
     });
   }
 
+  async getByIdRaw(id: string) {
+    return prisma.hunts.findUnique({
+      where: { id },
+    });
+  }
+
   async edit(huntData: EditHuntRequestDTO): Promise<hunts> {
     const huntRecord = await prisma.hunts.update({
       where: { id: huntData.id },
       data: { ...huntData },
     });
     return huntRecord;
+  }
+
+  async updateIsActive(id: string, isActive: boolean, tx?: Prisma.TransactionClient): Promise<hunts> {
+    return (tx ?? prisma).hunts.update({
+      where: { id },
+      data: { isactive: isActive },
+    });
+  }
+
+  async delete(id: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).hunts.delete({
+      where: { id },
+    });
   }
 
   async getByCulturalCenter(culturalcenter_id: string): Promise<hunts[]> {
@@ -102,4 +121,5 @@ export class HuntRepository {
     });
     return hunts;
   }
+
 }

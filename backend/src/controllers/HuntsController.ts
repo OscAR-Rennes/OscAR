@@ -85,4 +85,23 @@ export class HuntsController  {
       next(err);
     }
   }
+
+  async deleteHunt(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const id = req.params.id;
+
+      if (!user) {
+        logger.warn("User missing in request for deleting hunt", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+
+      await this.huntsService.deleteHunt(user, id);
+      logger.info(`Hunt with id ${id} deleted successfully`, { route: req.originalUrl, deletedBy: user.id });
+      res.status(204).send();
+    } catch (err) {
+      logger.error("Error deleting hunt", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
 };

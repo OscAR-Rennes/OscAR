@@ -1,4 +1,4 @@
-import { steps } from "@prisma/client";
+import { Prisma, steps } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { CreateStepRequestDTO } from "../dto/step/CreateStepRequestDTO.js";
 
@@ -11,9 +11,36 @@ export class StepRepository {
     return stepRecord;
   }
 
-  async delete(stepId: string): Promise<void> {
-    await prisma.steps.delete({
+  async delete(stepId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).steps.delete({
       where: { id: stepId },
+    });
+  }
+
+  async deleteByIndexId(indexId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).steps.deleteMany({
+      where: { index_id: indexId },
+    });
+  }
+
+  async deleteByHuntId(huntId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).steps.deleteMany({
+      where: { hunt_id: huntId },
+    });
+  }
+
+  async countByIndexId(indexId: string, tx?: Prisma.TransactionClient): Promise<number> {
+    return (tx ?? prisma).steps.count({
+      where: { index_id: indexId },
+    });
+  }
+
+  async getByIdWithHunt(id: string) {
+    return prisma.steps.findUnique({
+      where: { id },
+      include: {
+        hunts: true,
+      },
     });
   }
 

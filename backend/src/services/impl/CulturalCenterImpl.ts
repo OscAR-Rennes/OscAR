@@ -12,7 +12,6 @@ import { culturalCenterMapper } from "../../mapper/CulturalCenterMapper.js";
 import { CulturalCenterService } from "../CulturalCenterService.js";
 
 const culturalCenterRepository = new CulturalCenterRepository();
-const userRepository = new UserRepository();
 
 export class CulturalCenterServiceImpl implements CulturalCenterService {
 
@@ -43,9 +42,10 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
     }
 
     async switchCulturalCenterStatus(ids: string[]): Promise<boolean> {
-      try {
-        await prisma.$transaction(async (tx) => {
-          const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids);
+    try {
+      const userRepository = new UserRepository();
+      await prisma.$transaction(async (tx) => {
+        const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids);
 
           for (const center of centers) {
             if (center.isActive === false) {
