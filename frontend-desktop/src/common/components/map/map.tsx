@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import "./map.style.css";
 
-const containerStyle = { width: "100%", height: "400px" };
+const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+
+
 const defaultCenter = { lat: 48.8584, lng: 2.2945 };
 
 export default function MapPicker({ value, onChange }) {
+
   const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "AIzaSyCBC3gboWueiURoFHxsZbo87CqpBC8no2g",
+    googleMapsApiKey: apiKey,
   });
 
   const [marker, setMarker] = useState(value || null);
@@ -23,7 +27,7 @@ export default function MapPicker({ value, onChange }) {
 
   return isLoaded ? (
     <GoogleMap
-      mapContainerStyle={containerStyle}
+      mapContainerClassName="map-canvas"
       center={marker || defaultCenter}
       zoom={12}
       onClick={handleMapClick}

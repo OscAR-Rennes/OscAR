@@ -55,22 +55,26 @@ export default function HuntsCreation() {
         <FormInput
           name="title"
           label="Title"
+          required = {true}
         />
 
         <FormInput
           name="points"
           label="Points"
           type="number"
+          required = {true}
         />
         <FormInput
           name="longitude"
           label="Longitude"
           type="number"
+          required = {true}
         />
         <FormInput
           name="latitude"
           label="Latitude"
           type="number"
+          required = {true}
         />
 
         <FormSelect
