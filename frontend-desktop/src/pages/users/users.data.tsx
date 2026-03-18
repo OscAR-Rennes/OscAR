@@ -47,7 +47,7 @@ export function useUsersnData() {
     // Colonne des tables
     const userColumns = 
         [
-            { key: "username", label: "Username" },
+            { key: "username", label: "Nom d'utilisateur" },
             { key: "email", label: "Email"},
             {
                 key: "isActive",

@@ -15,12 +15,12 @@ export default function StepsList() {
 
   return (
     <>
-      <h1>Lootopia V0.0.1 - Steps management</h1>
-        <h2>Table des étapes</h2>
         <Table
           data={steps}
           columns={stepsColumns}
           onRowSelect={(rows) => setSelectedStepsRows(rows)}
+          allItemsPrefix="Toutes les"
+          allItemsLabel="étapes"
           renderActionButton={() => (
               <button 
               className="table-btn" 

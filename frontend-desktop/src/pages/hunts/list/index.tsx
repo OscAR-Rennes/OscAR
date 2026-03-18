@@ -19,21 +19,21 @@ export default function HuntsList() {
   
   return (
     <>
-      <h1>Lootopia V0.0.1 - Hunts List</h1>
-      <h2>Table des chasses</h2>
-        <Table
-          data={hunts}
-          columns={huntsColumns}
-          onRowSelect={(rows) => setSelectedHuntsRows(rows)}
-          renderActionButton={() => (
-              <button 
-              className="table-btn" 
-              onClick={() => navigate("/home/hunts/create")}
-              >
-                Créer une chasse
-              </button>
-            )}
-        />
+      <Table
+        data={hunts}
+        columns={huntsColumns}
+        onRowSelect={(rows) => setSelectedHuntsRows(rows)}
+        allItemsPrefix="Toutes les"
+        allItemsLabel="chasses"
+        renderActionButton={() => (
+            <button 
+            className="table-btn" 
+            onClick={() => navigate("/home/hunts/create")}
+            >
+              Créer une chasse
+            </button>
+          )}
+      />
     </>
   );
 }
