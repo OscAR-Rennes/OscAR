@@ -1,11 +1,10 @@
-export interface EditHuntResponseDTO {
-    id: string;
+export interface EditHuntBodyRequestDTO {
     title: string;
     description: string;
     difficulty_id: string;
     points: number;
     latitude: number;
     longitude: number;
-    picture_path: string | null;
+    picture_path: string;
     isactive: boolean;
 }
