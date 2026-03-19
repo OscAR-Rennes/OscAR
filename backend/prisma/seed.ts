@@ -1,6 +1,14 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../src/common-lib/config/prismaClient.js";
 
+const SEED_CONFIG = {
+  culturalCenters: 12,
+  huntManagersPerCenter: 6,
+  huntsPerCenter: 8,
+  indexesPerHunt: 4,
+  stepsPerIndex: 12,
+} as const;
+
 async function main() {
   console.log("Seeding database...");
 
@@ -65,15 +73,15 @@ async function main() {
   // =====================
   // CULTURAL CENTERS LOOP
   // =====================
-  for (let c = 1; c <= 5; c++) {
+  for (let c = 1; c <= SEED_CONFIG.culturalCenters; c++) {
     // ADDRESS
     let address = await prisma.address.findFirst({
-      where: { zip: `3500${c}`, street_number: `${c}` },
+      where: { zip: `350${String(c).padStart(2, "0")}`, street_number: `${c}` },
     });
     if (!address) {
       address = await prisma.address.create({
         data: {
-          zip: `3500${c}`,
+          zip: `350${String(c).padStart(2, "0")}`,
           city: "Rennes",
           street: `Rue Culturelle ${c}`,
           street_number: `${c}`,
@@ -123,7 +131,7 @@ async function main() {
 
     // HUNT MANAGERS
     const huntManagers = [];
-    for (let hm = 1; hm <= 3; hm++) {
+    for (let hm = 1; hm <= SEED_CONFIG.huntManagersPerCenter; hm++) {
       let manager = await prisma.users.findUnique({ where: { email: `hunt_manager_${c}_${hm}@oscar.com` } });
       if (!manager) {
         manager = await prisma.users.create({
@@ -150,7 +158,7 @@ async function main() {
     }
 
     // HUNTS
-    for (let h = 1; h <= 3; h++) {
+    for (let h = 1; h <= SEED_CONFIG.huntsPerCenter; h++) {
       let hunt = await prisma.hunts.findFirst({
         where: { title: `Chasse ${h} Centre ${c}`, cultural_center_id: center.id },
       });
@@ -164,50 +172,62 @@ async function main() {
             difficulty_id: difficulty.id,
             isactive: true,
             points: 100 * h,
-            latitude: 48.1 + h,
-            longitude: -1.6 + h,
+            latitude: 48.1 + h / 100 + c / 1000,
+            longitude: -1.6 + h / 100 - c / 1000,
             creator_id: creator.id,
             cultural_center_id: center.id,
           },
         });
       }
 
-      // INDEX
-      let huntIndex = await prisma.index.findFirst({
-        where: { name: "Index principal", hunt_id: hunt.id },
-      });
-      if (!huntIndex) {
-        huntIndex = await prisma.index.create({
-          data: { name: "Index principal", index: 1, hunt_id: hunt.id },
-        });
-      }
+      // INDEXES
+      for (let i = 1; i <= SEED_CONFIG.indexesPerHunt; i++) {
+        const indexName = `Index ${String(i).padStart(2, "0")}`;
 
-      // STEPS
-      for (let s = 1; s <= 4; s++) {
-        let step = await prisma.steps.findFirst({
-          where: { title: `Step ${s}`, index_id: huntIndex.id },
+        let huntIndex = await prisma.index.findFirst({
+          where: { name: indexName, hunt_id: hunt.id },
         });
-        if (!step) {
-          await prisma.steps.create({
-            data: {
-              title: `Step ${s}`,
-              description: `Step ${s} description`,
-              points: 25 * s,
-              hunt_id: hunt.id,
-              latitude: 48.11 + s,
-              longitude: -1.61 + s,
-              index_id: huntIndex.id,
-            },
+
+        if (!huntIndex) {
+          huntIndex = await prisma.index.create({
+            data: { name: indexName, index: i, hunt_id: hunt.id },
           });
+        }
+
+        // STEPS
+        for (let s = 1; s <= SEED_CONFIG.stepsPerIndex; s++) {
+          const stepTitle = `Step ${String(s).padStart(2, "0")}`;
+          let step = await prisma.steps.findFirst({
+            where: { title: stepTitle, index_id: huntIndex.id },
+          });
+
+          if (!step) {
+            await prisma.steps.create({
+              data: {
+                title: stepTitle,
+                description: `Step ${s} description for hunt ${h} center ${c} index ${i}`,
+                points: 10 + s,
+                hunt_id: hunt.id,
+                latitude: 48.11 + s / 100 + i / 1000,
+                longitude: -1.61 + s / 100 - i / 1000,
+                index_id: huntIndex.id,
+              },
+            });
+          }
         }
       }
     }
   }
 
+  const totalHunts = SEED_CONFIG.culturalCenters * SEED_CONFIG.huntsPerCenter;
+  const totalIndexes = totalHunts * SEED_CONFIG.indexesPerHunt;
+  const totalSteps = totalIndexes * SEED_CONFIG.stepsPerIndex;
+
   console.log("Seed terminé !");
+  console.log(`Volumes cibles: ${SEED_CONFIG.culturalCenters} centres, ${totalHunts} hunts, ${totalIndexes} index, ${totalSteps} steps`);
   console.log("Admin: admin@oscar.com / Admin1234!");
-  console.log("5 Cultural center managers: cc_manager_1@oscar.com → cc_manager_5@oscar.com");
-  console.log("15 Hunt managers: hunt_manager_X_Y@oscar.com");
+  console.log(`Managers centres: ${SEED_CONFIG.culturalCenters} comptes cc_manager_X@oscar.com`);
+  console.log(`Hunt managers: ${SEED_CONFIG.culturalCenters * SEED_CONFIG.huntManagersPerCenter} comptes hunt_manager_X_Y@oscar.com`);
 }
 
 main()

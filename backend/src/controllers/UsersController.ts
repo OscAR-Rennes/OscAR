@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UsersServiceImpl } from "../services/impl/UsersServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
 import { RoleEnum } from "../common-lib/enum/roleEnum.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 
 export class UsersController  {
 
@@ -13,8 +14,9 @@ export class UsersController  {
 
   async getAll(req: Request, res: Response, next: any) {
     try {
-      const users = await this.usersService.getAllUsers();
-      logger.debug("All users retrieved", { route: req.originalUrl, userId: req.user?.id, count: users.length });
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      const users = await this.usersService.getAllUsers(pagination);
+      logger.debug("All users retrieved", { route: req.originalUrl, userId: req.user?.id, count: users.data.length, page: users.pagination.page, limit: users.pagination.limit, total: users.pagination.total });
       res.status(200).json(users);
     } catch (err) {
       logger.error("Error getting all users", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -36,19 +38,20 @@ export class UsersController  {
 
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       const culturalcenter_id = req.user?.id_cultural_center;
       if (!culturalcenter_id && !req.user?.rights.includes(RoleEnum.ADMIN)) {
         logger.warn("User's cultural center ID missing", { route: req.originalUrl, userId: req.user?.id });
         throw new Error("Centre culturel de l'utilisateur introuvable");
       }
       if (culturalcenter_id) {
-        const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id)
-        logger.debug("Users retrieved by cultural center", { route: req.originalUrl, userId: req.user?.id, count: users.length });
+        const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id, pagination)
+        logger.debug("Users retrieved by cultural center", { route: req.originalUrl, userId: req.user?.id, count: users.data.length, page: users.pagination.page, limit: users.pagination.limit, total: users.pagination.total });
         res.status(200).json(users)
       }
       if (req.user?.rights.includes(RoleEnum.ADMIN)) {
-        const users = await this.usersService.getAllUsers();
-        logger.debug("All users retrieved for admin", { route: req.originalUrl, userId: req.user?.id, count: users.length });
+        const users = await this.usersService.getAllUsers(pagination);
+        logger.debug("All users retrieved for admin", { route: req.originalUrl, userId: req.user?.id, count: users.data.length, page: users.pagination.page, limit: users.pagination.limit, total: users.pagination.total });
         res.status(200).json(users)
       }
     } catch (err) {

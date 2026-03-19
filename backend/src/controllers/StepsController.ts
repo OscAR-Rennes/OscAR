@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { StepServiceImpl } from "../services/impl/StepServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 
 export class StepsController  {
 
@@ -26,11 +27,12 @@ export class StepsController  {
   async getStepsByCulturalCenter(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getStepsByCulturalCenter", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const steps = await this.stepService.getStepsByCulturalCenter(user);
+      const steps = await this.stepService.getStepsByCulturalCenter(user, pagination);
       res.status(200).json(steps);
     } catch (err) {
       logger.error("Error getting steps by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -82,11 +84,12 @@ export class StepsController  {
     try {
       const user = req.user;
       const indexId = req.params.indexId;
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getting steps by index", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const steps = await this.stepService.getStepsByIndex(indexId);
+      const steps = await this.stepService.getStepsByIndex(indexId, pagination);
       logger.info(`Steps for index ${indexId} retrieved successfully`, { route: req.originalUrl });
       res.status(200).json(steps);
     } catch (err) {

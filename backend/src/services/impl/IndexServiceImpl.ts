@@ -6,12 +6,15 @@ import { CreateIndexResponseDTO } from "../../common-lib/dto/index/CreateIndexRe
 import { indexMapper } from "../../mapper/IndexMapper.js";
 import { GetIndexByHuntResponseDTO } from "../../common-lib/dto/index/GetIndexByHuntResponseDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import { PaginationParamsDTO } from "../../common-lib/dto/common/PaginationParamsDTO.js";
+import { PaginatedResponseDTO } from "../../common-lib/dto/common/PaginatedResponseDTO.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import logger from "../../common-lib/utils/logger.js";
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
 import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
+import { paginateArray } from "../../common-lib/utils/pagination.js";
 
 const indexRepository = new IndexRepository();
 
@@ -29,10 +32,10 @@ export class IndexServiceImpl implements IndexService {
         }
     }
 
-    async getIndexByHunt(huntId: string): Promise<GetIndexByHuntResponseDTO[]> {
+    async getIndexByHunt(huntId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<GetIndexByHuntResponseDTO>> {
         try {
             const indexes = await indexRepository.getByHuntID(huntId);
-            return indexes.map(indexMapper.toLightDTO);
+            return paginateArray(indexes.map(indexMapper.toLightDTO), pagination);
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des index de la chasse',

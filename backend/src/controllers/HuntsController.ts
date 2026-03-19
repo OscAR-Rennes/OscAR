@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HuntServiceImpl } from "../services/impl/HuntServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 
 export class HuntsController  {
 
@@ -30,9 +31,10 @@ export class HuntsController  {
 
   async getAllHunt(req: Request, res: Response, next: any) {
     try {
-      const allHunt = await this.huntsService.getAllHunt();
-      logger.debug("Hunts retrieved successfully", { route: req.originalUrl, count: allHunt.length });
-      res.status(201).json(allHunt);
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      const allHunt = await this.huntsService.getAllHunt(pagination);
+      logger.debug("Hunts retrieved successfully", { route: req.originalUrl, count: allHunt.data.length, page: allHunt.pagination.page, limit: allHunt.pagination.limit, total: allHunt.pagination.total });
+      res.status(200).json(allHunt);
     } catch(err) {
       logger.error("Error getting all hunts", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
@@ -60,11 +62,12 @@ export class HuntsController  {
   async getHuntByCulturalCenter(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const hunts = await this.huntsService.getHuntByCulturalCenter(user);
+      const hunts = await this.huntsService.getHuntByCulturalCenter(user, pagination);
       res.status(200).json(hunts);
     } catch (err) {
       logger.error("Error getting hunts by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });

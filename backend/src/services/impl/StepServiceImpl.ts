@@ -10,9 +10,12 @@ import logger from "../../common-lib/utils/logger.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { LightStepDTO } from "../../common-lib/dto/step/LightStepDTO.js";
 import { FullStepDTO } from "../../common-lib/dto/step/FullStepDTO.js";
+import { PaginationParamsDTO } from "../../common-lib/dto/common/PaginationParamsDTO.js";
+import { PaginatedResponseDTO } from "../../common-lib/dto/common/PaginatedResponseDTO.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
+import { paginateArray } from "../../common-lib/utils/pagination.js";
 
 const stepRepository = new StepRepository();
 
@@ -93,21 +96,21 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepsByCulturalCenter(user: AuthResponseDTO): Promise<LightStepDTO[]> {
+    async getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {
         try {
             if (user.rights.includes('ADMIN')) {
-                return (await stepRepository.getAll()).map(stepMapper.toLightDTO);
+                return paginateArray((await stepRepository.getAll()).map(stepMapper.toLightDTO), pagination);
             }
 
             if (user.rights.includes('HUNT_MANAGER')) {
-                return (await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO);
+                return paginateArray((await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO), pagination);
             }
 
             if (
                 user.rights.includes('CULTURAL_CENTER_MANAGER') &&
                 user.id_cultural_center
             ) {
-                return (await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO);
+                return paginateArray((await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO), pagination);
             }
 
             throw new AppError({
@@ -148,10 +151,10 @@ export class StepServiceImpl implements StepService {
     }
     }
 
-    async getStepsByIndex(indexId: string): Promise<LightStepDTO[]> {
+    async getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {
         try {
             const steps = await stepRepository.getStepsByIndexId(indexId);
-            return steps.map(stepMapper.toLightDTO);
+            return paginateArray(steps.map(stepMapper.toLightDTO), pagination);
         } catch (error) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des étapes par index',

@@ -2,6 +2,8 @@
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import { GetAllActiveCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllActiveCulturalCenterResponseDTO.js";
 import { GetAllCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllCulturalCenterResponseDTO.js";
+import { PaginationParamsDTO } from "../../common-lib/dto/common/PaginationParamsDTO.js";
+import { PaginatedResponseDTO } from "../../common-lib/dto/common/PaginatedResponseDTO.js";
 import { SwitchStatusCulturalCenterRequestDTO } from "../../common-lib/dto/culturalcenter/SwitchStatusCulturalCenterRequestDTO.js";
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { CulturalCenterRepository } from "../../common-lib/repositories/CulturalCenterRepository.js";
@@ -9,15 +11,16 @@ import { UserRepository } from "../../common-lib/repositories/UsersRepository.js
 import logger from "../../common-lib/utils/logger.js";
 import { culturalCenterMapper } from "../../mapper/CulturalCenterMapper.js";
 import { CulturalCenterService } from "../CulturalCenterService.js";
+import { paginateArray } from "../../common-lib/utils/pagination.js";
 
 const culturalCenterRepository = new CulturalCenterRepository();
 
 export class CulturalCenterServiceImpl implements CulturalCenterService {
 
-    async getAllActiveCulturalCenters(): Promise<GetAllActiveCulturalCenterResponseDTO[]> {
+    async getAllActiveCulturalCenters(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<GetAllActiveCulturalCenterResponseDTO>> {
         try {
             const culturalCenters = await culturalCenterRepository.getAllActive();
-            return culturalCenters.map(culturalCenterMapper.toLightWithouActiveDTO);
+        return paginateArray(culturalCenters.map(culturalCenterMapper.toLightWithouActiveDTO), pagination);
         }
         catch (error: any) {
             throw new AppError({
@@ -27,10 +30,10 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
         }
     }
 
-    async getAllCulturalCenter(): Promise<GetAllCulturalCenterResponseDTO[]> {
+    async getAllCulturalCenter(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<GetAllCulturalCenterResponseDTO>> {
         try {
             const culturalCenters = await culturalCenterRepository.getAll();
-            return culturalCenters.map(culturalCenterMapper.toLightDTO)
+        return paginateArray(culturalCenters.map(culturalCenterMapper.toLightDTO), pagination)
         }
         catch (error: any) {
             throw new AppError({

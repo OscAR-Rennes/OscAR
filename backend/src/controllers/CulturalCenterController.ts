@@ -1,6 +1,7 @@
 import logger from "../common-lib/utils/logger.js";
 import { CulturalCenterServiceImpl } from "../services/impl/CulturalCenterImpl.js";
 import { Request, Response } from "express";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 
 export class CulturalCenterController {
     private culturalCenterService: CulturalCenterServiceImpl;
@@ -11,8 +12,9 @@ export class CulturalCenterController {
 
     async getAllActive(req: Request, res: Response, next: any) {
         try {
-            const culturalCenters = await this.culturalCenterService.getAllActiveCulturalCenters();
-            logger.debug("Active cultural centers retrieved", { route: req.originalUrl, count: culturalCenters.length });
+            const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+            const culturalCenters = await this.culturalCenterService.getAllActiveCulturalCenters(pagination);
+            logger.debug("Active cultural centers retrieved", { route: req.originalUrl, count: culturalCenters.data.length, page: culturalCenters.pagination.page, limit: culturalCenters.pagination.limit, total: culturalCenters.pagination.total });
             res.status(200).json(culturalCenters);
         } catch (err) {
             logger.error("Failed to get active cultural centers", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -22,8 +24,9 @@ export class CulturalCenterController {
 
     async getAll(req: Request, res: Response, next: any) {
         try {
-            const culturalCenters = await this.culturalCenterService.getAllCulturalCenter();
-            logger.debug("All cultural centers retrieved", { route: req.originalUrl, count: culturalCenters.length });
+            const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+            const culturalCenters = await this.culturalCenterService.getAllCulturalCenter(pagination);
+            logger.debug("All cultural centers retrieved", { route: req.originalUrl, count: culturalCenters.data.length, page: culturalCenters.pagination.page, limit: culturalCenters.pagination.limit, total: culturalCenters.pagination.total });
             res.status(200).json(culturalCenters)
         } catch (err) {
             logger.error("Failed to get all cultural centers", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
