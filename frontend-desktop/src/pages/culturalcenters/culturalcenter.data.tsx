@@ -44,7 +44,7 @@ export function useUsersnData() {
 
     const culturalCentersColumns = 
         [
-            { key: "name", label: "Name" },
+            { key: "name", label: "Nom du centre" },
             {
             key: "isActive",
             label: "Status",

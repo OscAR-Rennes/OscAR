@@ -22,15 +22,13 @@ export default function CulturalCenters() {
 
   return (
     <>
-      <h1>Lootopia V0.0.1 - Cultural Centers management</h1>
-
       { isAdmin && (
         <>
-          <h2>Table centre culturels</h2>
           <Table
             data={culturalCenters}
             columns={culturalCentersColumns}
             onRowSelect={(rows) => setSelectedCulturalCenterssRows(rows)}
+            allItemsLabel="centres culturels"
             renderActionButton={() => (
               <button
                 className="table-btn"

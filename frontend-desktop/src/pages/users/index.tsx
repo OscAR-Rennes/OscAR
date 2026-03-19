@@ -18,19 +18,14 @@ export default function Users() {
 
   return (
     <>
-      <h1>Lootopia V0.0.1 - Users management</h1>
 
       { isAdmin && (
-        <>
-          <h2>
-            {isAdmin
-              ? "Table des utilisateurs"
-              : "Table des utilisateurs du centre culturel"}
-          </h2>          
+        <>         
           <Table
             data={users}
             columns={userColumns}
             onRowSelect={setSelectedUsersRows}
+            allItemsLabel="utilisateurs"
             renderActionButton={() => (
               <button 
               className="table-btn" 
