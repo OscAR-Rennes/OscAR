@@ -1,4 +1,5 @@
 import { CreateIndexRequestDTO } from "../dto/index/CreateIndexRequestDTO.js";
+import { EditIndexRequestDTO } from "../dto/index/EditIndexRequestDTO.js";
 import { prisma } from "../config/prismaClient.js";
 import { Prisma, index } from "@prisma/client";
 
@@ -40,6 +41,14 @@ export class IndexRepository {
         });
 
         return indexRecord;
+    }
+
+    async edit(indexData: EditIndexRequestDTO): Promise<index> {
+        const { id, ...data } = indexData;
+        return prisma.index.update({
+            where: { id },
+            data,
+        });
     }
 
     async getByHuntID(huntId: string): Promise<index[]> {
