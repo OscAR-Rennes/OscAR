@@ -30,7 +30,8 @@ export const huntMapper = {
       points: entity.points,
       latitude: entity.latitude,
       longitude: entity.longitude,
-      picture_path: entity.picture_path ?? null,
+      picture_path: entity.picture_path,
+      isactive: entity.isactive
     };
   },
 
@@ -59,7 +60,7 @@ export const huntMapper = {
       points: entity.points,
       latitude: entity.latitude,
       longitude: entity.longitude,
-      pictureUrl: entity.picture_path ?? null,
+      pictureUrl: entity.picture_path,
 
       creator: {
         id: entity.users.id,

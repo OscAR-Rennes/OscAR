@@ -61,7 +61,7 @@ stepsRoutes.get(
 )
 
 stepsRoutes.put(
-    "/step/:id",
+    "/step/edit/:id",
     authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => stepsController.editStep(req, res, next)

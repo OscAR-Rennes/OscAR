@@ -7,4 +7,5 @@ export interface EditHuntResponseDTO {
     latitude: number;
     longitude: number;
     picture_path: string | null;
+    isactive: boolean;
 }
