@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { getStepsByCulturalCenter } from "../../../api/services/step.api";
-import { useNavigate } from "react-router-dom";
+import { useNotificationStore } from "../../../common/store/notificationStore";
 
 
 export function useStepsData() {
   const [steps, setSteps] = useState([]);
   const [selectedStepsRows, setSelectedStepsRows] = useState([]);
-  const navigate = useNavigate();
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   const stepsColumns = 
     [
@@ -22,11 +22,40 @@ export function useStepsData() {
     fetchSteps();
   },[]);
 
+  const getSelectedStepsIds = () => selectedStepsRows.map((row) => row.id);
+
+  const handleModifySteps = (): boolean => {
+    const ids = getSelectedStepsIds();
+
+    if (ids.length === 0) {
+      addNotification("Veuillez sélectionner au moins une étape", undefined, 400);
+      return false;
+    }
+
+    if (ids.length > 1) {
+      addNotification("Veuillez sélectionner une seule étape", undefined, 400);
+      return false;
+    }
+    return true;
+  };
+
+  const handleDeleteSteps = (): boolean => {
+    const ids = getSelectedStepsIds();
+
+    if (ids.length === 0) {
+      addNotification("Veuillez sélectionner au moins une étape", undefined, 400);
+      return false;
+    }
+    return true;
+  };
+
   return {
     steps,
     stepsColumns,
     selectedStepsRows,
     setSelectedStepsRows,
+    handleModifySteps,
+    handleDeleteSteps,
   }
 
 }

@@ -404,7 +404,7 @@ export default function Table<T extends { id: string | number }>({
 
           <div className="table-pagination-actions">
             <button
-              className="table-btn"
+              className="table-pagination-btn"
               disabled={currentPage === 1}
               onClick={() =>
                 setCurrentPage((p) => Math.max(1, p - 1))
@@ -418,7 +418,7 @@ export default function Table<T extends { id: string | number }>({
             </span>
 
             <button
-              className="table-btn"
+              className="table-pagination-btn"
               disabled={currentPage === totalPages}
               onClick={() =>
                 setCurrentPage((p) =>
