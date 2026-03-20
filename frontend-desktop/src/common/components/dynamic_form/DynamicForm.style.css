@@ -27,27 +27,95 @@
 .dynamic-form-container input,
 .dynamic-form-container select {
   width: 100%;
-  padding: 0.9rem 1rem 0.9rem 1rem;
+  padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid #e0e0e0;
   background: #fafafa;
-  font-size: 1rem;
+  font-size: 0.96rem;
   margin-bottom: 0.1rem;
   box-sizing: border-box;
 }
+
+.dynamic-form-container input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 3rem;
+  height: 1.65rem;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  left: 0.2rem;
+  top: 0.2rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: #4953d3;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(1.35rem);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 2px solid #4953d3;
+  outline-offset: 2px;
+}
+
 .dynamic-form-container input[type="password"] {
   letter-spacing: 0.2em;
 }
 
+.dynamic-form-group {
+  border: 1px solid #d3d3d3;
+  border-radius: 0.75rem;
+  padding: 0.9rem 0.9rem 0.1rem;
+  margin-bottom: 1.1rem;
+  background: #f1f1f1;
+}
+
+.dynamic-form-group .dynamic-form-field:last-child {
+  margin-bottom: 0.8rem;
+}
+
 .dynamic-form-container button[type="submit"] {
   width: 100%;
-  padding: 1rem 0;
-  margin-top: 1.2rem;
+  padding: 0.85rem 0;
+  margin-top: 1rem;
   border: none;
   border-radius: 0.75rem;
   background: #4953d3;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
   transition: opacity 0.2s;
