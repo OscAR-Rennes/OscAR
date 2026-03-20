@@ -1,5 +1,5 @@
-import { Hunt } from './IHunt';
+import { LightHuntDto } from './ILightHunt';
 
 export interface HuntListProps {
-    hunts: Hunt[];
+    hunts: LightHuntDto[];
 }

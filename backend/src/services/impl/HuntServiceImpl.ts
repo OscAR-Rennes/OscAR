@@ -77,8 +77,11 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntByCulturalCenter(user: AuthResponseDTO): Promise<LightHuntDTO[]> {
+    async getHuntByCulturalCenter(id: string, user?: AuthResponseDTO): Promise<LightHuntDTO[]> {
         try {
+            if (!user) {
+                return (await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO);
+            }
             if (user.rights.includes('ADMIN')) {
                 return (await huntRepository.getAll()).map(huntMapper.toLightDTO);
             }
@@ -107,7 +110,6 @@ export class HuntServiceImpl implements HuntService {
     }
 
     async getHuntById(
-        user: AuthResponseDTO,
         id: string
         ): Promise<FullHuntDTO | null> {
         try {
@@ -118,7 +120,6 @@ export class HuntServiceImpl implements HuntService {
             return null;
             }
 
-            await assertUserCanAccessHunt(user, hunt, userRepository);
 
             return huntMapper.toFullResponseDto(hunt);
 
