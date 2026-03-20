@@ -8,8 +8,8 @@ export function getAllHunts() {
   return apiClient('/hunt');
 }
 
-export function getHuntsByCulturalCenter() {
-  return apiClient(`/hunt/culturalcenter`);
+export function getHuntsByCulturalCenter(culturalCenterId) {
+  return apiClient(`/hunt/culturalcenter/${culturalCenterId}`);
 }
 
 export function getHuntById(huntId) {

@@ -1,0 +1,13 @@
+import { apiClient } from '../apiClient';
+
+export function getAllHunts() {
+  return apiClient('/hunt');
+}
+
+export function getHuntsByCulturalCenter(culturalCenterId) {
+  return apiClient(`/hunt/culturalcenter/${culturalCenterId}`);
+}
+
+export function getHuntById(huntId) {
+  return apiClient(`/hunt/getbyid/${huntId}`);
+}

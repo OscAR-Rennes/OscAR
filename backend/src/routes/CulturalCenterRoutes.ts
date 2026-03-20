@@ -103,6 +103,8 @@ culturalCenterRoutes.delete(
     (req, res, next) => culturalCenterController.deleteCulturalCenter(req, res, next)
 )
 
-
-
+culturalCenterRoutes.get(
+    "/culturalcenter/active/getById/:id",
+    (req, res, next) => culturalCenterController.getActiveById(req, res, next)
+)
 export default culturalCenterRoutes;

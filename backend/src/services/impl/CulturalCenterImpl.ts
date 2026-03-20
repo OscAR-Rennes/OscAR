@@ -1,5 +1,6 @@
 
 import { prisma } from "../../common-lib/config/prismaClient.js";
+import { FullCulturalCenterDTO } from "../../common-lib/dto/culturalcenter/FullCulturalCenterDTO.js";
 import { GetAllActiveCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllActiveCulturalCenterResponseDTO.js";
 import { GetAllCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetAllCulturalCenterResponseDTO.js";
 import { GetMapCulturalCenterResponseDTO } from "../../common-lib/dto/culturalcenter/GetMapCulturalCenterResponseDTO.js";
@@ -72,26 +73,37 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
       await prisma.$transaction(async (tx) => {
         const centers = await culturalCenterRepository.switchCulturalCenterStatus(ids);
 
-        for (const center of centers) {
-          if (center.isActive === false) {
-            await userRepository.deactivateUsersByCenter(center.id);
-            logger.info(`Users deactivated for cultural center ${center.id}`, { culturalCenterId: center.id });
-          } else {
-            await userRepository.activateManagersByCenter(center.id);
-            logger.info(`Managers activated for cultural center ${center.id}`, { culturalCenterId: center.id });
+          for (const center of centers) {
+            if (center.isActive === false) {
+              await userRepository.deactivateUsersByCenter(center.id);
+              logger.info(`Users deactivated for cultural center ${center.id}`, { culturalCenterId: center.id });
+            } else {
+              await userRepository.activateManagersByCenter(center.id);
+              logger.info(`Managers activated for cultural center ${center.id}`, { culturalCenterId: center.id });
+            }
           }
-        }
-      });
+        });
 
-      return true;
+        return true;
 
-    } catch (err) {
-      throw new AppError({
-        userMessage: "Erreur lors du changement de statut des centres culturels",
-        statusCode: 500,
-      });
+      } catch (err) {
+        throw new AppError({
+          userMessage: "Erreur lors du changement de statut des centres culturels",
+          statusCode: 500,
+        });
+      }
     }
-  }
+
+    async getActiveById(id: string): Promise<FullCulturalCenterDTO> {
+      const culturalCenter = await culturalCenterRepository.getById(id)
+      if (culturalCenter?.isActive == false) {
+        throw new AppError({
+          userMessage: "Accès non autorisé",
+          statusCode: 403,
+        });
+      }
+      return culturalCenterMapper.toFullResponse(culturalCenter);
+    }
 
   async deleteCulturalCenters(user: AuthResponseDTO, ids: string[]): Promise<void> {
     try {

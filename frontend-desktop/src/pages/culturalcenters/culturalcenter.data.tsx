@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useCheckRights } from "../../common/components/security/CheckRights";
 import { RoleEnum } from "../../common/enum/RolesEnum";
 import { activateDeactivateCulturalCenter, getAllCulturalCenters } from "../../api/services/culturalcenter.api";
-import { activateDeactivateUsers, getAllUsers, getUsersByCulturalCenter } from "../../api/services/users.api";
 import { useAuthStore } from "../../common/store/authStore";
 import "../../common/components/table/Table.style.css";
 
@@ -16,6 +15,7 @@ export function useUsersnData() {
     const isAdmin = checkRights(RoleEnum.ADMIN)
 
     const user = useAuthStore((state) => state.user);
+    const hasSelectedCulturalCenters = selectedCulturalCentersRows.length > 0;
     
     // Fetch data
     useEffect(() => {
@@ -44,7 +44,7 @@ export function useUsersnData() {
 
     const culturalCentersColumns = 
         [
-            { key: "name", label: "Name" },
+            { key: "name", label: "Nom du centre" },
             {
             key: "isActive",
             label: "Status",
@@ -54,8 +54,10 @@ export function useUsersnData() {
 
 
     // Handlers
-    const handleActivateDeactivateCulturalCenters = async () => {
-        const ids = selectedCulturalCentersRows.map(row => row.id);
+    const getSelectedCulturalCentersIds = () => selectedCulturalCentersRows.map(row => row.id);
+
+    const executeActivateDeactivateCulturalCenters = async () => {
+        const ids = getSelectedCulturalCentersIds();
         await activateDeactivateCulturalCenter(ids)
         setSelectedCulturalCenterssRows([])
         refreshCulturalCenters()
@@ -70,7 +72,9 @@ export function useUsersnData() {
 
         culturalCentersColumns,
 
-        handleActivateDeactivateCulturalCenters,
+        hasSelectedCulturalCenters,
+
+        executeActivateDeactivateCulturalCenters,
     }
 
 };

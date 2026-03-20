@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { HuntServiceImpl } from "../services/impl/HuntServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
 import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
+import { EditHuntBodyRequestDTO } from "../common-lib/dto/hunt/EditHuntBodyRequestDTO.js";
 
 export class HuntsController  {
 
@@ -14,6 +15,7 @@ export class HuntsController  {
   async createHunt(req: Request, res: Response, next: any) {
     try {
       const userId = req.user?.id;
+      logger.warn(req.user)
       const userCulturalCenterId = req.user?.id_cultural_center;
       if (!userId || !userCulturalCenterId) {
         logger.warn("Missing user information for hunt creation", { route: req.originalUrl });
@@ -43,15 +45,20 @@ export class HuntsController  {
 
   async editHunt(req: Request, res: Response,next: any) {
     try {
-      const userId = req.user?.id;
-      const userRights = req.user?.rights;
-      if (!userId || !userRights) {
+      const user = req.user
+      const huntId = req.params.id;
+
+      if (!user || !huntId) {
         logger.warn("Missing user information for hunt edition", { route: req.originalUrl });
         throw new Error("User information missing");
       }
-      const huntData = req.body;
-      const editHunt = await this.huntsService.editHunt(huntData, userId, userRights)
-      logger.info("Hunt edited successfully", { route: req.originalUrl, huntId: editHunt.id, editedBy: userId })
+      const huntBody: EditHuntBodyRequestDTO = req.body;
+      const huntData = {
+        id: huntId,
+        ...huntBody,
+      };
+      const editHunt = await this.huntsService.editHunt(huntData, user)
+      logger.info("Hunt edited successfully", { route: req.originalUrl, huntId: editHunt.id, editedBy: user.id });
       res.status(201).json(editHunt)
     } catch (err) {
       logger.error("Error editing hunt", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -61,13 +68,15 @@ export class HuntsController  {
 
   async getHuntByCulturalCenter(req: Request, res: Response, next: any) {
     try {
+      const id = req.params.id;
       const user = req.user;
       const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const hunts = await this.huntsService.getHuntByCulturalCenter(user, pagination);
+      const hunts = await this.huntsService.getHuntByCulturalCenter(id,user, pagination);
+      logger.info(`Hunts retrieved succesfully`, { route: req.originalUrl })
       res.status(200).json(hunts);
     } catch (err) {
       logger.error("Error getting hunts by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -77,13 +86,8 @@ export class HuntsController  {
 
   async getHuntById(req: Request, res: Response, next: any) {
     try {
-      const user = req.user;
       const id = req.params.id;
-      if (!user) {
-        logger.warn("User missing in request for getting hunt", { route: req.originalUrl });
-        throw new Error("User not found in request");
-      }
-      const hunt = await this.huntsService.getHuntById(user, id)
+      const hunt = await this.huntsService.getHuntById(id)
       if (!hunt) {
         logger.warn(`Hunt with id ${id} not found`, { route: req.originalUrl })
         res.status(404)

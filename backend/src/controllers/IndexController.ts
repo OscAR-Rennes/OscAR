@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { IndexServiceImpl } from "../services/impl/IndexServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
 import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
+import { EditIndexBodyRequestDTO } from "../common-lib/dto/index/EditIndexBodyRequestDTO.js";
 
 export class IndexController  {
 
@@ -32,6 +33,31 @@ export class IndexController  {
         res.status(200).json(index)
     } catch (err) {
       logger.error("Error getting index by hunt", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async editIndex(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const indexId = req.params.id;
+
+      if (!user || !indexId) {
+        logger.warn("Missing user information for index edition", { route: req.originalUrl });
+        throw new Error("User information missing");
+      }
+
+      const indexBody: EditIndexBodyRequestDTO = req.body;
+      const indexData = {
+        id: indexId,
+        ...indexBody,
+      };
+
+      const editedIndex = await this.indexService.editIndex(indexData, user);
+      logger.info("Index edited successfully", { route: req.originalUrl, indexId: editedIndex.id, editedBy: user.id });
+      res.status(200).json(editedIndex);
+    } catch (err) {
+      logger.error("Error editing index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
     }
   }

@@ -22,7 +22,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: process.env.FRONT_URL,
+   origin: (origin, callback) => callback(null, true),  //origin: process.env.FRONT_URL,
   credentials: true,
 }));
 

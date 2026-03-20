@@ -2,6 +2,7 @@ import { Router } from "express";
 import { HuntsController } from "../controllers/HuntsController.js";
 import { authMiddleware, requireRole } from "../common-lib/middlewares/AuthMiddleware.js";
 import { RoleEnum } from "../common-lib/enum/roleEnum.js";
+import { optionalAuthMiddleware } from "../common-lib/middlewares/OptionnalAuthMiddleware.js";
 
 const huntsRoutes = Router();
 
@@ -69,22 +70,20 @@ huntsRoutes.get(
 
 
 huntsRoutes.put(
-    "/hunt/edit",
+    "/hunt/edit/:id",
+    authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => huntsController.editHunt(req, res, next)
 );
 
 huntsRoutes.get(
-    "/hunt/culturalcenter",
-    authMiddleware,
-    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    "/hunt/culturalcenter/:id",
+    optionalAuthMiddleware,
     (req, res, next) => huntsController.getHuntByCulturalCenter(req, res, next)
 );
 
 huntsRoutes.get(
     "/hunt/getbyid/:id",
-    authMiddleware,
-    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => huntsController.getHuntById(req, res, next)
 )
 

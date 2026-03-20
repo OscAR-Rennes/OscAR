@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { StepServiceImpl } from "../services/impl/StepServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
 import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
+import { EditStepBodyRequestDTO } from "../common-lib/dto/step/EditStepBodyRequestDTO.js";
 
 export class StepsController  {
 
@@ -42,13 +43,8 @@ export class StepsController  {
 
   async getStepById(req: Request, res: Response, next: any) {
     try {
-      const user = req.user;
       const id = req.params.id;
-      if (!user) {
-        logger.warn("User missing in request for getting steps", { route: req.originalUrl });
-        throw new Error("User not found in request");
-      }
-      const step = await this.stepService.getStepById(user, id)
+      const step = await this.stepService.getStepById(id)
       if (!step) {
         logger.warn(`Step with id ${id} not found`, { route: req.originalUrl })
         res.status(404)
@@ -57,6 +53,31 @@ export class StepsController  {
       res.status(200).json(step)
     } catch (err) {
       logger.error("Error getting steps by id", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async editStep(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const stepId = req.params.id;
+
+      if (!user || !stepId) {
+        logger.warn("Missing user information for step edition", { route: req.originalUrl });
+        throw new Error("User information missing");
+      }
+
+      const stepBody: EditStepBodyRequestDTO = req.body;
+      const stepData = {
+        id: stepId,
+        ...stepBody,
+      };
+
+      const editedStep = await this.stepService.editStep(stepData, user);
+      logger.info("Step edited successfully", { route: req.originalUrl, stepId: editedStep.id, editedBy: user.id });
+      res.status(200).json(editedStep);
+    } catch (err) {
+      logger.error("Error editing step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
     }
   }
@@ -96,6 +117,18 @@ export class StepsController  {
       }
       const steps = await this.stepService.getStepsByIndex(indexId, pagination);
       logger.info(`Steps for index ${indexId} retrieved successfully`, { route: req.originalUrl });
+      res.status(200).json(steps);
+    } catch (err) {
+      logger.error("Error getting steps by index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async getStepByHunt(req: Request, res: Response, next: any) {
+    try { 
+      const id = req.params.id;
+      const steps = await this.stepService.getStepsByHunt(id);
+      logger.info(`Steps for hunt ${id} retrieved successfully`, { route: req.originalUrl });
       res.status(200).json(steps);
     } catch (err) {
       logger.error("Error getting steps by index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });

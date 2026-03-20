@@ -1,5 +1,10 @@
 export interface GetAllActiveCulturalCenterResponseDTO {
     id: string;
     name: string;
-    isActive: boolean;
+    address: {
+        longitude: string;
+        latitude: string;
+    }
+    description: string;
+    picture_path?:string;
 }

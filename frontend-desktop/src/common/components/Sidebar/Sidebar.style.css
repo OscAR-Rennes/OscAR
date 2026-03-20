@@ -7,15 +7,15 @@
 
 .sidebar-container {
     width: 15rem;
-    height: 100vh;
+    flex: 0 0 15rem;
 }
 
 .sidebar {
     position: fixed;
-    top: 3rem; /* Décale la sidebar sous le header */
+    top: 3.5rem; /* Décale la sidebar sous le header */
     left: 0;
     width: 15rem;
-    height: calc(100vh - 3rem); /* Ajuste la hauteur pour ne pas passer sous la navbar */
+    height: calc(100vh - 3.5rem); /* Ajuste la hauteur pour ne pas passer sous la navbar */
     background: #F0F0F0;
     display: flex;
     flex-direction: column;

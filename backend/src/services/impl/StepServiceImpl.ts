@@ -3,6 +3,8 @@ import { CreateStepRequestDTO } from "../../common-lib/dto/step/CreateStepReques
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
 import { stepMapper } from "../../mapper/StepMapper.js";
 import { CreateStepResponseDTO } from "../../common-lib/dto/step/CreateStepResponseDTO.js";
+import { EditStepRequestDTO } from "../../common-lib/dto/step/EditStepRequestDTO.js";
+import { EditStepResponseDTO } from "../../common-lib/dto/step/EditStepResponseDTO.js";
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
@@ -44,6 +46,46 @@ export class StepServiceImpl implements StepService {
             logger.error(`Error creating step: ${error.message}`, { error, stepData });
             throw new AppError({
                 userMessage: 'Erreur lors de la création de l\'étape',
+                statusCode: 500,
+            });
+        }
+    }
+
+    async editStep(stepData: EditStepRequestDTO, user: AuthResponseDTO): Promise<EditStepResponseDTO> {
+        try {
+            const userRepository = new UserRepository();
+            const indexRepository = new IndexRepository();
+            const existingStep = await stepRepository.getById(stepData.id);
+
+            if (!existingStep) {
+                throw new AppError({
+                    userMessage: "Étape non trouvée",
+                    statusCode: 404,
+                });
+            }
+
+            await assertUserCanAccessHunt(user, existingStep.hunts, userRepository);
+
+            if (stepData.index_id) {
+                const targetIndex = await indexRepository.getByIdWithHunt(stepData.index_id);
+
+                if (!targetIndex || targetIndex.hunt_id !== existingStep.hunt_id) {
+                    throw new AppError({
+                        userMessage: "L'index cible est invalide pour cette étape",
+                        statusCode: 400,
+                    });
+                }
+            }
+
+            const editedStep = await stepRepository.edit(stepData);
+            return stepMapper.toEditResponseDto(editedStep);
+        } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
+            throw new AppError({
+                userMessage: "Erreur lors de la modification de l'étape",
                 statusCode: 500,
             });
         }
@@ -129,18 +171,14 @@ export class StepServiceImpl implements StepService {
     }
 
     async getStepById(
-    user: AuthResponseDTO,
     id: string
     ): Promise<FullStepDTO | null> {
     try {
-        const userRepository = new UserRepository();
         const step = await stepRepository.getById(id);
 
         if (!step) {
-        return null;
+            return null;
         }
-
-        await assertUserCanAccessHunt(user, step.hunts, userRepository);
 
         return stepMapper.toFullResponseDto(step);
 
@@ -148,8 +186,8 @@ export class StepServiceImpl implements StepService {
         if (error instanceof AppError) throw error;
 
         throw new AppError({
-        userMessage: "Erreur lors de la récupération de l'étape",
-        statusCode: 500,
+            userMessage: "Erreur lors de la récupération de l'étape",
+            statusCode: 500,
         });
     }
     }
@@ -161,6 +199,18 @@ export class StepServiceImpl implements StepService {
         } catch (error) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des étapes par index',
+                statusCode: 500,
+            });
+        }
+    }
+
+    async getStepsByHunt(id: string): Promise<LightStepDTO[]> {
+        try {
+            const steps = await stepRepository.getStepsByHuntId(id);
+            return steps.map(stepMapper.toLightDTO);
+        } catch (error) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des étapes par chasse',
                 statusCode: 500,
             });
         }

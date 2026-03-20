@@ -6,6 +6,7 @@ import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js"
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { LightHuntDTO } from "../../common-lib/dto/hunt/LightHuntDTO.js";
 import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
+import { EditHuntResponseDTO } from "../../common-lib/dto/hunt/EditHuntResponseDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { PaginationParamsDTO } from "../../common-lib/dto/common/PaginationParamsDTO.js";
 import { PaginatedResponseDTO } from "../../common-lib/dto/common/PaginatedResponseDTO.js";
@@ -53,9 +54,8 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async editHunt(huntData: EditHuntRequestDTO, userId: string, userRights: string[]) {
+    async editHunt(huntData: EditHuntRequestDTO, user: AuthResponseDTO): Promise<EditHuntResponseDTO> {
         try {
-
             const existingHunt = await huntRepository.getByID(huntData.id);
             if (!existingHunt) {
                 throw new AppError({
@@ -63,22 +63,16 @@ export class HuntServiceImpl implements HuntService {
                     statusCode: 404
                 })
             }
-            const hasRights =
-                existingHunt.creator_id === userId ||
-                userRights.includes('ADMIN') ||
-                (userRights.includes('CULTURAL_CENTER_MANAGER') && existingHunt.cultural_center_id === userId);
 
-            if (!hasRights) {
-                logger.warn(`User does not have rights to edit hunt with ID: ${huntData.id}`);
-                throw new AppError({
-                    userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
-                    statusCode: 403,
-                });
-            }
-
+            await assertUserCanAccessHunt(user, existingHunt, new UserRepository());
             const editedHunt = await huntRepository.edit(huntData);
+            
             return huntMapper.toEditResponseDto(editedHunt)
         } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
             throw new AppError({
                 userMessage: 'Erreur lors de la modification de la chasse',
                 statusCode: 500
@@ -86,8 +80,11 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>> {
+    async getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>> {
         try {
+            if (!user) {
+                return paginateArray((await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO), pagination);
+            }
             if (user.rights.includes('ADMIN')) {
                 return paginateArray((await huntRepository.getAll()).map(huntMapper.toLightDTO), pagination);
             }
@@ -116,7 +113,6 @@ export class HuntServiceImpl implements HuntService {
     }
 
     async getHuntById(
-        user: AuthResponseDTO,
         id: string
         ): Promise<FullHuntDTO | null> {
         try {
@@ -127,7 +123,6 @@ export class HuntServiceImpl implements HuntService {
             return null;
             }
 
-            await assertUserCanAccessHunt(user, hunt, userRepository);
 
             return huntMapper.toFullResponseDto(hunt);
 

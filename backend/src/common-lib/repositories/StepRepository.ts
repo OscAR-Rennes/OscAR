@@ -1,6 +1,7 @@
 import { Prisma, steps } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { CreateStepRequestDTO } from "../dto/step/CreateStepRequestDTO.js";
+import { EditStepRequestDTO } from "../dto/step/EditStepRequestDTO.js";
 
 export class StepRepository {
 
@@ -9,6 +10,14 @@ export class StepRepository {
       data: { ...stepData },
     });
     return stepRecord;
+  }
+
+  async edit(stepData: EditStepRequestDTO): Promise<steps> {
+    const { id, ...data } = stepData;
+    return prisma.steps.update({
+      where: { id },
+      data,
+    });
   }
 
   async delete(stepId: string, tx?: Prisma.TransactionClient): Promise<void> {
@@ -57,6 +66,13 @@ export class StepRepository {
   async getStepsByIndexId(indexId: string): Promise<steps[]> {
     const stepRecords = await prisma.steps.findMany({
       where: { index_id: indexId },
+    });
+    return stepRecords;
+  }
+
+  async getStepsByHuntId(id: string): Promise<steps[]> {
+    const stepRecords = await prisma.steps.findMany({
+      where: { hunt_id: id },
     });
     return stepRecords;
   }

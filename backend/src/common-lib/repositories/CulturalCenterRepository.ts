@@ -32,6 +32,14 @@ export class CulturalCenterRepository  {
      async getAllActive(): Promise<cultural_centers[]> {
         const centers = await prisma.cultural_centers.findMany({
         where: { isActive: true },
+        include: {
+            address: {
+                select: {
+                    longitude: true,
+                    latitude: true,
+                }
+            }
+        }
         });
         return centers;
     }
@@ -39,12 +47,6 @@ export class CulturalCenterRepository  {
     async getAll(): Promise<cultural_centers[]> {
         const centers = await prisma.cultural_centers.findMany();
         return centers;
-    }
-
-    async getById(id: string, tx?: Prisma.TransactionClient): Promise<cultural_centers | null> {
-        return (tx ?? prisma).cultural_centers.findUnique({
-            where: { id },
-        });
     }
 
     async getAllActiveForMap(filters: CulturalCenterMapFilters) {
@@ -114,5 +116,20 @@ export class CulturalCenterRepository  {
         await (tx ?? prisma).cultural_centers.delete({
             where: { id },
         });
+    }
+
+    async getById(id: string, tx?: Prisma.TransactionClient): Promise<cultural_centers | null> {
+        const center = await (tx ?? prisma).cultural_centers.findUnique({
+            where: { id },
+            include: {
+                address: {
+                    select: {
+                        longitude: true,
+                        latitude: true,
+                    }
+                }
+            }
+        })
+        return center
     }
 }
