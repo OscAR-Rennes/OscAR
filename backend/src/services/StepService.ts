@@ -11,6 +11,6 @@ export interface StepService {
   editStep(stepData: EditStepRequestDTO, user: AuthResponseDTO): Promise<EditStepResponseDTO>;
   deleteStep(user: AuthResponseDTO, stepId: string): Promise<void>;
   getStepsByCulturalCenter(user: AuthResponseDTO): Promise<LightStepDTO[]>;
-  getStepById(user: AuthResponseDTO, id: string): Promise<FullStepDTO | null>;
   getStepsByIndex(indexId: string): Promise<LightStepDTO[]>;
+  getStepById(id: string): Promise<FullStepDTO | null>;
 }

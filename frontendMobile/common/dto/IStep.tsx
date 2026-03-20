@@ -1,12 +1,25 @@
-export interface Step {
+export interface FullStepDTO {
+  id: string;
+  title: string;
+  description: string;
+  points: number;
+  latitude: number | null;
+  longitude: number | null;
+  hunt: {
     id: string;
     title: string;
-    description: string;
-    points: number;
-    hunt_id: string;
-    latitude: number;
-    longitude: number;
-    index_id: string;
-    created_at: string;
-    updated_at: string;
+    culturalCenter: {
+      id: string;
+      name: string;
+    };
+    creator: {
+      id: string;
+      username: string;
+    };
+  };
+  index: {
+    id: string;
+    name: string | null;
+    index: number;
+  };
 }

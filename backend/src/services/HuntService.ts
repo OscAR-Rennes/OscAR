@@ -3,13 +3,14 @@ import { CreateHuntRequestDTO } from "../common-lib/dto/hunt/CreateHuntRequestDT
 import { CreateHuntResponseDTO } from "../common-lib/dto/hunt/CreateHuntResponseDTO.js";
 import { EditHuntRequestDTO } from "../common-lib/dto/hunt/EditHuntRequestDTO.js";
 import { EditHuntResponseDTO } from "../common-lib/dto/hunt/EditHuntResponseDTO.js";
+import { FullHuntDTO } from "../common-lib/dto/hunt/FullHuntDTO.js";
 import { LightHuntDTO } from "../common-lib/dto/hunt/LightHuntDTO.js";
 
 export interface HuntService {
   createHunt(huntData: CreateHuntRequestDTO, userId: string, userCulturalCenterId: string): Promise<CreateHuntResponseDTO>;
   getAllHunt(): Promise<LightHuntDTO[]>;
-  getHuntByCulturalCenter(user: AuthResponseDTO): Promise<LightHuntDTO[]>;
+  getHuntByCulturalCenter(id: string, user?: AuthResponseDTO): Promise<LightHuntDTO[]>;
+  getHuntById(id: string): Promise<FullHuntDTO | null>;
   editHunt(huntData: EditHuntRequestDTO, user: AuthResponseDTO): Promise<EditHuntResponseDTO>;
-  getHuntById(user: AuthResponseDTO, id: string): Promise<LightHuntDTO | null>;
   deleteHunt(user: AuthResponseDTO, id: string): Promise<void>;
 }
