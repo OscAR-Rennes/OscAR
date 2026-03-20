@@ -1,54 +1,94 @@
-import { useState, useEffect } from "react";
-import { FullStepDTO } from "../../../api/models/steps/FullStepDto";
-import { getStepById } from "../../../api/services/step.api";
+import HeaderForm from "../../../common/components/header_form/HeaderForm";
+import Ribbon from "../../../common/components/ribbon/ribbon";
+import {
+  STEPS_CONSULT_TABS,
+  StepsConsultMapField,
+  useStepConsultData,
+} from "./steps.data";
+import "../../../common/components/map/map.style.css";
+import "./index.style.css";
 
 export default function StepConsultation() {
+  const { step, isLoading, errorMessage } = useStepConsultData();
 
-  const [step, setStep] = useState<FullStepDTO | null>(null);
-  
-    const id = window.location.pathname.split("/").pop();
-  
-    useEffect(() => {
-      const fetchStep = async () => {
-        if (!id) return;
-        const data = await getStepById(id);
-        setStep(data);
-      };
-      fetchStep();
-    }, [id]);
+  if (isLoading) {
+    return (
+      <div className="steps-consult-page">
+        <Ribbon formId="step-consult-form" />
+        <div className="steps-consult-loading">Chargement...</div>
+      </div>
+    );
+  }
 
-    if (!step) return <p>Loading...</p>;
+  if (errorMessage || !step) {
+    return (
+      <div className="steps-consult-page">
+        <Ribbon formId="step-consult-form" />
+        <div className="steps-consult-error">{errorMessage ?? "Étape introuvable."}</div>
+      </div>
+    );
+  }
+
+  const indexLabel = step.index.name
+    ? `${step.index.index} - ${step.index.name}`
+    : String(step.index.index);
   
   return (
-    <>
-      <h1>Lootopia V0.0.1 - Steps consultation</h1>
+    <div className="steps-consult-page">
+      <Ribbon formId="step-consult-form" />
 
-      <section>
-        <h2>{step.title}</h2>
-        <p>{step.description}</p>
+      <HeaderForm
+        title={step.title}
+        entityName="Étape"
+        tabs={STEPS_CONSULT_TABS}
+        activeTabId="general"
+        onTabChange={() => {}}
+        creatorName={step.hunt.creator.username}
+        creatorLabel="Créé par"
+        creatorPlacement="right"
+        saveState="saved"
+      />
 
-        <h3>Détails :</h3>
-        <ul>
-          <li><strong>Points :</strong> {step.points}</li>
-          {step.latitude && (<li><strong>Latitude :</strong> {step.latitude}</li>)}
-          {step.longitude && (<li><strong>Longitude :</strong> {step.longitude}</li>)}
+      <section className="steps-consult-content">
+        <div className="steps-consult-general-layout" id="step-consult-form">
+          <div className="steps-consult-info-panel">
+            <p className="steps-consult-section-title">Informations de l'étape</p>
 
-          <li><strong>Chasse associée :</strong>{step.hunt.title}</li>
-          <li><strong>Centre culturel :</strong> {step.hunt.culturalCenter.name}</li>
-          <li><strong>Createur de l'étape : </strong>{step.hunt.creator.username}</li>
-         
-          {
-            step.index.name ? (
-              <>
-                <li><strong>Chasse dans l'index numéro : </strong>{step.index.index}</li>
-                <li><strong>Nom de l'index : </strong>{step.index.name}</li>
-              </>
-            ) : (
-              <li><strong>Chasse numéro : </strong>{step.index.index}</li>
-            )
-          }
-        </ul>
+            <ReadOnlyField label="Titre" value={step.title} />
+            <ReadOnlyField label="Description" value={step.description} />
+            <ReadOnlyField label="Points" value={String(step.points)} />
+            <ReadOnlyField
+              label="Latitude"
+              value={step.latitude === null ? "-" : String(step.latitude)}
+            />
+            <ReadOnlyField
+              label="Longitude"
+              value={step.longitude === null ? "-" : String(step.longitude)}
+            />
+            <ReadOnlyField label="Chasse" value={step.hunt.title} />
+            <ReadOnlyField label="Centre culturel" value={step.hunt.culturalCenter.name} />
+            <ReadOnlyField label="Index" value={indexLabel} />
+          </div>
+
+          <StepsConsultMapField latitude={step.latitude} longitude={step.longitude} />
+        </div>
       </section>
-    </>
+    </div>
+  );
+}
+
+function ReadOnlyField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="osc-form-item">
+      <label className="osc-form-label">{label}</label>
+
+      <div className="osc-form-control-row">
+        <span className="osc-form-required is-hidden" aria-hidden="true">
+          *
+        </span>
+
+        <input className="osc-form-control" value={value} readOnly />
+      </div>
+    </div>
   );
 }

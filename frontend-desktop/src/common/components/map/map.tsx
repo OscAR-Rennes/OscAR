@@ -13,7 +13,13 @@ const libraries: Libraries = ["places"];
 
 const defaultCenter = { lat: 48.8584, lng: 2.2945 };
 
-export default function MapPicker({ value, onChange }) {
+type MapPickerProps = {
+  value: { lat: number; lng: number } | null;
+  onChange?: (coords: { lat: number; lng: number }) => void;
+  readOnly?: boolean;
+};
+
+export default function MapPicker({ value, onChange, readOnly = false }: MapPickerProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: apiKey,
     libraries,
@@ -34,6 +40,8 @@ export default function MapPicker({ value, onChange }) {
   }, [value]);
 
   const handleMapClick = (e) => {
+    if (readOnly) return;
+
     const coords = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
@@ -43,6 +51,8 @@ export default function MapPicker({ value, onChange }) {
   };
 
   const handlePlaceChanged = () => {
+    if (readOnly) return;
+
     if (!autocomplete) return;
 
     const place = autocomplete.getPlace();
@@ -64,25 +74,27 @@ export default function MapPicker({ value, onChange }) {
 
   return isLoaded ? (
     <div className="map-picker">
-      <Autocomplete
-        onLoad={setAutocomplete}
-        onPlaceChanged={handlePlaceChanged}
-      >
-        <input
-          type="text"
-          className="map-search-input"
-          placeholder="Rechercher une adresse..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
-      </Autocomplete>
+      {!readOnly && (
+        <Autocomplete
+          onLoad={setAutocomplete}
+          onPlaceChanged={handlePlaceChanged}
+        >
+          <input
+            type="text"
+            className="map-search-input"
+            placeholder="Rechercher une adresse..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        </Autocomplete>
+      )}
 
       <GoogleMap
         mapContainerClassName="map-canvas"
         center={marker || defaultCenter}
         zoom={12}
         onLoad={setMap}
-        onClick={handleMapClick}
+        onClick={readOnly ? undefined : handleMapClick}
       >
         {marker && <Marker position={marker} />}
       </GoogleMap>
