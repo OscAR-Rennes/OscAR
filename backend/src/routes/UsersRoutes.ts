@@ -125,4 +125,9 @@ usersRoutes.put(
     requireRole([RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => usersController.switchStatus(req, res, next)
 )
+
+usersRoutes.post(
+    "/users/mobile",
+    (req, res, next) => usersController.createUserMobile(req, res, next)
+)
 export default usersRoutes;

@@ -25,7 +25,7 @@ export class UserRepository  {
         email: userData.email,
         username: userData.username,
         password: hashedPassword,
-        id_cultural_center: userData.id_cultural_center,
+        id_cultural_center: userData.id_cultural_center ?? null,
       },
     });
 

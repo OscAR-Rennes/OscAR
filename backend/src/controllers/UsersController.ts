@@ -34,6 +34,18 @@ export class UsersController  {
     }
   }
 
+  async createUserMobile(req: Request, res: Response, next: any) {
+    try {
+      const userData = req.body;
+      const newUser = await this.usersService.createUserMobile(userData);
+      logger.info("User created successfully", { route: req.originalUrl, userId: newUser.id });
+      res.status(201).json(newUser);
+    } catch (err) {
+      logger.error("Error creating user", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
       const culturalcenter_id = req.user?.id_cultural_center;

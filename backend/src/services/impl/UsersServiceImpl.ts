@@ -93,6 +93,40 @@ export class UsersServiceImpl implements UsersService {
     });
   }
 
+  async createUserMobile(userData: NewUserRequestDTO) {
+    try {
+      let userToCreate = { ...userData };
+      userToCreate = {
+          ...userToCreate,
+          rights: [RoleEnum.USER]
+        };
+      const newUser = await this.userRepository.create(userToCreate);
+      return userMapper.toDTONewUser(newUser);
+    } catch(error: any) {
+      if (error instanceof AppError) throw error;
+
+      if (error.code === "P2002") {
+        let field = error.meta?.target?.[0];
+
+        if (!field && typeof error.message === "string") {
+          const match = error.message.match(/\(`(.+)`\)/);
+          if (match) field = match[1];
+        }
+
+        field = field || "un champ unique";
+        console.log(error)
+        throw new AppError({
+          userMessage: `Conflit d'unicité sur: ${field}`,
+          statusCode: 409,
+        });
+      }
+      throw new AppError({
+        userMessage: "Erreur lors de la création de l'utilisateur",
+        statusCode: 500,
+      });
+    };
+  }
+
   async getAllUsers() {
     try {
       const users = await this.userRepository.findAll();
