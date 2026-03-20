@@ -1,68 +1,19 @@
 import { CreateIndexDto } from "../../../api/models/index/AddIndexDto";
 import { CreateStepDto } from "../../../api/models/steps/AddStepDto";
-import { useStepsData } from "./steps.data";
-import { useEffect, useMemo, useState } from "react";
+import {
+  HuntSelectionSync,
+  STEPS_CREATE_TABS,
+  StepsMapField,
+  useStepsData,
+} from "./steps.data";
+import { useMemo, useState } from "react";
 import HeaderForm from "../../../common/components/header_form/HeaderForm";
 import { useAuthStore } from "../../../common/store/authStore";
-import MapPicker from "../../../common/components/map/map";
 import Ribbon from "../../../common/components/ribbon/ribbon";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
-import Button from "../../../common/components/button/Button";
-import { useFormContext } from "react-hook-form";
 import "./index.style.css";
-
-function HuntSelectionSync({
-  onHuntChange,
-}: {
-  onHuntChange: (huntId: string | null) => void;
-}) {
-  const { watch } = useFormContext();
-  const huntId = watch("hunt_id");
-
-  useEffect(() => {
-    if (huntId === undefined || huntId === null || huntId === "") {
-      onHuntChange(null);
-      return;
-    }
-
-    onHuntChange(String(huntId));
-  }, [huntId, onHuntChange]);
-
-  return null;
-}
-
-function StepsMapField() {
-  const { setValue, watch } = useFormContext();
-  const latitude = watch("latitude");
-  const longitude = watch("longitude");
-
-  const markerValue =
-    latitude !== undefined &&
-    latitude !== null &&
-    latitude !== "" &&
-    longitude !== undefined &&
-    longitude !== null &&
-    longitude !== ""
-      ? {
-          lat: Number(latitude),
-          lng: Number(longitude),
-        }
-      : null;
-
-  return (
-    <div className="steps-create-map-panel">
-      <MapPicker
-        value={markerValue}
-        onChange={(coords: { lat: number; lng: number }) => {
-          setValue("latitude", coords.lat, { shouldDirty: true, shouldValidate: true });
-          setValue("longitude", coords.lng, { shouldDirty: true, shouldValidate: true });
-        }}
-      />
-    </div>
-  );
-}
 
 export default function StepsCreation() {
   const {
@@ -91,12 +42,6 @@ export default function StepsCreation() {
     [indexesForHunt]
   );
 
-  const tabs = [
-    { id: "general", label: "Général" },
-    { id: "documents", label: "Documents" },
-    { id: "index", label: "Index" },
-  ];
-
   const activeFormId = activeTabId === "index" ? "create-index-form" : "create-step-form";
 
   return (
@@ -106,7 +51,7 @@ export default function StepsCreation() {
       <HeaderForm
         title="Nouvelle étape"
         entityName="Étape"
-        tabs={tabs}
+        tabs={STEPS_CREATE_TABS}
         activeTabId={activeTabId}
         onTabChange={setActiveTabId}
         creatorName={connectedUserName}
