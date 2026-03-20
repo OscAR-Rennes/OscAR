@@ -53,13 +53,11 @@ const CurrentStepScreen: React.FC = () => {
         });
     };
 
-    // 1️⃣ Charger la liste des steps pour la hunt
     useEffect(() => {
         const fetchSteps = async () => {
-        const data = await getStepByHunt(huntId as string); // ← liste LightStepDTO
+        const data = await getStepByHunt(huntId as string);
         setSteps(data);
         if (data.length > 0) {
-            // on charge le premier step complet
             const full = await getStepById(data[0].id);
             setCurrentStep(full);
         }
@@ -70,17 +68,16 @@ const CurrentStepScreen: React.FC = () => {
         }
     }, [huntId]);
 
-    // 2️⃣ Quand l’index change, charger le step complet correspondant
     useEffect(() => {
         const fetchCurrentStep = async () => {
         const light = steps[currentStepIndex];
         if (!light) return;
-        const full = await getStepById(light.id);
-        setCurrentStep(full);
+            const full = await getStepById(light.id);
+            setCurrentStep(full);
         };
 
         if (steps.length > 0) {
-        fetchCurrentStep();
+            fetchCurrentStep();
         }
     }, [currentStepIndex, steps]);
 
