@@ -28,7 +28,14 @@ export const huntMapper = {
   toEditResponseDto(entity: hunts): EditHuntResponseDTO {
     return {
       id: entity.id,
-      title: entity.title
+      title: entity.title,
+      description: entity.description,
+      difficulty_id: entity.difficulty_id,
+      points: entity.points,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
+      picture_path: entity.picture_path,
+      isactive: entity.isactive
     };
   },
 
@@ -57,7 +64,7 @@ export const huntMapper = {
       points: entity.points,
       latitude: entity.latitude,
       longitude: entity.longitude,
-      pictureUrl: entity.picture_path ?? null,
+      pictureUrl: entity.picture_path,
 
       creator: {
         id: entity.users.id,

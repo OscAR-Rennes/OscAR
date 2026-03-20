@@ -7,6 +7,9 @@ export function useHuntsData() {
   const [hunts, setHunts] = useState([]);
   const [selectedHuntsRows, setSelectedHuntsRows] = useState([]);
   const user = useAuthStore((state) => state.user);
+  const hasSelectedHunts = selectedHuntsRows.length > 0;
+  const hasSingleSelectedHunt = selectedHuntsRows.length === 1;
+  const selectedHuntId = hasSingleSelectedHunt ? selectedHuntsRows[0].id : undefined;
 
   const huntsColumns = 
     [
@@ -26,6 +29,9 @@ export function useHuntsData() {
     hunts,
     huntsColumns,
     setSelectedHuntsRows,
+    hasSelectedHunts,
+    hasSingleSelectedHunt,
+    selectedHuntId,
   }
 
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { StepServiceImpl } from "../services/impl/StepServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { EditStepBodyRequestDTO } from "../common-lib/dto/step/EditStepBodyRequestDTO.js";
 
 export class StepsController  {
 
@@ -50,6 +51,31 @@ export class StepsController  {
       res.status(200).json(step)
     } catch (err) {
       logger.error("Error getting steps by id", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async editStep(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const stepId = req.params.id;
+
+      if (!user || !stepId) {
+        logger.warn("Missing user information for step edition", { route: req.originalUrl });
+        throw new Error("User information missing");
+      }
+
+      const stepBody: EditStepBodyRequestDTO = req.body;
+      const stepData = {
+        id: stepId,
+        ...stepBody,
+      };
+
+      const editedStep = await this.stepService.editStep(stepData, user);
+      logger.info("Step edited successfully", { route: req.originalUrl, stepId: editedStep.id, editedBy: user.id });
+      res.status(200).json(editedStep);
+    } catch (err) {
+      logger.error("Error editing step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
     }
   }

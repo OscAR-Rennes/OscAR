@@ -1,5 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+
+const searchIcon = require("../../assets/icon/search.svg").default;
+
+const normalizeText = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
 
 export type Column<T> = {
@@ -19,7 +27,11 @@ type TableProps<T extends { id: string | number }> = {
   actions?: Action<T>[];
   onRowSelect?: (rows: T[]) => void;
   renderActionButton?: () => React.ReactNode;
+  allItemsLabel?: string;
+  allItemsPrefix?: string;
 };
+
+type SortDirection = "asc" | "desc";
 
 
 export default function Table<T extends { id: string | number }>({
@@ -28,8 +40,11 @@ export default function Table<T extends { id: string | number }>({
   actions = [],
   onRowSelect,
   renderActionButton,
+  allItemsLabel,
+  allItemsPrefix = "Tous les",
 }: TableProps<T>) {
   const location = useLocation();
+  const selectAllRef = useRef<HTMLInputElement>(null);
 
 
   const [selectedIds, setSelectedIds] = useState<
@@ -37,18 +52,165 @@ export default function Table<T extends { id: string | number }>({
   >([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortKey, setSortKey] = useState<keyof T | null>(
+    columns[0]?.key ?? null
+  );
+  const [sortDirection, setSortDirection] =
+    useState<SortDirection>("asc");
+
+  const normalizedSearchQuery = normalizeText(
+    searchQuery.trim()
+  );
+
+  const filteredData = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return data;
+    }
+
+    const isStatusQuery = [
+      "actif",
+      "active",
+      "inactif",
+      "inactive",
+      "desactive",
+    ].includes(normalizedSearchQuery);
+
+    return data.filter((row) =>
+      Object.values(row as Record<string, unknown>).some(
+        (value) => {
+          const searchableValues = [String(value ?? "")];
+
+          if (typeof value === "boolean") {
+            searchableValues.push(
+              ...(value
+                ? ["true", "active", "actif"]
+                : [
+                    "false",
+                    "inactive",
+                    "inactif",
+                    "desactive",
+                  ])
+            );
+          }
+
+          const normalizedValue = normalizeText(
+            String(value ?? "")
+          );
+
+          if (
+            normalizedValue === "active" ||
+            normalizedValue === "actif"
+          ) {
+            searchableValues.push("active", "actif");
+          }
+
+          if (
+            normalizedValue === "inactive" ||
+            normalizedValue === "inactif"
+          ) {
+            searchableValues.push(
+              "inactive",
+              "inactif",
+              "desactive"
+            );
+          }
+
+          const normalizedSearchableValues =
+            searchableValues.map((searchableValue) =>
+              normalizeText(searchableValue)
+            );
+
+          if (isStatusQuery) {
+            return normalizedSearchableValues.some(
+              (searchableValue) =>
+                searchableValue === normalizedSearchQuery
+            );
+          }
+
+          return normalizedSearchableValues.some(
+            (searchableValue) =>
+              searchableValue.includes(normalizedSearchQuery)
+          );
+        }
+      )
+    );
+  }, [data, normalizedSearchQuery]);
+
+  const sortedData = useMemo(() => {
+    if (!sortKey) {
+      return filteredData;
+    }
+
+    const getSortableValue = (value: unknown) => {
+      if (typeof value === "number") {
+        return value;
+      }
+
+      if (typeof value === "boolean") {
+        return value ? "actif" : "inactif";
+      }
+
+      return normalizeText(String(value ?? ""));
+    };
+
+    const sorted = [...filteredData].sort((a, b) => {
+      const aValue = getSortableValue(a[sortKey]);
+      const bValue = getSortableValue(b[sortKey]);
+
+      let comparison = 0;
+
+      if (
+        typeof aValue === "number" &&
+        typeof bValue === "number"
+      ) {
+        comparison = aValue - bValue;
+      } else {
+        comparison = String(aValue).localeCompare(
+          String(bValue),
+          "fr",
+          { sensitivity: "base" }
+        );
+      }
+
+      return sortDirection === "asc"
+        ? comparison
+        : -comparison;
+    });
+
+    return sorted;
+  }, [filteredData, sortDirection, sortKey]);
 
 
   const totalPages = Math.max(
     1,
-    Math.ceil(data.length / itemsPerPage)
+    Math.ceil(sortedData.length / itemsPerPage)
   );
 
   const currentData = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return data.slice(start, start + itemsPerPage);
-  }, [data, currentPage, itemsPerPage]);
+    return sortedData.slice(start, start + itemsPerPage);
+  }, [sortedData, currentPage, itemsPerPage]);
+
+  const allRowIds = useMemo(
+    () => sortedData.map((row) => row.id),
+    [sortedData]
+  );
+
+  const selectedAllRowsCount = useMemo(
+    () =>
+      allRowIds.filter((id) => selectedIds.includes(id))
+        .length,
+    [allRowIds, selectedIds]
+  );
+
+  const isAllRowsSelected =
+    allRowIds.length > 0 &&
+    selectedAllRowsCount === allRowIds.length;
+
+  const isSomeRowsSelected =
+    selectedAllRowsCount > 0 && !isAllRowsSelected;
 
 
   const toggleSelect = (row: T) => {
@@ -64,10 +226,61 @@ export default function Table<T extends { id: string | number }>({
     });
   };
 
+  const toggleSelectAllRows = () => {
+    setSelectedIds((prev) => {
+      const next = isAllRowsSelected ? [] : allRowIds;
+
+      onRowSelect?.(data.filter((r) => next.includes(r.id)));
+
+      return next;
+    });
+  };
+
+  const toggleSort = (columnKey: keyof T) => {
+    setCurrentPage(1);
+
+    if (sortKey === columnKey) {
+      setSortDirection((prev) =>
+        prev === "asc" ? "desc" : "asc"
+      );
+      return;
+    }
+
+    setSortKey(columnKey);
+    setSortDirection("asc");
+  };
+
   useEffect(() => {
     setSelectedIds([]);
     setCurrentPage(1);
   }, [data, itemsPerPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (!columns.length) {
+      setSortKey(null);
+      return;
+    }
+
+    const hasCurrentSortKey = sortKey
+      ? columns.some((column) => column.key === sortKey)
+      : false;
+
+    if (!hasCurrentSortKey) {
+      setSortKey(columns[0].key);
+      setSortDirection("asc");
+    }
+  }, [columns, sortKey]);
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate =
+        isSomeRowsSelected;
+    }
+  }, [isSomeRowsSelected]);
 
 
   const renderCell = (
@@ -93,102 +306,147 @@ export default function Table<T extends { id: string | number }>({
 
   return (
     <>
-      {/* Header */}
-      <div
-        className="table-row-count-wrapper"
-        style={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <span>Lignes : {data.length}</span>
-        {renderActionButton?.()}
-      </div>
+      <div className="container">
+        {/* Header */}
+        <div className="table-row-count-wrapper">
+          {allItemsLabel ? (
+            <span className="table-all-items-label">
+              {`${allItemsPrefix} ${allItemsLabel}`}
+            </span>
+          ) : null}
 
-      {/* Table */}
-      <table>
-        <thead>
-          <tr>
-            <th />
-            {columns.map((col) => (
-              <th key={String(col.key)}>{col.label}</th>
-            ))}
-          </tr>
-        </thead>
+          <div className="table-header-actions">
+            {renderActionButton?.()}
 
-        <tbody>
-          {currentData.map((row) => (
-            <tr key={row.id}>
-              {/* Checkbox */}
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(row.id)}
-                  onChange={() => toggleSelect(row)}
-                />
-              </td>
+            <label className="table-search-wrapper">
+              <img
+                src={searchIcon}
+                alt="Rechercher"
+                className="table-search-icon"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) =>
+                  setSearchQuery(e.target.value)
+                }
+                placeholder="Rechercher"
+                className="table-search-input"
+              />
+            </label>
+          </div>
+        </div>
 
-              {/* Data columns */}
-              {columns.map((col, index) => (
-                <td key={String(col.key)}>
-                  {renderCell(row, col, index)}
-                </td>
+        {/* Table */}
+        <div className="table-content">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    ref={selectAllRef}
+                    type="checkbox"
+                    checked={isAllRowsSelected}
+                    onChange={toggleSelectAllRows}
+                    aria-label="Sélectionner toutes les lignes"
+                  />
+                </th>
+                {columns.map((col) => (
+                  <th key={String(col.key)}>
+                    <button
+                      type="button"
+                      className="table-sort-button"
+                      onClick={() => toggleSort(col.key)}
+                    >
+                      <span>{col.label}</span>
+                      {sortKey === col.key ? (
+                        <span className="table-sort-arrow">
+                          {sortDirection === "asc"
+                            ? "↓"
+                            : "↑"}
+                        </span>
+                      ) : null}
+                    </button>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {currentData.map((row) => (
+                <tr key={row.id}>
+                  {/* Checkbox */}
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(row.id)}
+                      onChange={() => toggleSelect(row)}
+                    />
+                  </td>
+
+                  {/* Data columns */}
+                  {columns.map((col, index) => (
+                    <td key={String(col.key)}>
+                      {renderCell(row, col, index)}
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
 
-      {/* Footer / Pagination */}
-      <div
-        className="table-footer"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 12,
-          marginTop: 16,
-        }}
-      >
-        <button
-          className="table-btn"
-          disabled={currentPage === 1}
-          onClick={() =>
-            setCurrentPage((p) => Math.max(1, p - 1))
-          }
-        >
-          Précédent
-        </button>
+        {/* Footer / Pagination */}
+        <div className="table-footer">
+          <span className="table-row-count">
+            Lignes : {filteredData.length}
+          </span>
 
-        <span>
-          Page {currentPage} / {totalPages}
-        </span>
+          <div className="table-pagination-actions">
+            <button
+              className="table-pagination-btn"
+              disabled={currentPage === 1}
+              onClick={() =>
+                setCurrentPage((p) => Math.max(1, p - 1))
+              }
+            >
+              Précédent
+            </button>
 
-        <button
-          className="table-btn"
-          disabled={currentPage === totalPages}
-          onClick={() =>
-            setCurrentPage((p) =>
-              Math.min(totalPages, p + 1)
-            )
-          }
-        >
-          Suivant
-        </button>
+            <span>
+              Page {currentPage} / {totalPages}
+            </span>
 
-        <span>
-          Afficher&nbsp;
-          <select
-            value={itemsPerPage}
-            onChange={(e) =>
-              setItemsPerPage(Number(e.target.value))
-            }
-          >
-            {[10, 15, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-          &nbsp;par page
-        </span>
+            <button
+              className="table-pagination-btn"
+              disabled={currentPage === totalPages}
+              onClick={() =>
+                setCurrentPage((p) =>
+                  Math.min(totalPages, p + 1)
+                )
+              }
+            >
+              Suivant
+            </button>
+
+            <span>
+              Afficher&nbsp;
+              <select
+                value={itemsPerPage}
+                onChange={(e) =>
+                  setItemsPerPage(Number(e.target.value))
+                }
+              >
+                {[15, 30, 50].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              &nbsp;par page
+            </span>
+          </div>
+        </div>
       </div>
     </>
   );

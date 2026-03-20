@@ -1,4 +1,5 @@
 import { CreateStepResponseDTO } from "../common-lib/dto/step/CreateStepResponseDTO.js";
+import { EditStepResponseDTO } from "../common-lib/dto/step/EditStepResponseDTO.js";
 import { steps } from "@prisma/client";
 import { LightStepDTO } from "../common-lib/dto/step/LightStepDTO.js";
 import { FullStepDTO } from "../common-lib/dto/step/FullStepDTO.js";
@@ -20,6 +21,19 @@ export const stepMapper = {
         points: entity.points
       };
     },
+
+  toEditResponseDto(entity: steps): EditStepResponseDTO {
+    return {
+      id: entity.id,
+      title: entity.title,
+      description: entity.description,
+      points: entity.points,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
+      hunt_id: entity.hunt_id,
+      index_id: entity.index_id,
+    };
+  },
 
   toFullResponseDto(entity: any): FullStepDTO {
     return {

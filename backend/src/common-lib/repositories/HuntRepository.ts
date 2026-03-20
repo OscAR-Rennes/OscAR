@@ -68,9 +68,10 @@ export class HuntRepository {
   }
 
   async edit(huntData: EditHuntRequestDTO): Promise<hunts> {
+    const { id, ...data } = huntData;
     const huntRecord = await prisma.hunts.update({
-      where: { id: huntData.id },
-      data: { ...huntData },
+      where: { id },
+      data,
     });
     return huntRecord;
   }

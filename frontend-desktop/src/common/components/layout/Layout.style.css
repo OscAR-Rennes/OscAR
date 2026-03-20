@@ -1,19 +1,25 @@
 .layout-root {
   display: flex;
   flex-direction: column;
-  min-height: 62.5rem;
+  min-height: 100vh;
 }
 
 .layout-content {
   display: flex;
   flex: 1;
+  min-height: 0;
+  padding-top: 3.5rem;
 }
 
 .layout-main {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   margin-left: 0;
-  padding-left: 0;
-  padding-top: 3.5rem;
   background: #f9f9f9;
-  min-height: calc(100vh - 3.5rem);
+  min-height: 0;
+  padding-top: 0.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-bottom: 1.5rem;
 }
