@@ -5,7 +5,7 @@ export interface CulturalCenter {
     picture_path?: string | null;
     isActive: boolean;
     address: {
-        longitude: string;
-        latitude: string;
+        longitude: number;
+        latitude: number;
     }
 }
