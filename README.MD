@@ -62,8 +62,7 @@ docker compose -f docker-compose.dev.yml up --build```
 ```bash
 cd frontendMobile
 npm install
-npx expo start
-```
+npx expo start```
 
 ---
 

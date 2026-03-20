@@ -45,38 +45,38 @@ export class IndexServiceImpl implements IndexService {
     }
 
 
-    async deleteIndex(user: AuthResponseDTO, indexId: string): Promise<void> {
+    async deleteIndex(user: AuthResponseDTO, indexIds: string[]): Promise<void> {
         try {
             const userRepository = new UserRepository();
-            const index = await indexRepository.getByIdWithHunt(indexId);
 
-            if (!index) {
-                throw new AppError({
-                    userMessage: "Index non trouvé",
-                    statusCode: 404,
-                });
-            }
+            for (const indexId of indexIds) {
+                const index = await indexRepository.getByIdWithHunt(indexId);
 
-            await assertUserCanAccessHunt(user, index.hunts, userRepository);
-            
-
-
-            await prisma.$transaction(async (tx) => {
-                const stepRepository = new StepRepository();
-                const huntRepository = new HuntRepository();
-                
-
-                const indexesInHunt = await indexRepository.countByHuntId(index.hunt_id, tx);
-                await stepRepository.deleteByIndexId(indexId, tx);
-                
-                if (indexesInHunt === 1) {
-                    await huntRepository.updateIsActive(index.hunt_id, false, tx);
-                    logger.info(`Hunt disabled because its last index became empty: ${index.hunt_id}`, { huntId: index.hunt_id });
+                if (!index) {
+                    throw new AppError({
+                        userMessage: "Index non trouvé",
+                        statusCode: 404,
+                    });
                 }
 
-                await indexRepository.delete(indexId, tx);
-                logger.info(`Index deleted successfully with ID: ${indexId}`, { indexId, huntId: index.hunt_id });
-            });
+                await assertUserCanAccessHunt(user, index.hunts, userRepository);
+
+                await prisma.$transaction(async (tx) => {
+                    const stepRepository = new StepRepository();
+                    const huntRepository = new HuntRepository();
+
+                    const indexesInHunt = await indexRepository.countByHuntId(index.hunt_id, tx);
+                    await stepRepository.deleteByIndexId(indexId, tx);
+
+                    if (indexesInHunt === 1) {
+                        await huntRepository.updateIsActive(index.hunt_id, false, tx);
+                        logger.info(`Hunt disabled because its last index became empty: ${index.hunt_id}`, { huntId: index.hunt_id });
+                    }
+
+                    await indexRepository.delete(indexId, tx);
+                    logger.info(`Index deleted successfully with ID: ${indexId}`, { indexId, huntId: index.hunt_id });
+                });
+            }
         } catch (error: any) {
             if (error instanceof AppError) {
                 throw error;

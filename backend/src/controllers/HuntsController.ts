@@ -99,15 +99,20 @@ export class HuntsController  {
   async deleteHunt(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
-      const id = req.params.id;
+      const ids = req.body?.ids;
 
       if (!user) {
         logger.warn("User missing in request for deleting hunt", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
 
-      await this.huntsService.deleteHunt(user, id);
-      logger.info(`Hunt with id ${id} deleted successfully`, { route: req.originalUrl, deletedBy: user.id });
+      if (!Array.isArray(ids) || ids.length === 0 || ids.some((id) => typeof id !== "string" || !id.trim())) {
+        logger.warn("Invalid ids payload for deleting hunts", { route: req.originalUrl });
+        throw new Error("Invalid ids payload");
+      }
+
+      await this.huntsService.deleteHunt(user, ids);
+      logger.info(`Hunts deleted successfully`, { route: req.originalUrl, deletedBy: user.id, deletedCount: ids.length });
       res.status(204).send();
     } catch (err) {
       logger.error("Error deleting hunt", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });

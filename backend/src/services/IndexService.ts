@@ -8,5 +8,5 @@ import { PaginatedResponseDTO } from "../common-lib/dto/common/PaginatedResponse
 export interface IndexService {
   createIndex(indexData: CreateIndexRequestDTO): Promise<CreateIndexResponseDTO>;
   getIndexByHunt(huntId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<GetIndexByHuntResponseDTO>>;
-  deleteIndex(user: AuthResponseDTO, indexId: string): Promise<void>;
+  deleteIndex(user: AuthResponseDTO, indexIds: string[]): Promise<void>;
 }

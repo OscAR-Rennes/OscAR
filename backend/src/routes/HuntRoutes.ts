@@ -89,7 +89,7 @@ huntsRoutes.get(
 )
 
 huntsRoutes.delete(
-    "/hunt/:id",
+    "/hunt",
     authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => huntsController.deleteHunt(req, res, next)

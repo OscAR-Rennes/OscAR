@@ -8,7 +8,7 @@ import { LightStepDTO } from "../common-lib/dto/step/LightStepDTO.js";
 
 export interface StepService {
   createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO>;
-  deleteStep(user: AuthResponseDTO, stepId: string): Promise<void>;
+  deleteStep(user: AuthResponseDTO, stepIds: string[]): Promise<void>;
   getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>>;
   getStepById(user: AuthResponseDTO, id: string): Promise<FullStepDTO | null>;
   getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>>;

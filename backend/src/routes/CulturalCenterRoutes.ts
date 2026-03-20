@@ -29,6 +29,11 @@ culturalCenterRoutes.get(
     (req, res, next) => culturalCenterController.getAllActive(req, res, next)
 );
 
+culturalCenterRoutes.get(
+    '/culturalcenter/active/map',
+    (req, res, next) => culturalCenterController.getAllActiveForMap(req, res, next)
+);
+
 /**
  * @swagger
  * /culturalcenter:
@@ -90,5 +95,14 @@ culturalCenterRoutes.put(
     requireRole([RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => culturalCenterController.switchStatus(req, res, next)
 )
+
+culturalCenterRoutes.delete(
+    "/culturalcenter",
+    authMiddleware,
+    requireRole([RoleEnum.CULTURAL_CENTER_MANAGER,RoleEnum.ADMIN]),
+    (req, res, next) => culturalCenterController.deleteCulturalCenter(req, res, next)
+)
+
+
 
 export default culturalCenterRoutes;

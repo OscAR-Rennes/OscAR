@@ -1,7 +1,15 @@
 import { CreateCulturalCenterRequestDTO } from "../dto/culturalcenter/CreateCulturalCenterRequestDTO.js";
 import { prisma } from "../config/prismaClient.js";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { cultural_centers } from "@prisma/client";
+
+export interface CulturalCenterMapFilters {
+    search?: string;
+    minLat?: number;
+    maxLat?: number;
+    minLng?: number;
+    maxLng?: number;
+}
 
 
 export class CulturalCenterRepository  {
@@ -33,6 +41,60 @@ export class CulturalCenterRepository  {
         return centers;
     }
 
+    async getById(id: string, tx?: Prisma.TransactionClient): Promise<cultural_centers | null> {
+        return (tx ?? prisma).cultural_centers.findUnique({
+            where: { id },
+        });
+    }
+
+    async getAllActiveForMap(filters: CulturalCenterMapFilters) {
+        const hasLatBounds = Number.isFinite(filters.minLat) && Number.isFinite(filters.maxLat);
+        const hasLngBounds = Number.isFinite(filters.minLng) && Number.isFinite(filters.maxLng);
+
+        return prisma.cultural_centers.findMany({
+            where: {
+                isActive: true,
+                ...(filters.search
+                    ? {
+                        name: {
+                            contains: filters.search,
+                            mode: "insensitive",
+                        },
+                    }
+                    : {}),
+                ...(hasLatBounds && hasLngBounds
+                    ? {
+                        address: {
+                            latitude: {
+                                gte: filters.minLat,
+                                lte: filters.maxLat,
+                            },
+                            longitude: {
+                                gte: filters.minLng,
+                                lte: filters.maxLng,
+                            },
+                        },
+                    }
+                    : {}),
+            },
+            orderBy: {
+                name: "asc",
+            },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                picture_path: true,
+                address: {
+                    select: {
+                        latitude: true,
+                        longitude: true,
+                    },
+                },
+            },
+        });
+    }
+
 
     async switchCulturalCenterStatus(ids: string[]): Promise<{ id: string; isActive: boolean }[]> {
         if (ids.length === 0) return [];
@@ -46,5 +108,11 @@ export class CulturalCenterRepository  {
         RETURNING id, "isActive";
         `;
         return updatedCenters;
+    }
+
+    async delete(id: string, tx?: Prisma.TransactionClient): Promise<void> {
+        await (tx ?? prisma).cultural_centers.delete({
+            where: { id },
+        });
     }
 }

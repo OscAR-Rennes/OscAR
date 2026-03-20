@@ -13,5 +13,5 @@ export interface HuntService {
   getHuntByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>>;
   editHunt(huntData: EditHuntRequestDTO, userId: string, userRights: string[]): Promise<EditHuntResponseDTO>;
   getHuntById(user: AuthResponseDTO, id: string): Promise<LightHuntDTO | null>;
-  deleteHunt(user: AuthResponseDTO, id: string): Promise<void>;
+  deleteHunt(user: AuthResponseDTO, ids: string[]): Promise<void>;
 }

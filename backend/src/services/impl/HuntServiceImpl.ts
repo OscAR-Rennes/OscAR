@@ -141,29 +141,32 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async deleteHunt(user: AuthResponseDTO, id: string): Promise<void> {
+    async deleteHunt(user: AuthResponseDTO, ids: string[]): Promise<void> {
         try {
             const userRepository = new UserRepository();
-            const hunt = await huntRepository.getByID(id);
 
-            if (!hunt) {
-                throw new AppError({
-                    userMessage: "Chasse non trouvée",
-                    statusCode: 404,
+            for (const id of ids) {
+                const hunt = await huntRepository.getByID(id);
+
+                if (!hunt) {
+                    throw new AppError({
+                        userMessage: "Chasse non trouvée",
+                        statusCode: 404,
+                    });
+                }
+
+                await assertUserCanAccessHunt(user, hunt, userRepository);
+
+                await prisma.$transaction(async (tx) => {
+                    const stepRepository = new StepRepository();
+                    const indexRepository = new IndexRepository();
+                    await stepRepository.deleteByHuntId(id, tx);
+                    await indexRepository.deleteByHuntId(id, tx);
+                    await huntRepository.delete(id, tx);
                 });
+
+                logger.info(`Hunt deleted successfully with ID: ${id}`, { huntId: id, deletedBy: user.id });
             }
-
-            await assertUserCanAccessHunt(user, hunt, userRepository);
-
-            await prisma.$transaction(async (tx) => {
-                const stepRepository = new StepRepository();
-                const indexRepository = new IndexRepository();
-                await stepRepository.deleteByHuntId(id, tx);
-                await indexRepository.deleteByHuntId(id, tx);
-                await huntRepository.delete(id, tx);
-            });
-
-            logger.info(`Hunt deleted successfully with ID: ${id}`, { huntId: id, deletedBy: user.id });
         } catch (error) {
             if (error instanceof AppError) {
                 throw error;

@@ -61,7 +61,7 @@ stepsRoutes.get(
 )
 
 stepsRoutes.delete(
-    "/step/:id",
+    "/step",
     authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => stepsController.deleteStep(req, res, next)
