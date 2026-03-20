@@ -53,9 +53,6 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
         router.push({
             pathname: '/cultural-center',
             params: {
-                name: culturalCenterName,
-                description: culturalCenterDescription,
-                image: culturalCenterImage,
                 id: culturalCenterId,
             },
         });

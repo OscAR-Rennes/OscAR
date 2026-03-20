@@ -70,6 +70,13 @@ export class StepRepository {
     return stepRecords;
   }
 
+  async getStepsByHuntId(id: string): Promise<steps[]> {
+    const stepRecords = await prisma.steps.findMany({
+      where: { hunt_id: id },
+    });
+    return stepRecords;
+  }
+
   async getAll(): Promise<steps[]> {
       const steps = await prisma.steps.findMany();
       return steps;
