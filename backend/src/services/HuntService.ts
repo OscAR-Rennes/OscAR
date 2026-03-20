@@ -9,8 +9,7 @@ import { LightHuntDTO } from "../common-lib/dto/hunt/LightHuntDTO.js";
 export interface HuntService {
   createHunt(huntData: CreateHuntRequestDTO, userId: string, userCulturalCenterId: string): Promise<CreateHuntResponseDTO>;
   getAllHunt(): Promise<LightHuntDTO[]>;
-  getHuntByCulturalCenter(id: string, user: AuthResponseDTO): Promise<LightHuntDTO[]>;
-  editHunt(huntData: EditHuntRequestDTO, userId: string, userRights: string[]): Promise<EditHuntResponseDTO>;
+  getHuntByCulturalCenter(id: string, user?: AuthResponseDTO): Promise<LightHuntDTO[]>;
   getHuntById(id: string): Promise<FullHuntDTO | null>;
   editHunt(huntData: EditHuntRequestDTO, user: AuthResponseDTO): Promise<EditHuntResponseDTO>;
   deleteHunt(user: AuthResponseDTO, id: string): Promise<void>;

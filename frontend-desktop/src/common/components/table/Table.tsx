@@ -35,7 +35,7 @@ type SortDirection = "asc" | "desc";
 
 
 export default function Table<T extends { id: string | number }>({
-  data,
+  data = [],
   columns,
   actions = [],
   onRowSelect,
@@ -65,6 +65,8 @@ export default function Table<T extends { id: string | number }>({
   );
 
   const filteredData = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+
     if (!normalizedSearchQuery) {
       return data;
     }

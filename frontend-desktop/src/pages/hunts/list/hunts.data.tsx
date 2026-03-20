@@ -19,11 +19,12 @@ export function useHuntsData() {
 
   useEffect(() => {
     const fetchHunts = async () => {
-      const huntsData = await getHuntsByCulturalCenter(user.id_cultural_center);
+      console.log(user)
+      const huntsData = await getHuntsByCulturalCenter(user.id_cultural_center ?? "no-cultural-center");
       setHunts(huntsData);
     };
     fetchHunts();
-  },[]);
+  },[user]);
 
   return {
     hunts,

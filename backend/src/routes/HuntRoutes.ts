@@ -2,6 +2,7 @@ import { Router } from "express";
 import { HuntsController } from "../controllers/HuntsController.js";
 import { authMiddleware, requireRole } from "../common-lib/middlewares/AuthMiddleware.js";
 import { RoleEnum } from "../common-lib/enum/roleEnum.js";
+import { optionalAuthMiddleware } from "../common-lib/middlewares/OptionnalAuthMiddleware.js";
 
 const huntsRoutes = Router();
 
@@ -77,6 +78,7 @@ huntsRoutes.put(
 
 huntsRoutes.get(
     "/hunt/culturalcenter/:id",
+    optionalAuthMiddleware,
     (req, res, next) => huntsController.getHuntByCulturalCenter(req, res, next)
 );
 

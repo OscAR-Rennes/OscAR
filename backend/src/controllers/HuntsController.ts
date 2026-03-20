@@ -14,6 +14,7 @@ export class HuntsController  {
   async createHunt(req: Request, res: Response, next: any) {
     try {
       const userId = req.user?.id;
+      logger.warn(req.user)
       const userCulturalCenterId = req.user?.id_cultural_center;
       if (!userId || !userCulturalCenterId) {
         logger.warn("Missing user information for hunt creation", { route: req.originalUrl });
