@@ -27,7 +27,10 @@ export default function MapPicker({ value, onChange }) {
   useEffect(() => {
     if (value) {
       setMarker(value);
+      return;
     }
+
+    setMarker(null);
   }, [value]);
 
   const handleMapClick = (e) => {

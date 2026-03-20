@@ -5,6 +5,7 @@
   padding: 2.5rem 2rem 2rem 2rem;
   max-width: 23.125rem;
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: stretch;
