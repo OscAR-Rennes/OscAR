@@ -9,6 +9,8 @@ type StepRow = {
 	description: string;
 };
 
+export const HUNTS_CONSULT_TABS = [{ id: "general", label: "Général" }];
+
 export function useHuntConsultData(huntId?: string) {
 	const [hunt, setHunt] = useState<FullHuntDTO | null>(null);
 	const [steps, setSteps] = useState<StepRow[]>([]);

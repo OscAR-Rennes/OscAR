@@ -3,7 +3,10 @@ import MapPicker from "../../../common/components/map/map";
 import { FullStepDTO } from "../../../api/models/steps/FullStepDto";
 import { getStepById } from "../../../api/services/step.api";
 
-export const STEPS_CONSULT_TABS = [{ id: "general", label: "Général" }];
+export const STEPS_CONSULT_TABS = [
+	{ id: "general", label: "Général" },
+	{ id: "documents", label: "Documents" },
+];
 
 export function StepsConsultMapField({
 	latitude,

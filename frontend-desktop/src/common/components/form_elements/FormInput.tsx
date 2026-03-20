@@ -35,9 +35,9 @@ export function FormInput({
                             </span>
 
               {type === "number" ? (
-                  <InputNumber {...field} />
+                                <InputNumber {...field} readOnly={readOnly} disabled={disabled} />
               ) : (
-                  <Input {...field} />
+                                <Input {...field} readOnly={readOnly} disabled={disabled} />
               )}
             </div>
 

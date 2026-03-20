@@ -1,3 +1,4 @@
+import { useState } from "react";
 import HeaderForm from "../../../common/components/header_form/HeaderForm";
 import Ribbon from "../../../common/components/ribbon/ribbon";
 import {
@@ -10,6 +11,7 @@ import "./index.style.css";
 
 export default function StepConsultation() {
   const { step, isLoading, errorMessage } = useStepConsultData();
+  const [activeTabId, setActiveTabId] = useState("general");
 
   if (isLoading) {
     return (
@@ -41,8 +43,8 @@ export default function StepConsultation() {
         title={step.title}
         entityName="Étape"
         tabs={STEPS_CONSULT_TABS}
-        activeTabId="general"
-        onTabChange={() => {}}
+        activeTabId={activeTabId}
+        onTabChange={setActiveTabId}
         creatorName={step.hunt.creator.username}
         creatorLabel="Créé par"
         creatorPlacement="right"
@@ -50,28 +52,36 @@ export default function StepConsultation() {
       />
 
       <section className="steps-consult-content">
-        <div className="steps-consult-general-layout" id="step-consult-form">
-          <div className="steps-consult-info-panel">
-            <p className="steps-consult-section-title">Informations de l'étape</p>
+        {activeTabId === "general" && (
+          <div className="steps-consult-general-layout" id="step-consult-form">
+            <div className="steps-consult-info-panel">
+              <p className="steps-consult-section-title">Informations de l'étape</p>
 
-            <ReadOnlyField label="Titre" value={step.title} />
-            <ReadOnlyField label="Description" value={step.description} />
-            <ReadOnlyField label="Points" value={String(step.points)} />
-            <ReadOnlyField
-              label="Latitude"
-              value={step.latitude === null ? "-" : String(step.latitude)}
-            />
-            <ReadOnlyField
-              label="Longitude"
-              value={step.longitude === null ? "-" : String(step.longitude)}
-            />
-            <ReadOnlyField label="Chasse" value={step.hunt.title} />
-            <ReadOnlyField label="Centre culturel" value={step.hunt.culturalCenter.name} />
-            <ReadOnlyField label="Index" value={indexLabel} />
+              <ReadOnlyField label="Titre" value={step.title} />
+              <ReadOnlyField label="Description" value={step.description} />
+              <ReadOnlyField label="Points" value={String(step.points)} />
+              <ReadOnlyField
+                label="Latitude"
+                value={step.latitude === null ? "-" : String(step.latitude)}
+              />
+              <ReadOnlyField
+                label="Longitude"
+                value={step.longitude === null ? "-" : String(step.longitude)}
+              />
+              <ReadOnlyField label="Chasse" value={step.hunt.title} />
+              <ReadOnlyField label="Centre culturel" value={step.hunt.culturalCenter.name} />
+              <ReadOnlyField label="Index" value={indexLabel} />
+            </div>
+
+            <StepsConsultMapField latitude={step.latitude} longitude={step.longitude} />
           </div>
+        )}
 
-          <StepsConsultMapField latitude={step.latitude} longitude={step.longitude} />
-        </div>
+        {activeTabId === "documents" && (
+          <div className="steps-consult-placeholder">
+            Aucun document à afficher pour le moment.
+          </div>
+        )}
       </section>
     </div>
   );

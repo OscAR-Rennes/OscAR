@@ -70,6 +70,14 @@
   color: #b91c1c;
 }
 
+.steps-consult-placeholder {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.18);
+  color: #4b5563;
+  padding: 1rem 1.25rem;
+}
+
 @media (max-width: 62rem) {
   .steps-consult-general-layout {
     grid-template-columns: 1fr;
