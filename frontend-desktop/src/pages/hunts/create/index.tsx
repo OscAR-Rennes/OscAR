@@ -1,53 +1,40 @@
-import Button from '../../../common/components/button/Button';
+import Ribbon from "../../../common/components/ribbon/ribbon";
 import { MapCoordinatesField, useHomeData } from "./hunts.data";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
 import "../../../common/components/map/map.style.css";
+import "./index.style.css";
 
 export default function HuntsCreation() {
-  useHomeData();
+  const { handleAddHunt, difficulties } = useHomeData();
 
   return (
-    <>
-      {/* <section>
-        <h2>Ajouter une chasse</h2>
-        <form onSubmit={async (e) => {
-          e.preventDefault();
-          await handleAddHunt({
-            ...formState,
-            points: Number(formState.points),
-            latitude: Number(formState.latitude),
-            longitude: Number(formState.longitude),
-          });
-          setResetHuntForm((n) => n + 1);
-        }}>
-          {addHuntFields.map(field =>
-            field.render
-              ? field.render({
-                  name: field.name,
-                  value: formState[field.name],
-                  onChange: (e) => {
-                    const value = e.target.value;
-                    setFormState(prev => ({ ...prev, [field.name]: value }));
-                  },
-                  required: field.required,
-                  label: field.label
-                })
-              : null
-          )}
-          <Button type="submit">Envoyer</Button>
-        </form>
-      </section> */}
+    <div className="hunts-create-page">
+      <Ribbon formId="create-hunt-form" />
 
       <Form
-        onSubmit={() => console.log("submit")}
+        id="create-hunt-form"
+        onSubmit={async (data: any) => {
+          await handleAddHunt({
+            title: data.title,
+            description: data.description,
+            points: Number(data.points),
+            latitude: Number(data.latitude),
+            longitude: Number(data.longitude),
+            difficulty_id: String(data.difficulty_id),
+            creator_id: "",
+            picture_path: data.picture_path ?? "",
+          });
+        }}
         defaultValues={{
           title: "",
           points: 0,
           longitude: "",
           latitude: "",
           description: "",
+          difficulty_id: "",
+          picture_path: "",
         }}
       >
         <FormInput
@@ -82,22 +69,17 @@ export default function HuntsCreation() {
         />
 
         <FormSelect
-          name="difficultyId"
+          name="difficulty_id"
           label="Difficulty"
-          options={[
-            { value: "1", label: "Easy" },
-            { value: "2", label: "Medium" },
-            { value: "3", label: "Hard" },
-          ]}
+          options={difficulties.map((d: any) => ({
+            value: d.id,
+            label: d.name,
+          }))}
         />
-        
-        <Button type="submit">
-          Sauvegarder
-        </Button>
 
         <MapCoordinatesField />
       </Form>
-    </>
+    </div>
   );
 }
 

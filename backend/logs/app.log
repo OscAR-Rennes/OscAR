@@ -1470,3 +1470,200 @@ Unique constraint failed on the fields: (`email`)
 2026-03-18 14:04:52 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
 2026-03-18 14:04:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
 2026-03-18 14:05:01 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:34:19 [INFO] Server is running on port 5000
+2026-03-18 15:37:19 [INFO] Server is running on port 5000
+2026-03-18 15:37:23 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-18 15:37:23 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-18 15:37:26 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:37:26 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:38:22 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:22 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:24 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:24 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:25 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:25 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:25 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:25 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:25 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:25 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:25 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:25 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:25 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:25 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:38:26 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:38:26 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:39:15 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:39:15 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:40:25 [DEBUG] Hunts retrieved successfully route=/api/hunt count=15
+2026-03-18 15:40:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:40:57 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:43:47 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:43:47 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:43:53 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:43:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:44:09 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:44:09 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:44:30 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:44:40 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:44:40 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:44:55 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:45:07 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:45:28 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-18 15:45:28 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-18 15:45:28 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:45:28 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:45:56 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:45:56 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:46:06 [DEBUG] Hunts retrieved successfully route=/api/hunt count=15
+2026-03-18 15:46:55 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:46:55 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:47:25 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:47:25 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:47:37 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-18 15:47:37 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-18 15:47:37 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:47:37 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-18 15:48:19 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:48:19 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:50:24 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:50:24 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-18 15:50:38 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-18 15:50:38 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-20 08:36:28 [INFO] Server is running on port 5000
+2026-03-20 08:37:19 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-20 08:37:19 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-20 08:37:29 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-03-20 08:37:29 [INFO] User authenticated route=/api/auth/login/web userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-20 08:37:32 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:37:32 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:37:52 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-20 08:37:52 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-20 08:38:11 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-20 08:38:11 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-20 08:38:13 [WARN] Missing user information for hunt creation route=/api/hunt
+2026-03-20 08:38:13 [ERROR] Error creating hunt route=/api/hunt errorMessage=User information missing errorStack=Error: User information missing
+    at HuntsController.createHunt (/app/src/controllers/HuntsController.ts:19:15)
+    at <anonymous> (/app/src/routes/HuntRoutes.ts:40:41)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:149:13)
+    at <anonymous> (/app/src/common-lib/middlewares/AuthMiddleware.ts:81:14)
+2026-03-20 08:44:52 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-20 08:44:52 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-20 08:45:29 [INFO] User created successfully route=/api/users/web userId=be7f676a-5c7f-4f3c-a0fb-119b0fc87f3d
+2026-03-20 08:45:42 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=22
+2026-03-20 08:45:42 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=22
+2026-03-20 08:45:51 [INFO] Switch users Status
+2026-03-20 08:45:51 [INFO] Users status switched successfully route=/api/users/switchactivation count=1 userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-20 08:45:51 [DEBUG] All users retrieved route=/api/users userId=a3e06198-db2c-472b-92a4-ee332c01c242 count=22
+2026-03-20 08:46:09 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-03-20 08:46:09 [INFO] User authenticated route=/api/auth/login/web userId=be7f676a-5c7f-4f3c-a0fb-119b0fc87f3d
+2026-03-20 08:46:16 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:46:16 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:46:36 [INFO] Hunt created successfully route=/api/hunt huntId=ed74c32c-1433-41a5-8e2e-ad2f327a8fbc createdBy=be7f676a-5c7f-4f3c-a0fb-119b0fc87f3d
+2026-03-20 08:46:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:46:59 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:51:04 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 08:51:04 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:14:02 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-20 09:14:02 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-20 09:14:03 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:14:03 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:22:53 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-20 09:22:53 [DEBUG] Get current user route=/api/auth/me userId=a3e06198-db2c-472b-92a4-ee332c01c242
+2026-03-20 09:22:53 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:22:53 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:29:02 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:32:31 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:41:19 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:41:19 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:41:43 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:41:43 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:41:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:41:58 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:42:24 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-20 09:42:24 [DEBUG] Active cultural centers retrieved route=/api/culturalcenter/active count=5
+2026-03-20 09:42:38 [DEBUG] Auth attempt started route=/api/auth/login/web ip=::ffff:172.18.0.1
+2026-03-20 09:42:38 [INFO] User authenticated route=/api/auth/login/web userId=be7f676a-5c7f-4f3c-a0fb-119b0fc87f3d
+2026-03-20 09:42:40 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:42:40 [DEBUG] Difficulties retrieved successfully route=/api/difficulty count=3
+2026-03-20 09:43:26 [INFO] Hunt created successfully route=/api/hunt huntId=b0be073c-fc0c-4394-8c9b-a678b0c351c1 createdBy=be7f676a-5c7f-4f3c-a0fb-119b0fc87f3d
