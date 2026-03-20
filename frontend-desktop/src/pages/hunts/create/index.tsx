@@ -1,5 +1,5 @@
 import Ribbon from "../../../common/components/ribbon/ribbon";
-import { MapCoordinatesField, useHomeData } from "./hunts.data";
+import { HUNTS_CREATE_TABS, MapCoordinatesField, useHomeData } from "./hunts.data";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
@@ -12,8 +12,6 @@ export default function HuntsCreation() {
   const { handleAddHunt, difficulties } = useHomeData();
   const connectedUserName = useAuthStore((state) => state.user?.username);
 
-  const tabs = [{ id: "general", label: "Général" }];
-
   return (
     <div className="hunts-create-page">
       <Ribbon formId="create-hunt-form" />
@@ -21,7 +19,7 @@ export default function HuntsCreation() {
       <HeaderForm
         title="Nouvelle chasse"
         entityName="Chasse"
-        tabs={tabs}
+        tabs={HUNTS_CREATE_TABS}
         activeTabId="general"
         onTabChange={() => {}}
         creatorName={connectedUserName}

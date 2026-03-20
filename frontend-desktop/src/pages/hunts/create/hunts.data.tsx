@@ -6,6 +6,8 @@ import TextInput from "../../../common/components/text_input/TextInput";
 import MapPicker from "../../../common/components/map/map";
 import { useFormContext } from "react-hook-form";
 
+export const HUNTS_CREATE_TABS = [{ id: "general", label: "Général" }];
+
 export function MapCoordinatesField() {
   const { setValue, watch } = useFormContext();
   const latitude = watch("latitude");
