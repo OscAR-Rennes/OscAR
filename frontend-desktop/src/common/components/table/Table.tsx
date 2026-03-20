@@ -29,6 +29,7 @@ type TableProps<T extends { id: string | number }> = {
   renderActionButton?: () => React.ReactNode;
   allItemsLabel?: string;
   allItemsPrefix?: string;
+  getRowLink?: (row: T, currentPath: string) => string;
 };
 
 type SortDirection = "asc" | "desc";
@@ -42,6 +43,7 @@ export default function Table<T extends { id: string | number }>({
   renderActionButton,
   allItemsLabel,
   allItemsPrefix = "Tous les",
+  getRowLink,
 }: TableProps<T>) {
   const location = useLocation();
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -290,13 +292,31 @@ export default function Table<T extends { id: string | number }>({
     column: Column<T>,
     columnIndex: number
   ) => {
-    const value = column.render
-      ? column.render(row)
-      : (row[column.key] as React.ReactNode);
+    const rawValue = row[column.key];
+    const isStatusColumn =
+      !column.render &&
+      String(column.key) === "isActive" &&
+      typeof rawValue === "boolean";
+
+    const value = isStatusColumn ? (
+      <span
+        className={`table-status-badge ${rawValue ? "table-status-badge--active" : "table-status-badge--inactive"}`}
+      >
+        {rawValue ? "Actif" : "Inactif"}
+      </span>
+    ) : column.render ? (
+      column.render(row)
+    ) : (
+      rawValue as React.ReactNode
+    );
 
     if (columnIndex === 0) {
+      const rowLink = getRowLink
+        ? getRowLink(row, location.pathname)
+        : `${location.pathname}/${row.id}`;
+
       return (
-        <Link to={`${location.pathname}/${row.id}`}>
+        <Link to={rowLink}>
           {value}
         </Link>
       );

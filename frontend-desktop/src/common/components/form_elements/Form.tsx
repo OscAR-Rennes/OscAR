@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import "./Form.style.css";
 
-export function Form({ children, onSubmit, defaultValues, id, className = "" }) {
+export function Form({ children, onSubmit, defaultValues, id = undefined, className = "" }) {
   const methods = useForm({ defaultValues });
 
   return (

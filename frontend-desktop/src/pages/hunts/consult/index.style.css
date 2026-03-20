@@ -1,0 +1,13 @@
+.hunts-consult-page {
+  position: relative;
+}
+
+.consult-steps-table {
+  margin: 1.5rem 1rem 1rem;
+}
+
+.consult-steps-table .container {
+  height: auto;
+  max-height: none;
+  min-height: 0;
+}

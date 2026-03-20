@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ReactComponent as LeftArrowIcon } from "../../assets/icon/left-arrow.svg";
 import "./ribbon.style.css";
 
-export default function Ribbon({ formId }) {
+export default function Ribbon({ formId = undefined, showSave = true }) {
 	const navigate = useNavigate();
 
 	return (
@@ -19,11 +19,13 @@ export default function Ribbon({ formId }) {
 				</Button>
 			</div>
 
-			<div className="osc-ribbon-right">
-				<Button type="submit" form={formId}>
-					Sauvegarder
-				</Button>
-			</div>
+			{showSave && (
+				<div className="osc-ribbon-right">
+					<Button type="submit" form={formId}>
+						Sauvegarder
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 }

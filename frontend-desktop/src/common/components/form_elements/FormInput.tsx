@@ -10,6 +10,8 @@ export function FormInput({
   label,
   required = false,
   type = "text",
+    readOnly = false,
+    disabled = false,
 }) {
 
     const rules = required
