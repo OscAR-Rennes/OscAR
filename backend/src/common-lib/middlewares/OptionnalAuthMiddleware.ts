@@ -9,7 +9,6 @@ export async function optionalAuthMiddleware(
 ) {
   const token = req.cookies?.token;
 
-  // Aucun token → on continue sans rien ajouter
   if (!token) {
     return next();
   }
@@ -18,7 +17,6 @@ export async function optionalAuthMiddleware(
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
 
-    // Ajout du user dans la requête
     req.user = payload as unknown as AuthResponseDTO;
 
   } catch (err) {
