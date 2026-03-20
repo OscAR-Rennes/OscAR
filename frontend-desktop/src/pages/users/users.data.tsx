@@ -3,7 +3,6 @@ import { useCheckRights } from "../../common/components/security/CheckRights";
 import { RoleEnum } from "../../common/enum/RolesEnum";
 import { activateDeactivateUsers, getAllUsers, getUsersByCulturalCenter } from "../../api/services/users.api";
 import { useAuthStore } from "../../common/store/authStore";
-import { useNotificationStore } from "../../common/store/notificationStore";
 
 export function useUsersnData() {
 
@@ -15,7 +14,6 @@ export function useUsersnData() {
     const isAdmin = checkRights(RoleEnum.ADMIN)
 
     const user = useAuthStore((state) => state.user);
-    const addNotification = useNotificationStore((state) => state.addNotification);
     
     // Fetch data
     useEffect(() => {
@@ -61,46 +59,13 @@ export function useUsersnData() {
 
     const getSelectedUsersIds = () => selectedUsersRows.map(row => row.id);
 
-    const validateActivateDeactivateUsers = (): boolean => {
-        const ids = getSelectedUsersIds();
-
-        if (ids.length === 0) {
-            addNotification("Veuillez sélectionner au moins un utilisateur", undefined, 400);
-            return false;
-        }
-        return true;
-    };
+    const hasSelectedUsers = selectedUsersRows.length > 0;
 
     const executeActivateDeactivateUsers = async () => {
         const ids = getSelectedUsersIds();
         await activateDeactivateUsers(ids)
         setSelectedUsersRows([])
         refreshUsers()
-    };
-
-    const handleModifyUsers = (): boolean => {
-        const ids = getSelectedUsersIds();
-
-        if (ids.length === 0) {
-            addNotification("Veuillez sélectionner au moins un utilisateur", undefined, 400);
-            return false;
-        }
-
-        if (ids.length > 1) {
-            addNotification("Veuillez sélectionner un seul utilisateur", undefined, 400);
-            return false;
-        }
-        return true;
-    };
-
-    const handleDeleteUsers = (): boolean => {
-        const ids = getSelectedUsersIds();
-
-        if (ids.length === 0) {
-            addNotification("Veuillez sélectionner au moins un utilisateur", undefined, 400);
-            return false;
-        }
-        return true;
     };
 
     return {
@@ -112,13 +77,9 @@ export function useUsersnData() {
 
         userColumns,
 
-        validateActivateDeactivateUsers,
+        hasSelectedUsers,
 
         executeActivateDeactivateUsers,
-
-        handleModifyUsers,
-
-        handleDeleteUsers
     }
 
 };

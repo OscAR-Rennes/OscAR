@@ -2,11 +2,8 @@ import { useState } from "react";
 import Table from "../../common/components/table/Table";
 import ConfirmModal from "../../common/components/confirmmodal/ConfirmModal";
 import { useUsersnData } from "./culturalcenter.data";
-
-const powerIcon = require("../../common/assets/icon/power-button.svg").default;
-const plusIcon = require("../../common/assets/icon/plus.svg").default;
-const deleteIcon = require("../../common/assets/icon/close.svg").default;
-const modifyIcon = require("../../common/assets/icon/pen.svg").default;
+import { ReactComponent as PowerIcon } from "../../common/assets/icon/power-button.svg";
+import { ReactComponent as DeleteIcon } from "../../common/assets/icon/close.svg";
 
 export default function CulturalCenters() {
   const {
@@ -14,10 +11,8 @@ export default function CulturalCenters() {
     culturalCenters,
     setSelectedCulturalCenterssRows,
     culturalCentersColumns,
-    validateActivateDeactivateCulturalCenters,
+    hasSelectedCulturalCenters,
     executeActivateDeactivateCulturalCenters,
-    handleModifyCulturalCenters,
-    handleDeleteCulturalCenters,
   } = useUsersnData();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -34,28 +29,16 @@ export default function CulturalCenters() {
             allItemsLabel="centres culturels"
             renderActionButton={() => (
               <div className="table-action-buttons">
-                <button className="table-btn">
-                  <img src={plusIcon} className="table-btn-icon-larger" alt="Plus" />
-                  <span>Créer</span>
-                </button>
-                <button className="table-btn" onClick={() => {
-                  if (validateActivateDeactivateCulturalCenters()) {
-                    setIsSwitchStatusModalOpen(true);
-                  }
+                <button className="table-btn" disabled={!hasSelectedCulturalCenters} onClick={() => {
+                  setIsSwitchStatusModalOpen(true);
                 }}>
-                  <img src={powerIcon} className="table-btn-icon-bigger" alt="Activer / Désactiver" />
+                  <PowerIcon className="table-btn-icon-bigger" aria-hidden="true" focusable="false" />
                   Désactiver / Réactiver
                 </button>
-                <button className="table-btn" onClick={handleModifyCulturalCenters}>
-                  <img src={modifyIcon} className="table-btn-icon-larger" alt="Modifier" />
-                  <span>Modifier</span>
-                </button>
-                <button className="table-btn" onClick={() => {
-                  if (handleDeleteCulturalCenters()) {
-                    setIsDeleteModalOpen(true);
-                  }
+                <button className="table-btn" disabled={!hasSelectedCulturalCenters} onClick={() => {
+                  setIsDeleteModalOpen(true);
                 }}>
-                  <img src={deleteIcon} className="table-btn-icon" alt="Supprimer" />
+                  <DeleteIcon className="table-btn-icon" aria-hidden="true" focusable="false" />
                   <span>Supprimer</span>
                 </button>
               </div>

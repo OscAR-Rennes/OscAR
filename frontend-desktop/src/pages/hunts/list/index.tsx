@@ -4,10 +4,9 @@ import Table from "../../../common/components/table/Table";
 import "../../../common/components/table/Table.style.css";
 import ConfirmModal from "../../../common/components/confirmmodal/ConfirmModal";
 import { useHuntsData } from "./hunts.data";
-
-const plusIcon = require("../../../common/assets/icon/plus.svg").default;
-const deleteIcon = require("../../../common/assets/icon/close.svg").default;
-const modifyIcon = require("../../../common/assets/icon/pen.svg").default;
+import { ReactComponent as PlusIcon } from "../../../common/assets/icon/plus.svg";
+import { ReactComponent as DeleteIcon } from "../../../common/assets/icon/close.svg";
+import { ReactComponent as ModifyIcon } from "../../../common/assets/icon/pen.svg";
 
 export default function HuntsList() {
   const navigate = useNavigate();
@@ -17,8 +16,9 @@ export default function HuntsList() {
     hunts,
     huntsColumns,
     setSelectedHuntsRows,
-    handleModifyHunts,
-    handleDeleteHunts,
+    hasSelectedHunts,
+    hasSingleSelectedHunt,
+    selectedHuntId,
   } = useHuntsData();
 
   return (
@@ -32,19 +32,21 @@ export default function HuntsList() {
         renderActionButton={() => (
           <div className="table-action-buttons">
             <button className="table-btn" onClick={() => navigate("/home/hunts/create")}>
-              <img src={plusIcon} className="table-btn-icon-larger" alt="Plus" />
+              <PlusIcon className="table-btn-icon-larger" aria-hidden="true" focusable="false" />
               <span>Créer</span>
             </button>
-            <button className="table-btn" onClick={handleModifyHunts}>
-              <img src={modifyIcon} className="table-btn-icon-larger" alt="Modifier" />
-              <span>Modifier</span>
-            </button>
-            <button className="table-btn" onClick={() => {
-              if (handleDeleteHunts()) {
-                setIsDeleteModalOpen(true);
+            <button className="table-btn" disabled={!hasSingleSelectedHunt} onClick={() => {
+              if (selectedHuntId) {
+                navigate(`/home/hunts/${selectedHuntId}/edit`);
               }
             }}>
-              <img src={deleteIcon} className="table-btn-icon" alt="Supprimer" />
+              <ModifyIcon className="table-btn-icon-larger" aria-hidden="true" focusable="false" />
+              <span>Modifier</span>
+            </button>
+            <button className="table-btn" disabled={!hasSelectedHunts} onClick={() => {
+              setIsDeleteModalOpen(true);
+            }}>
+              <DeleteIcon className="table-btn-icon" aria-hidden="true" focusable="false" />
               <span>Supprimer</span>
             </button>
           </div>

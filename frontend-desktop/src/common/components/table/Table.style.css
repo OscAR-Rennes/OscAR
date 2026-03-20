@@ -155,7 +155,7 @@
 .table-btn:disabled {
   background: transparent;
   color: #bdbdbd;
-  cursor: not-allowed;
+  cursor: pointer;
 }
 
 .table-pagination-btn {
@@ -196,6 +196,14 @@
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
+}
+
+.table-btn-icon,
+.table-btn-icon-larger,
+.table-btn-icon-bigger,
+.table-btn-icon-tiny {
+  color: inherit;
+  fill: currentColor;
 }
 
 .table-btn-icon-larger {

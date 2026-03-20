@@ -3,7 +3,6 @@ import { useCheckRights } from "../../common/components/security/CheckRights";
 import { RoleEnum } from "../../common/enum/RolesEnum";
 import { activateDeactivateCulturalCenter, getAllCulturalCenters } from "../../api/services/culturalcenter.api";
 import { useAuthStore } from "../../common/store/authStore";
-import { useNotificationStore } from "../../common/store/notificationStore";
 import "../../common/components/table/Table.style.css";
 
 export function useUsersnData() {
@@ -16,7 +15,7 @@ export function useUsersnData() {
     const isAdmin = checkRights(RoleEnum.ADMIN)
 
     const user = useAuthStore((state) => state.user);
-    const addNotification = useNotificationStore((state) => state.addNotification);
+    const hasSelectedCulturalCenters = selectedCulturalCentersRows.length > 0;
     
     // Fetch data
     useEffect(() => {
@@ -57,46 +56,11 @@ export function useUsersnData() {
     // Handlers
     const getSelectedCulturalCentersIds = () => selectedCulturalCentersRows.map(row => row.id);
 
-    const validateActivateDeactivateCulturalCenters = (): boolean => {
-        const ids = getSelectedCulturalCentersIds();
-
-        if (ids.length === 0) {
-            addNotification("Veuillez sélectionner au moins un centre culturel", undefined, 400);
-            return false;
-        }
-        return true;
-    };
-
     const executeActivateDeactivateCulturalCenters = async () => {
         const ids = getSelectedCulturalCentersIds();
         await activateDeactivateCulturalCenter(ids)
         setSelectedCulturalCenterssRows([])
         refreshCulturalCenters()
-    };
-
-    const handleModifyCulturalCenters = (): boolean => {
-        const ids = getSelectedCulturalCentersIds();
-
-        if (ids.length === 0) {
-            addNotification("Veuillez sélectionner au moins un centre culturel", undefined, 400);
-            return false;
-        }
-
-        if (ids.length > 1) {
-            addNotification("Veuillez sélectionner un seul centre culturel", undefined, 400);
-            return false;
-        }
-        return true;
-    };
-
-    const handleDeleteCulturalCenters = (): boolean => {
-        const ids = getSelectedCulturalCentersIds();
-
-        if (ids.length === 0) {
-            addNotification("Veuillez sélectionner au moins un centre culturel", undefined, 400);
-            return false;
-        }
-        return true;
     };
 
     return {
@@ -108,13 +72,9 @@ export function useUsersnData() {
 
         culturalCentersColumns,
 
-        validateActivateDeactivateCulturalCenters,
+        hasSelectedCulturalCenters,
 
         executeActivateDeactivateCulturalCenters,
-
-        handleModifyCulturalCenters,
-
-        handleDeleteCulturalCenters,
     }
 
 };

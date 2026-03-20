@@ -4,10 +4,9 @@ import Table from "../../../common/components/table/Table";
 import "../../../common/components/table/Table.style.css";
 import ConfirmModal from "../../../common/components/confirmmodal/ConfirmModal";
 import { useStepsData } from "./steps.data";
-
-const plusIcon = require("../../../common/assets/icon/plus.svg").default;
-const deleteIcon = require("../../../common/assets/icon/close.svg").default;
-const modifyIcon = require("../../../common/assets/icon/pen.svg").default;
+import { ReactComponent as PlusIcon } from "../../../common/assets/icon/plus.svg";
+import { ReactComponent as DeleteIcon } from "../../../common/assets/icon/close.svg";
+import { ReactComponent as ModifyIcon } from "../../../common/assets/icon/pen.svg";
 
 export default function StepsList() {
 
@@ -15,8 +14,9 @@ export default function StepsList() {
     steps,
     stepsColumns,
     setSelectedStepsRows,
-    handleModifySteps,
-    handleDeleteSteps,
+    hasSelectedSteps,
+    hasSingleSelectedStep,
+    selectedStepId,
   } = useStepsData();
 
   const navigate = useNavigate();
@@ -36,25 +36,29 @@ export default function StepsList() {
               className="table-btn" 
               onClick={() => navigate("/home/steps/create")}
               >
-                <img src={plusIcon} className="table-btn-icon-larger" alt="Plus" />
+                <PlusIcon className="table-btn-icon-larger" aria-hidden="true" focusable="false" />
                 <span>Créer</span>
               </button>
               <button 
               className="table-btn" 
-              onClick={handleModifySteps}
+              disabled={!hasSingleSelectedStep}
+              onClick={() => {
+                if (selectedStepId) {
+                  navigate(`/home/steps/${selectedStepId}/edit`);
+                }
+              }}
               >
-                <img src={modifyIcon} className="table-btn-icon-larger" alt="Modifier" />
+                <ModifyIcon className="table-btn-icon-larger" aria-hidden="true" focusable="false" />
                 <span>Modifier</span>
               </button>
               <button 
               className="table-btn" 
+              disabled={!hasSelectedSteps}
               onClick={() => {
-                if (handleDeleteSteps()) {
-                  setIsDeleteModalOpen(true);
-                }
+                setIsDeleteModalOpen(true);
               }}
               >
-                <img src={deleteIcon} className="table-btn-icon" alt="Supprimer" />
+                <DeleteIcon className="table-btn-icon" aria-hidden="true" focusable="false" />
                 <span>Supprimer</span>
               </button>
             </div>
