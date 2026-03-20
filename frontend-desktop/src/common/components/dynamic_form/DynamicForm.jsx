@@ -89,19 +89,22 @@ export default function DynamicForm({
       {fields.map((field) => {
         if (field.showIf && !field.showIf(values)) return null;
 
+        const isRequired =
+          typeof field.required === "function" ? field.required(values) : field.required;
+
         return (
           <div key={field.name} className="dynamic-form-field">
             <label>
               {field.label}
-              {typeof field.required === "function"
-                ? field.required(values) && " *"
-                : field.required && " *"}
+              {isRequired && <span className="required-asterisk"> *</span>}
             </label>
             {renderField(field)}
           </div>
         );
       })}
-      <p>* champs obligatoires</p>
+      <p>
+        <span className="required-asterisk">*</span> champs obligatoires
+      </p>
       <button type="submit">{submitLabel}</button>
     </form>
   );

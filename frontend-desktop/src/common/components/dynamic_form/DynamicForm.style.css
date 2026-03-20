@@ -19,6 +19,11 @@
   margin-bottom: 0.5rem;
   display: block;
 }
+
+.required-asterisk {
+  color: #dc2626;
+}
+
 .dynamic-form-container input,
 .dynamic-form-container select {
   width: 100%;
