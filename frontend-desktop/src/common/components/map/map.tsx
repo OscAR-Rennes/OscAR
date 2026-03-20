@@ -13,13 +13,13 @@ const libraries: Libraries = ["places"];
 
 const defaultCenter = { lat: 48.8584, lng: 2.2945 };
 
-type MapPickerProps = {
-  value: { lat: number; lng: number } | null;
-  onChange?: (coords: { lat: number; lng: number }) => void;
-  readOnly?: boolean;
-};
+export default function MapPicker({ value, onChange = undefined, readOnly = false }) {
+  const hasValidCoords = (coords) => (
+    coords &&
+    Number.isFinite(Number(coords.lat)) &&
+    Number.isFinite(Number(coords.lng))
+  );
 
-export default function MapPicker({ value, onChange, readOnly = false }: MapPickerProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: apiKey,
     libraries,
@@ -31,13 +31,20 @@ export default function MapPicker({ value, onChange, readOnly = false }: MapPick
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    if (value) {
-      setMarker(value);
-      return;
-    }
+    if (!hasValidCoords(value)) return;
 
-    setMarker(null);
-  }, [value]);
+    const nextMarker = {
+      lat: Number(value.lat),
+      lng: Number(value.lng),
+    };
+
+    setMarker(nextMarker);
+
+    if (map) {
+      map.panTo(nextMarker);
+      map.setZoom(15);
+    }
+  }, [map, value]);
 
   const handleMapClick = (e) => {
     if (readOnly) return;

@@ -239,6 +239,27 @@ th, td {
   white-space: nowrap;
 }
 
+.table-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5.5rem;
+  padding: 0.4rem 0.4rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.table-status-badge--active {
+  background: #d3f9df;
+  color: #166534;
+}
+
+.table-status-badge--inactive {
+  background: #fcd8d8;
+  color: #991b1b;
+}
+
 .table-sort-button {
   display: inline-flex;
   align-items: center;
