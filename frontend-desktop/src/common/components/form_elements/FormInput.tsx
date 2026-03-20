@@ -10,6 +10,8 @@ export function FormInput({
   label,
   required = false,
   type = "text",
+    readOnly = false,
+    disabled = false,
 }) {
 
     const rules = required
@@ -25,9 +27,9 @@ export function FormInput({
             <FormLabel>{label}</FormLabel>
 
             {type === "number" ? (
-                <InputNumber {...field} />
+                <InputNumber {...field} readOnly={readOnly} disabled={disabled} />
             ) : (
-                <Input {...field} />
+                <Input {...field} readOnly={readOnly} disabled={disabled} />
             )}
 
             <FormError name={name} />

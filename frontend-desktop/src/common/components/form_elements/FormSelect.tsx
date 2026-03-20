@@ -14,9 +14,10 @@ type Props = {
   label: string;
   options: Option[];
   required?: boolean;
+  disabled?: boolean;
 };
 
-export function FormSelect({ name, label, options, required = true }: Props) {
+export function FormSelect({ name, label, options, required = true, disabled = false }: Props) {
     const rules = required ? { required: "Ce champ est obligatoire" } : {};
     return (
         <FormField
@@ -30,6 +31,7 @@ export function FormSelect({ name, label, options, required = true }: Props) {
                 value={field.value}
                 onChange={field.onChange}
                 options={options}
+              disabled={disabled}
             />
 
             <FormError name={name} />

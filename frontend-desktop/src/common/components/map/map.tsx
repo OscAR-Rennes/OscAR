@@ -13,7 +13,13 @@ const libraries: Libraries = ["places"];
 
 const defaultCenter = { lat: 48.8584, lng: 2.2945 };
 
-export default function MapPicker({ value, onChange }) {
+const hasValidCoords = (coords) => (
+  coords &&
+  Number.isFinite(Number(coords.lat)) &&
+  Number.isFinite(Number(coords.lng))
+);
+
+export default function MapPicker({ value, onChange = undefined, readOnly = false }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: apiKey,
     libraries,
@@ -25,12 +31,24 @@ export default function MapPicker({ value, onChange }) {
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    if (value) {
-      setMarker(value);
+    if (!hasValidCoords(value)) return;
+
+    const nextMarker = {
+      lat: Number(value.lat),
+      lng: Number(value.lng),
+    };
+
+    setMarker(nextMarker);
+
+    if (map) {
+      map.panTo(nextMarker);
+      map.setZoom(15);
     }
-  }, [value]);
+  }, [map, value]);
 
   const handleMapClick = (e) => {
+    if (readOnly) return;
+
     const coords = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
@@ -61,18 +79,20 @@ export default function MapPicker({ value, onChange }) {
 
   return isLoaded ? (
     <div className="map-picker">
-      <Autocomplete
-        onLoad={setAutocomplete}
-        onPlaceChanged={handlePlaceChanged}
-      >
-        <input
-          type="text"
-          className="map-search-input"
-          placeholder="Rechercher une adresse..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
-      </Autocomplete>
+      {!readOnly && (
+        <Autocomplete
+          onLoad={setAutocomplete}
+          onPlaceChanged={handlePlaceChanged}
+        >
+          <input
+            type="text"
+            className="map-search-input"
+            placeholder="Rechercher une adresse..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        </Autocomplete>
+      )}
 
       <GoogleMap
         mapContainerClassName="map-canvas"
