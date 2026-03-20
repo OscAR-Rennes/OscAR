@@ -57,7 +57,7 @@ export class CulturalCenterServiceImpl implements CulturalCenterService {
       ): Promise<PaginatedResponseDTO<GetMapCulturalCenterResponseDTO>> {
         try {
           const culturalCenters = await culturalCenterRepository.getAllActiveForMap(filters);
-          return paginateArray(culturalCenters.map(culturalCenterMapper.toMapDTO), pagination);
+          return paginateArray(culturalCenters.map(culturalCenterMapper.toMinimalMapDTO), pagination);
         }
         catch (error: any) {
           throw new AppError({

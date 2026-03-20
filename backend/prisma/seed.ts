@@ -2,25 +2,61 @@ import bcrypt from "bcrypt";
 import { prisma } from "../src/common-lib/config/prismaClient.js";
 
 const SEED_CONFIG = {
-  culturalCenters: 12,
-  huntManagersPerCenter: 6,
-  huntsPerCenter: 8,
-  indexesPerHunt: 4,
-  stepsPerIndex: 12,
+  culturalCenters: 500,
+  huntManagersPerCenter: 1,
+  huntsPerCenter: 1,
+  indexesPerHunt: 2,
+  stepsPerIndex: 3,
 } as const;
 
-const CITY_PROFILES = {
-  Rennes: {
-    zipPrefix: "35",
-    centerLat: 48.1173,
-    centerLng: -1.6778,
-  },
-  Paris: {
-    zipPrefix: "75",
-    centerLat: 48.8566,
-    centerLng: 2.3522,
-  },
-} as const;
+const FRANCE_CITIES = [
+  { name: "Paris", zipPrefix: "75", lat: 48.8566, lng: 2.3522 },
+  { name: "Marseille", zipPrefix: "13", lat: 43.2965, lng: 5.3698 },
+  { name: "Lyon", zipPrefix: "69", lat: 45.764, lng: 4.8357 },
+  { name: "Toulouse", zipPrefix: "31", lat: 43.6047, lng: 1.4442 },
+  { name: "Nice", zipPrefix: "06", lat: 43.7102, lng: 7.262 },
+  { name: "Nantes", zipPrefix: "44", lat: 47.2184, lng: -1.5536 },
+  { name: "Montpellier", zipPrefix: "34", lat: 43.6119, lng: 3.8772 },
+  { name: "Strasbourg", zipPrefix: "67", lat: 48.5734, lng: 7.7521 },
+  { name: "Bordeaux", zipPrefix: "33", lat: 44.8378, lng: -0.5792 },
+  { name: "Lille", zipPrefix: "59", lat: 50.6292, lng: 3.0573 },
+  { name: "Rennes", zipPrefix: "35", lat: 48.1173, lng: -1.6778 },
+  { name: "Reims", zipPrefix: "51", lat: 49.2583, lng: 4.0317 },
+  { name: "Le Havre", zipPrefix: "76", lat: 49.4944, lng: 0.1079 },
+  { name: "Saint-Etienne", zipPrefix: "42", lat: 45.4397, lng: 4.3872 },
+  { name: "Toulon", zipPrefix: "83", lat: 43.1242, lng: 5.928 },
+  { name: "Grenoble", zipPrefix: "38", lat: 45.1885, lng: 5.7245 },
+  { name: "Dijon", zipPrefix: "21", lat: 47.322, lng: 5.0415 },
+  { name: "Angers", zipPrefix: "49", lat: 47.4784, lng: -0.5632 },
+  { name: "Nimes", zipPrefix: "30", lat: 43.8367, lng: 4.3601 },
+  { name: "Clermont-Ferrand", zipPrefix: "63", lat: 45.7772, lng: 3.087 },
+  { name: "Brest", zipPrefix: "29", lat: 48.3904, lng: -4.4861 },
+  { name: "Tours", zipPrefix: "37", lat: 47.3941, lng: 0.6848 },
+  { name: "Amiens", zipPrefix: "80", lat: 49.8941, lng: 2.2958 },
+  { name: "Limoges", zipPrefix: "87", lat: 45.8336, lng: 1.2611 },
+  { name: "Perpignan", zipPrefix: "66", lat: 42.6887, lng: 2.8948 },
+  { name: "Metz", zipPrefix: "57", lat: 49.1193, lng: 6.1757 },
+  { name: "Besancon", zipPrefix: "25", lat: 47.2378, lng: 6.0241 },
+  { name: "Orleans", zipPrefix: "45", lat: 47.903, lng: 1.9093 },
+  { name: "Mulhouse", zipPrefix: "68", lat: 47.7508, lng: 7.3359 },
+  { name: "Ajaccio", zipPrefix: "20", lat: 41.9192, lng: 8.7386 },
+] as const;
+
+function randomBetween(min: number, max: number): number {
+  return min + Math.random() * (max - min);
+}
+
+function randomOffset(base: number, spread: number): number {
+  return base + randomBetween(-spread, spread);
+}
+
+function randomInt(min: number, max: number): number {
+  return Math.floor(randomBetween(min, max + 1));
+}
+
+function pickRandomCity() {
+  return FRANCE_CITIES[Math.floor(Math.random() * FRANCE_CITIES.length)];
+}
 
 async function main() {
   console.log("Seeding database...");
@@ -87,23 +123,24 @@ async function main() {
   // CULTURAL CENTERS LOOP
   // =====================
   for (let c = 1; c <= SEED_CONFIG.culturalCenters; c++) {
-    const cityName = c <= SEED_CONFIG.culturalCenters / 2 ? "Rennes" : "Paris";
-    const cityProfile = CITY_PROFILES[cityName];
+    const city = pickRandomCity();
+    const cityName = city.name;
 
-    // Keep slight offset so each seeded center has a unique point in the same city.
-    const centerLat = cityProfile.centerLat + c * 0.001;
-    const centerLng = cityProfile.centerLng + c * 0.001;
+    // Spread centers around city center so map feels natural and dense where needed.
+    const centerLat = randomOffset(city.lat, 0.18);
+    const centerLng = randomOffset(city.lng, 0.18);
+    const zipSuffix = String(randomInt(1, 999)).padStart(3, "0");
 
     // ADDRESS
     let address = await prisma.address.findFirst({
-      where: { zip: `${cityProfile.zipPrefix}${String(c).padStart(3, "0")}`, street_number: `${c}` },
+      where: { zip: `${city.zipPrefix}${zipSuffix}`, street_number: `${c}` },
     });
     if (!address) {
       address = await prisma.address.create({
         data: {
-          zip: `${cityProfile.zipPrefix}${String(c).padStart(3, "0")}`,
+          zip: `${city.zipPrefix}${zipSuffix}`,
           city: cityName,
-          street: `Rue Culturelle ${c}`,
+          street: `Avenue Culturelle ${c}`,
           street_number: `${c}`,
           latitude: centerLat,
           longitude: centerLng,
@@ -112,12 +149,12 @@ async function main() {
     }
 
     // CULTURAL CENTER
-    let center = await prisma.cultural_centers.findUnique({ where: { name: `Centre Culturel ${c}` } });
+    let center = await prisma.cultural_centers.findUnique({ where: { name: `Centre Culturel ${cityName} ${c}` } });
     if (!center) {
       center = await prisma.cultural_centers.create({
         data: {
-          name: `Centre Culturel ${c}`,
-          description: `Centre culturel numéro ${c}`,
+          name: `Centre Culturel ${cityName} ${c}`,
+          description: `Centre culturel ${cityName} #${c}`,
           isActive: true,
           address_id: address.id,
         },
@@ -186,8 +223,8 @@ async function main() {
         const creator = huntManagers[Math.floor(Math.random() * huntManagers.length)];
         const difficulty = Object.values(difficulties)[Math.floor(Math.random() * 3)];
 
-        const huntLat = centerLat + h * 0.002;
-        const huntLng = centerLng + h * 0.002;
+        const huntLat = randomOffset(centerLat, 0.03);
+        const huntLng = randomOffset(centerLng, 0.03);
 
         hunt = await prisma.hunts.create({
           data: {
@@ -229,8 +266,8 @@ async function main() {
           });
 
           if (!step) {
-            const stepLat = huntLatBase + i * 0.0008 + s * 0.0002;
-            const stepLng = huntLngBase + i * 0.0008 + s * 0.0002;
+            const stepLat = randomOffset(huntLatBase, 0.006);
+            const stepLng = randomOffset(huntLngBase, 0.006);
 
             await prisma.steps.create({
               data: {
