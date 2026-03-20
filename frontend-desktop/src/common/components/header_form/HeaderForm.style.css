@@ -32,8 +32,21 @@
 }
 
 .header-form-status {
+  display: inline-flex;
+  align-items: flex-end;
+  align-self: flex-end;
+  padding-bottom: 0.3rem;
+  line-height: 1;
   color: #6b7280;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
+}
+
+.header-form-status.saved {
+  color: #6b7280;
+}
+
+.header-form-status.unsaved {
+  color: #6b7280;
 }
 
 .header-form-entity {

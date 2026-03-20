@@ -25,10 +25,10 @@ export function MapCoordinatesField() {
       : null;
 
   return (
-    <div className="map-container">
+    <div className="hunts-create-map-panel">
       <MapPicker
         value={markerValue}
-        onChange={(coords) => {
+        onChange={(coords: { lat: number; lng: number }) => {
           setValue("latitude", coords.lat, { shouldDirty: true, shouldValidate: true });
           setValue("longitude", coords.lng, { shouldDirty: true, shouldValidate: true });
         }}
