@@ -3,6 +3,7 @@
 	border-radius: 1rem;
 	box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.15);
 	padding: 1rem;
+	box-sizing: border-box;
 	margin-left: 1rem;
 	width: 45%;
 	display: grid;
@@ -24,13 +25,32 @@
 	font-weight: bold;
 }
 
+.osc-form-control-row {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	column-gap: 0.5rem;
+}
+
+.osc-form-required {
+	color: #dc2626;
+	font-weight: 700;
+	line-height: 1;
+	width: 0.625rem;
+	text-align: center;
+}
+
+.osc-form-required.is-hidden {
+	visibility: hidden;
+}
+
 .osc-form-control {
 	width: 100%;
 	min-height: 2.125rem;
 	padding: 0.375rem 0.75rem;
-	border: 0.0625rem solid #d7d7d7;
+	border: 0.0625rem solid #e3e7ee;
 	border-radius: 0.1875rem;
-	background: #e2e2e2;
+	background: #f4f6f9;
 	color: #000000;
 	font-size: 0.95rem;
 	outline: none;
@@ -38,8 +58,8 @@
 }
 
 .osc-form-control:focus {
-	border-color: #b2b2b2;
-	background: #f0f0f0;
+	border-color: #cfd6e3;
+	background: #ffffff;
 }
 
 .osc-form-error {

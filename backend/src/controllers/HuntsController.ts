@@ -14,6 +14,7 @@ export class HuntsController  {
   async createHunt(req: Request, res: Response, next: any) {
     try {
       const userId = req.user?.id;
+      logger.warn(req.user)
       const userCulturalCenterId = req.user?.id_cultural_center;
       if (!userId || !userCulturalCenterId) {
         logger.warn("Missing user information for hunt creation", { route: req.originalUrl });
@@ -65,12 +66,10 @@ export class HuntsController  {
 
   async getHuntByCulturalCenter(req: Request, res: Response, next: any) {
     try {
+      const id = req.params.id;
       const user = req.user;
-      if (!user) {
-        logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
-        throw new Error("User not found in request");
-      }
-      const hunts = await this.huntsService.getHuntByCulturalCenter(user);
+      const hunts = await this.huntsService.getHuntByCulturalCenter(id, user);
+      logger.info(`Hunts retrieved succesfully`, { route: req.originalUrl })
       res.status(200).json(hunts);
     } catch (err) {
       logger.error("Error getting hunts by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -80,13 +79,8 @@ export class HuntsController  {
 
   async getHuntById(req: Request, res: Response, next: any) {
     try {
-      const user = req.user;
       const id = req.params.id;
-      if (!user) {
-        logger.warn("User missing in request for getting hunt", { route: req.originalUrl });
-        throw new Error("User not found in request");
-      }
-      const hunt = await this.huntsService.getHuntById(user, id)
+      const hunt = await this.huntsService.getHuntById(id)
       if (!hunt) {
         logger.warn(`Hunt with id ${id} not found`, { route: req.originalUrl })
         res.status(404)

@@ -7,6 +7,7 @@ export default function DynamicForm({
   submitLabel = "Valider",
   onFieldChange = undefined,
   resetSignal = 0,
+  externalValues = undefined,
 }) {
   const [values, setValues] = useState(() =>
     fields.reduce((acc, field) => {
@@ -23,6 +24,24 @@ export default function DynamicForm({
       }, {})
     );
   }, [resetSignal, fields]);
+
+  useEffect(() => {
+    if (!externalValues) return;
+
+    setValues((prev) => {
+      let hasChanged = false;
+      const nextValues = { ...prev };
+
+      Object.entries(externalValues).forEach(([key, value]) => {
+        if (value !== undefined && nextValues[key] !== value) {
+          nextValues[key] = value;
+          hasChanged = true;
+        }
+      });
+
+      return hasChanged ? nextValues : prev;
+    });
+  }, [externalValues]);
 
   const handleChange = (name, type, value) => {
     const parsed = type === "number" ? (value === "" ? "" : Number(value)) : value;
@@ -62,6 +81,20 @@ export default function DynamicForm({
     }
 
     if (field.type === "checkbox") {
+      if (field.variant === "toggle") {
+        return (
+          <label className="toggle-switch" aria-label={field.label}>
+            <input
+              type="checkbox"
+              name={field.name}
+              checked={!!values[field.name]}
+              onChange={(e) => handleChange(field.name, field.type, e.target.checked)}
+            />
+            <span className="toggle-slider" aria-hidden="true" />
+          </label>
+        );
+      }
+
       return (
         <input
           type="checkbox"
@@ -86,22 +119,67 @@ export default function DynamicForm({
 
   return (
     <form className="dynamic-form-container" onSubmit={handleSubmit}>
-      {fields.map((field) => {
-        if (field.showIf && !field.showIf(values)) return null;
+      {(() => {
+        const renderedElements = [];
+        const visibleFields = fields.filter(f => !f.showIf || f.showIf(values));
+        let i = 0;
 
-        return (
-          <div key={field.name} className="dynamic-form-field">
-            <label>
-              {field.label}
-              {typeof field.required === "function"
-                ? field.required(values) && " *"
-                : field.required && " *"}
-            </label>
-            {renderField(field)}
-          </div>
-        );
-      })}
-      <p>* champs obligatoires</p>
+        while (i < visibleFields.length) {
+          const field = visibleFields[i];
+
+          // S'il y a un groupe, regrouper tous les champs du même groupe
+          if (field.group) {
+            const groupId = field.group;
+            const groupedFields = [];
+
+            while (i < visibleFields.length && visibleFields[i].group === groupId) {
+              groupedFields.push(visibleFields[i]);
+              i++;
+            }
+
+            const isRequired =
+              typeof field.required === "function" ? field.required(values) : field.required;
+
+            renderedElements.push(
+              <div key={`group-${groupId}`} className="dynamic-form-group">
+                {groupedFields.map((gf) => {
+                  const isReq =
+                    typeof gf.required === "function" ? gf.required(values) : gf.required;
+
+                  return (
+                    <div key={gf.name} className="dynamic-form-field">
+                      <label>
+                        {gf.label}
+                        {isReq && <span className="required-asterisk"> *</span>}
+                      </label>
+                      {renderField(gf)}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          } else {
+            const isRequired =
+              typeof field.required === "function" ? field.required(values) : field.required;
+
+            renderedElements.push(
+              <div key={field.name} className="dynamic-form-field">
+                <label>
+                  {field.label}
+                  {isRequired && <span className="required-asterisk"> *</span>}
+                </label>
+                {renderField(field)}
+              </div>
+            );
+            i++;
+          }
+        }
+
+        return renderedElements;
+      })()}
+      <p>
+        <span className="required-asterisk">*</span> champs obligatoires
+      </p>
       <button type="submit">{submitLabel}</button>
     </form>
   );

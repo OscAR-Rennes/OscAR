@@ -1,5 +1,9 @@
 export interface LightHuntDTO {
     id: string
     title: string;
-    description: string;
+    difficulty: {
+        name: string
+    }
+    points: number;
+    steps: number;
 }

@@ -27,12 +27,21 @@ export function FormSelect({ name, label, options, required = true, disabled = f
             <FormItem>
             <FormLabel>{label}</FormLabel>
 
+          <div className="osc-form-control-row">
+            <span
+              className={`osc-form-required ${required ? "" : "is-hidden"}`}
+              aria-hidden="true"
+            >
+              *
+            </span>
+
             <Select
                 value={field.value}
                 onChange={field.onChange}
                 options={options}
               disabled={disabled}
             />
+          </div>
 
             <FormError name={name} />
             </FormItem>

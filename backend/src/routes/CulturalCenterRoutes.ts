@@ -91,4 +91,9 @@ culturalCenterRoutes.put(
     (req, res, next) => culturalCenterController.switchStatus(req, res, next)
 )
 
+
+culturalCenterRoutes.get(
+    "/culturalcenter/active/getById/:id",
+    (req, res, next) => culturalCenterController.getActiveById(req, res, next)
+)
 export default culturalCenterRoutes;

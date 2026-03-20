@@ -4,11 +4,72 @@ import { getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
 import { addStep } from "../../../api/services/step.api";
 import { CreateIndexDto } from "../../../api/models/index/AddIndexDto";
 import { CreateStepDto } from "../../../api/models/steps/AddStepDto";
+import { useAuthStore } from "../../../common/store/authStore";
+import MapPicker from "../../../common/components/map/map";
+import { useFormContext } from "react-hook-form";
+
+export const STEPS_CREATE_TABS = [
+  { id: "general", label: "Général" },
+  { id: "documents", label: "Documents" },
+  { id: "index", label: "Index" },
+];
+
+export function HuntSelectionSync({
+  onHuntChange,
+}: {
+  onHuntChange: (huntId: string | null) => void;
+}) {
+  const { watch } = useFormContext();
+  const huntId = watch("hunt_id");
+
+  useEffect(() => {
+    if (huntId === undefined || huntId === null || huntId === "") {
+      onHuntChange(null);
+      return;
+    }
+
+    onHuntChange(String(huntId));
+  }, [huntId, onHuntChange]);
+
+  return null;
+}
+
+export function StepsMapField() {
+  const { setValue, watch } = useFormContext();
+  const latitude = watch("latitude");
+  const longitude = watch("longitude");
+
+  const markerValue =
+    latitude !== undefined &&
+    latitude !== null &&
+    latitude !== "" &&
+    longitude !== undefined &&
+    longitude !== null &&
+    longitude !== ""
+      ? {
+          lat: Number(latitude),
+          lng: Number(longitude),
+        }
+      : null;
+
+  return (
+    <div className="steps-create-map-panel">
+      <MapPicker
+        value={markerValue}
+        onChange={(coords: { lat: number; lng: number }) => {
+          setValue("latitude", coords.lat, { shouldDirty: true, shouldValidate: true });
+          setValue("longitude", coords.lng, { shouldDirty: true, shouldValidate: true });
+        }}
+      />
+    </div>
+  );
+}
 
 export function useStepsData() {
   const [hunts, setHunts] = useState([]);
   const [selectedHuntId, setSelectedHuntId] = useState(null);
   const [indexesForHunt, setIndexesForHunt] = useState([]);
+  const user = useAuthStore((state) => state.user);
 
   // Fetch difficulties + hunts au chargement
   useEffect(() => {
@@ -31,7 +92,7 @@ export function useStepsData() {
   }, [selectedHuntId]);
 
   const refreshHunts = async () => {
-    const huntsData = await getHuntsByCulturalCenter();
+    const huntsData = await getHuntsByCulturalCenter(user.id_cultural_center);
     setHunts(huntsData);
   };
 
