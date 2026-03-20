@@ -1,49 +1,70 @@
-import { logoutUser } from "../../api/services/auth.api";
+import { useState } from "react";
 import Table from "../../common/components/table/Table";
-import { useAuthStore } from "../../common/store/authStore";
+import ConfirmModal from "../../common/components/confirmmodal/ConfirmModal";
 import { useUsersnData } from "./users.data";
-
+import { ReactComponent as PowerIcon } from "../../common/assets/icon/power-button.svg";
+import { ReactComponent as DeleteIcon } from "../../common/assets/icon/close.svg";
 
 export default function Users() {
-
   const {
     isAdmin,
     users,
     setSelectedUsersRows,
     userColumns,
-    handleActivateDeactivateUsers
+    hasSelectedUsers,
+    executeActivateDeactivateUsers,
   } = useUsersnData();
 
-  const clearUser = useAuthStore((state) => state.clearUser);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSwitchStatusModalOpen, setIsSwitchStatusModalOpen] = useState(false);
 
   return (
     <>
-      <h1>Lootopia V0.0.1 - Users management</h1>
-
-      { isAdmin && (
+      {isAdmin && (
         <>
-          <h2>
-            {isAdmin
-              ? "Table des utilisateurs"
-              : "Table des utilisateurs du centre culturel"}
-          </h2>          
           <Table
             data={users}
             columns={userColumns}
             onRowSelect={setSelectedUsersRows}
+            allItemsLabel="utilisateurs"
             renderActionButton={() => (
-              <button 
-              className="table-btn" 
-              onClick={handleActivateDeactivateUsers}
-              >
-                Désactiver / Réactiver
-              </button>
+              <div className="table-action-buttons">
+                <button className="table-btn" disabled={!hasSelectedUsers} onClick={() => {
+                  setIsSwitchStatusModalOpen(true);
+                }}>
+                  <PowerIcon className="table-btn-icon-bigger" aria-hidden="true" focusable="false" />
+                  Désactiver / Réactiver
+                </button>
+                <button className="table-btn" disabled={!hasSelectedUsers} onClick={() => {
+                  setIsDeleteModalOpen(true);
+                }}>
+                  <DeleteIcon className="table-btn-icon" aria-hidden="true" focusable="false" />
+                  <span>Supprimer</span>
+                </button>
+              </div>
             )}
+          />
+
+          <ConfirmModal
+            isOpen={isSwitchStatusModalOpen}
+            message="Etes vous sur de vouloir désactiver/réactiver ces utilisateurs ?"
+            onCancel={() => setIsSwitchStatusModalOpen(false)}
+            onConfirm={() => {
+              executeActivateDeactivateUsers();
+              setIsSwitchStatusModalOpen(false);
+            }}
+          />
+
+          <ConfirmModal
+            isOpen={isDeleteModalOpen}
+            message="Etes vous sur de vouloir supprimer ces utilisateurs ?"
+            onCancel={() => setIsDeleteModalOpen(false)}
+            onConfirm={() => {
+              setIsDeleteModalOpen(false);
+            }}
           />
         </>
       )}
-
-    
     </>
   );
 }

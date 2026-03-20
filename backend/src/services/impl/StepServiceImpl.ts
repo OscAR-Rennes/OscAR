@@ -3,22 +3,26 @@ import { CreateStepRequestDTO } from "../../common-lib/dto/step/CreateStepReques
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
 import { stepMapper } from "../../mapper/StepMapper.js";
 import { CreateStepResponseDTO } from "../../common-lib/dto/step/CreateStepResponseDTO.js";
+import { EditStepRequestDTO } from "../../common-lib/dto/step/EditStepRequestDTO.js";
+import { EditStepResponseDTO } from "../../common-lib/dto/step/EditStepResponseDTO.js";
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
-import { IndexServiceImpl } from "./IndexServiceImpl.js";
 import logger from "../../common-lib/utils/logger.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { LightStepDTO } from "../../common-lib/dto/step/LightStepDTO.js";
+import { FullStepDTO } from "../../common-lib/dto/step/FullStepDTO.js";
+import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
+import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
+import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
 
-const indexServiceImpl = new IndexServiceImpl();
 const stepRepository = new StepRepository();
-const indexRepository = new IndexRepository();
 
 export class StepServiceImpl implements StepService {
 
     async createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO> {
         try {
+            const indexRepository = new IndexRepository();
             let stepToCreate = stepData;
             if (!stepData.index_id) {
                 const index = await indexRepository.createIncrementEmpty(stepData.hunt_id);
@@ -44,21 +48,86 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async deleteStep(stepId: string): Promise<void> {
+    async editStep(stepData: EditStepRequestDTO, user: AuthResponseDTO): Promise<EditStepResponseDTO> {
         try {
-            await prisma.$transaction(async (tx) => {
-                const step = await stepRepository.getStepById(stepId);
-                const stepIndexId = step.index_id;
+            const userRepository = new UserRepository();
+            const indexRepository = new IndexRepository();
+            const existingStep = await stepRepository.getById(stepData.id);
 
-                const stepsInIndex = await stepRepository.getStepsByIndexId(stepIndexId);
-                if (stepsInIndex.length === 0) {
-                    await indexServiceImpl.deleteIndex(stepIndexId);
-                    logger.info(`Index deleted successfully with ID: ${stepIndexId}`, { indexId: stepIndexId });
+            if (!existingStep) {
+                throw new AppError({
+                    userMessage: "Étape non trouvée",
+                    statusCode: 404,
+                });
+            }
+
+            await assertUserCanAccessHunt(user, existingStep.hunts, userRepository);
+
+            if (stepData.index_id) {
+                const targetIndex = await indexRepository.getByIdWithHunt(stepData.index_id);
+
+                if (!targetIndex || targetIndex.hunt_id !== existingStep.hunt_id) {
+                    throw new AppError({
+                        userMessage: "L'index cible est invalide pour cette étape",
+                        statusCode: 400,
+                    });
                 }
-                await stepRepository.delete(stepId);
+            }
+
+            const editedStep = await stepRepository.edit(stepData);
+            return stepMapper.toEditResponseDto(editedStep);
+        } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
+            throw new AppError({
+                userMessage: "Erreur lors de la modification de l'étape",
+                statusCode: 500,
+            });
+        }
+    }
+
+    async deleteStep(user: AuthResponseDTO, stepId: string): Promise<void> {
+        try {
+            const userRepository = new UserRepository();
+            const step = await stepRepository.getByIdWithHunt(stepId);
+
+            if (!step) {
+                throw new AppError({
+                    userMessage: "Étape non trouvée",
+                    statusCode: 404,
+                });
+            }
+
+            await assertUserCanAccessHunt(user, step.hunts, userRepository);
+
+            await prisma.$transaction(async (tx) => {
+                const indexRepository = new IndexRepository();
+                const huntRepository = new HuntRepository();
+                await stepRepository.delete(stepId, tx);
+
+                const remainingStepsInIndex = await stepRepository.countByIndexId(step.index_id, tx);
+
+                if (remainingStepsInIndex === 0) {
+                    const indexesInHunt = await indexRepository.countByHuntId(step.hunt_id, tx);
+
+                    if (indexesInHunt === 1) {
+                        await huntRepository.updateIsActive(step.hunt_id, false, tx);
+                        logger.info(`Hunt disabled because its last index became empty: ${step.hunt_id}`, { huntId: step.hunt_id });
+                    }
+
+                    await indexRepository.delete(step.index_id, tx);
+                    logger.info(`Index deleted successfully with ID: ${step.index_id}`, { indexId: step.index_id });
+                }
+
                 logger.info(`Step deleted successfully with ID: ${stepId}`, { stepId });
             });
         } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
             throw new AppError({
                 userMessage: 'Erreur lors de la suppression de l\'étape',
                 statusCode: 500,
@@ -94,4 +163,43 @@ export class StepServiceImpl implements StepService {
             });
         }
     }
+
+    async getStepById(
+    user: AuthResponseDTO,
+    id: string
+    ): Promise<FullStepDTO | null> {
+    try {
+        const userRepository = new UserRepository();
+        const step = await stepRepository.getById(id);
+
+        if (!step) {
+        return null;
+        }
+
+        await assertUserCanAccessHunt(user, step.hunts, userRepository);
+
+        return stepMapper.toFullResponseDto(step);
+
+    } catch (error) {
+        if (error instanceof AppError) throw error;
+
+        throw new AppError({
+        userMessage: "Erreur lors de la récupération de l'étape",
+        statusCode: 500,
+        });
+    }
+    }
+
+    async getStepsByIndex(indexId: string): Promise<LightStepDTO[]> {
+        try {
+            const steps = await stepRepository.getStepsByIndexId(indexId);
+            return steps.map(stepMapper.toLightDTO);
+        } catch (error) {
+            throw new AppError({
+                userMessage: 'Erreur lors de la récupération des étapes par index',
+                statusCode: 500,
+            });
+        }
+    }
+    
 }

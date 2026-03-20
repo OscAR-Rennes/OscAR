@@ -6,13 +6,19 @@ import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js"
 import { AppError } from "../../common-lib/errors/AppError.js";
 import { LightHuntDTO } from "../../common-lib/dto/hunt/LightHuntDTO.js";
 import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
+import { EditHuntResponseDTO } from "../../common-lib/dto/hunt/EditHuntResponseDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import logger from "../../common-lib/utils/logger.js";
 import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
+import { FullHuntDTO } from "../../common-lib/dto/hunt/FullHuntDTO.js";
+import { hunts } from "@prisma/client";
+import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
+import { prisma } from "../../common-lib/config/prismaClient.js";
+import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
+import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
 
 const huntRepository = new HuntRepository();
-const userRpository = new UserRepository();
 
 export class HuntServiceImpl implements HuntService {
 
@@ -45,9 +51,8 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async editHunt(huntData: EditHuntRequestDTO, userId: string, userRights: string[]) {
+    async editHunt(huntData: EditHuntRequestDTO, user: AuthResponseDTO): Promise<EditHuntResponseDTO> {
         try {
-
             const existingHunt = await huntRepository.getByID(huntData.id);
             if (!existingHunt) {
                 throw new AppError({
@@ -55,22 +60,16 @@ export class HuntServiceImpl implements HuntService {
                     statusCode: 404
                 })
             }
-            const hasRights =
-                existingHunt.creator_id === userId ||
-                userRights.includes('ADMIN') ||
-                (userRights.includes('CULTURAL_CENTER_MANAGER') && existingHunt.cultural_center_id === userId);
 
-            if (!hasRights) {
-                logger.warn(`User does not have rights to edit hunt with ID: ${huntData.id}`);
-                throw new AppError({
-                    userMessage: 'Vous n\'avez pas les droits pour modifier cette chasse',
-                    statusCode: 403,
-                });
-            }
-
+            await assertUserCanAccessHunt(user, existingHunt, new UserRepository());
             const editedHunt = await huntRepository.edit(huntData);
+            
             return huntMapper.toEditResponseDto(editedHunt)
         } catch (error: any) {
+            if (error instanceof AppError) {
+                throw error;
+            }
+
             throw new AppError({
                 userMessage: 'Erreur lors de la modification de la chasse',
                 statusCode: 500
@@ -107,36 +106,63 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntById(user: AuthResponseDTO, id: string): Promise<LightHuntDTO | null> {
+    async getHuntById(
+        user: AuthResponseDTO,
+        id: string
+        ): Promise<FullHuntDTO | null> {
         try {
-            const hunt = await huntRepository.getByID(id)
+            const userRepository = new UserRepository();
+            const hunt = await huntRepository.getByID(id);
+
             if (!hunt) {
-                return null
+            return null;
             }
-            if (user.rights.includes(RoleEnum.ADMIN)) {
-                return huntMapper.toLightDTO(hunt)
-            }
-            if (user.rights.includes(RoleEnum.CULTURAL_CENTER_MANAGER)) {
-                const creator = await userRpository.findById(hunt.id)
-                if (creator?.id_cultural_center === user.id_cultural_center) {
-                    return huntMapper.toLightDTO(hunt)
-                }
-            }
-            if (user.rights.includes(RoleEnum.HUNT_MANAGER) && hunt.creator_id === user.id) {
-                return huntMapper.toLightDTO(hunt)
-            }
+
+            await assertUserCanAccessHunt(user, hunt, userRepository);
+
+            return huntMapper.toFullResponseDto(hunt);
+
+        } catch (error) {
+            if (error instanceof AppError) throw error;
+
             throw new AppError({
-                userMessage: "Vous n'avez pas les droits pour accéder à cette chasse",
-                statusCode: 403,
+            userMessage: "Erreur lors de la récupération de la chasse",
+            statusCode: 500,
+            });
+        }
+    }
+
+    async deleteHunt(user: AuthResponseDTO, id: string): Promise<void> {
+        try {
+            const userRepository = new UserRepository();
+            const hunt = await huntRepository.getByID(id);
+
+            if (!hunt) {
+                throw new AppError({
+                    userMessage: "Chasse non trouvée",
+                    statusCode: 404,
+                });
+            }
+
+            await assertUserCanAccessHunt(user, hunt, userRepository);
+
+            await prisma.$transaction(async (tx) => {
+                const stepRepository = new StepRepository();
+                const indexRepository = new IndexRepository();
+                await stepRepository.deleteByHuntId(id, tx);
+                await indexRepository.deleteByHuntId(id, tx);
+                await huntRepository.delete(id, tx);
             });
 
+            logger.info(`Hunt deleted successfully with ID: ${id}`, { huntId: id, deletedBy: user.id });
         } catch (error) {
             if (error instanceof AppError) {
                 throw error;
             }
+
             throw new AppError({
-                userMessage: 'Erreur lors de la récupération des chasses',
-                statusCode: error instanceof AppError ? error.statusCode : 500
+                userMessage: "Erreur lors de la suppression de la chasse",
+                statusCode: 500,
             });
         }
     }

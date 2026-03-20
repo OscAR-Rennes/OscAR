@@ -1,6 +1,7 @@
-import { steps } from "@prisma/client";
+import { Prisma, steps } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { CreateStepRequestDTO } from "../dto/step/CreateStepRequestDTO.js";
+import { EditStepRequestDTO } from "../dto/step/EditStepRequestDTO.js";
 
 export class StepRepository {
 
@@ -11,9 +12,44 @@ export class StepRepository {
     return stepRecord;
   }
 
-  async delete(stepId: string): Promise<void> {
-    await prisma.steps.delete({
+  async edit(stepData: EditStepRequestDTO): Promise<steps> {
+    const { id, ...data } = stepData;
+    return prisma.steps.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async delete(stepId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).steps.delete({
       where: { id: stepId },
+    });
+  }
+
+  async deleteByIndexId(indexId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).steps.deleteMany({
+      where: { index_id: indexId },
+    });
+  }
+
+  async deleteByHuntId(huntId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).steps.deleteMany({
+      where: { hunt_id: huntId },
+    });
+  }
+
+  async countByIndexId(indexId: string, tx?: Prisma.TransactionClient): Promise<number> {
+    return (tx ?? prisma).steps.count({
+      where: { index_id: indexId },
+    });
+  }
+
+  async getByIdWithHunt(id: string) {
+    return prisma.steps.findUnique({
+      where: { id },
+      include: {
+        hunts: true,
+      },
     });
   }
 
@@ -62,6 +98,26 @@ export class StepRepository {
       },
       include: {
         hunts: true,
+        index: true
+      }
+    });
+  }
+
+  async getById(id: string) {
+    return prisma.steps.findUnique({
+      where: { id },
+      include: {
+        hunts: {
+          include: {
+            cultural_centers: true,
+            users: {
+              select: {
+                id: true,
+                username: true
+              }
+            }
+          }
+        },
         index: true
       }
     });

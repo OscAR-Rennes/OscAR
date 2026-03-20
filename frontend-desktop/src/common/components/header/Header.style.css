@@ -17,10 +17,10 @@
 }
 
 .header-menu-burger {
-    width: 2rem;
-    height: 2rem;
-    margin-left: 1.5rem;
-    margin-right: 1rem;
+    width: 1.9rem;
+    height: 1.9rem;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,7 +29,8 @@
 }
 
 .separator-header {
-    color: #ffffff;
+    border: 1px solid #ffffff;
+    height: 1rem;
 }
     
 .user-rights {

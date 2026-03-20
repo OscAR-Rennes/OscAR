@@ -45,4 +45,33 @@ stepsRoutes.get(
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => stepsController.getStepsByCulturalCenter(req, res, next)
 );
+
+stepsRoutes.get(
+    "/step/getbyid/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.getStepById(req, res, next)
+)
+
+stepsRoutes.get(
+    "/step/index/:indexId",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.getStepsByIndex(req, res, next)
+)
+
+stepsRoutes.put(
+    "/step/edit/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.editStep(req, res, next)
+)
+
+stepsRoutes.delete(
+    "/step/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => stepsController.deleteStep(req, res, next)
+)
+
 export default stepsRoutes;

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO.js";
 
 declare global {
@@ -7,5 +8,5 @@ declare global {
     }
   }
 }
-
+  
 export {};

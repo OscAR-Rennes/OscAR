@@ -1,4 +1,4 @@
-import { hunts } from "@prisma/client";
+import { Prisma, hunts } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { CreateHuntRequestDTO } from "../dto/hunt/CreateHuntRequestDTO.js";
 import { EditHuntRequestDTO } from "../dto/hunt/EditHuntRequestDTO.js";
@@ -17,19 +17,65 @@ export class HuntRepository {
     return hunts;
   }
 
-  async getByID(id: string): Promise<hunts | null> {
-    const hunt = await prisma.hunts.findUnique({
+  async getByID(id: string) {
+    return prisma.hunts.findUnique({
+      where: { id },
+      include: {
+        users: {
+          select: {
+            id: true,
+            username: true,
+            id_cultural_center: true,
+          },
+        },
+        cultural_centers: {
+          select : {
+            id: true,
+            name: true
+          }
+        },
+        difficulty: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        steps: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getByIdRaw(id: string) {
+    return prisma.hunts.findUnique({
       where: { id },
     });
-    return hunt;
   }
 
   async edit(huntData: EditHuntRequestDTO): Promise<hunts> {
+    const { id, ...data } = huntData;
     const huntRecord = await prisma.hunts.update({
-      where: { id: huntData.id },
-      data: { ...huntData },
+      where: { id },
+      data,
     });
     return huntRecord;
+  }
+
+  async updateIsActive(id: string, isActive: boolean, tx?: Prisma.TransactionClient): Promise<hunts> {
+    return (tx ?? prisma).hunts.update({
+      where: { id },
+      data: { isactive: isActive },
+    });
+  }
+
+  async delete(id: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).hunts.delete({
+      where: { id },
+    });
   }
 
   async getByCulturalCenter(culturalcenter_id: string): Promise<hunts[]> {
@@ -45,4 +91,5 @@ export class HuntRepository {
     });
     return hunts;
   }
+
 }

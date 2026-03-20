@@ -11,3 +11,7 @@ export function getAllHunts() {
 export function getHuntsByCulturalCenter() {
   return apiClient(`/hunt/culturalcenter`);
 }
+
+export function getHuntById(huntId) {
+  return apiClient(`/hunt/getbyid/${huntId}`);
+}

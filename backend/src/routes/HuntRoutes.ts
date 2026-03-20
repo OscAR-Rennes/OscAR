@@ -69,7 +69,8 @@ huntsRoutes.get(
 
 
 huntsRoutes.put(
-    "/hunt/edit",
+    "/hunt/edit/:id",
+    authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => huntsController.editHunt(req, res, next)
 );
@@ -86,6 +87,13 @@ huntsRoutes.get(
     authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => huntsController.getHuntById(req, res, next)
+)
+
+huntsRoutes.delete(
+    "/hunt/:id",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => huntsController.deleteHunt(req, res, next)
 )
 
 export default huntsRoutes;
