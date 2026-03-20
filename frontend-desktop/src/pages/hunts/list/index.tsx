@@ -1,6 +1,4 @@
 
-import { use, useEffect, useState } from "react";
-import { getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
 import Table from "../../../common/components/table/Table";
 import "../../../common/components/table/Table.style.css";
 import { useNavigate } from "react-router-dom";

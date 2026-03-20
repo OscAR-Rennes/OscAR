@@ -25,7 +25,7 @@ const HuntDetailsScreen: React.FC = () => {
     // Handle cases where parameters might be undefined
     const huntId = Array.isArray(id) ? id[0] : id;
 
-    const [steps, setSteps] = useState<LightStepDTO[]>([]); // Explicitly define the type for steps
+    const [steps, setSteps] = useState<LightStepDTO[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -84,6 +84,7 @@ const HuntDetailsScreen: React.FC = () => {
                             router.push({
                                 pathname: '/current-step',
                                 params: {
+                                    huntId: id,
                                     stepId: steps[0].id,
                                 },
                             });

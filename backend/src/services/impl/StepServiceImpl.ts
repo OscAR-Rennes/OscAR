@@ -126,11 +126,10 @@ export class StepServiceImpl implements StepService {
     id: string
     ): Promise<FullStepDTO | null> {
     try {
-        const userRepository = new UserRepository();
         const step = await stepRepository.getById(id);
 
         if (!step) {
-        return null;
+            return null;
         }
 
         return stepMapper.toFullResponseDto(step);
@@ -139,8 +138,8 @@ export class StepServiceImpl implements StepService {
         if (error instanceof AppError) throw error;
 
         throw new AppError({
-        userMessage: "Erreur lors de la récupération de l'étape",
-        statusCode: 500,
+            userMessage: "Erreur lors de la récupération de l'étape",
+            statusCode: 500,
         });
     }
     }
