@@ -13,7 +13,8 @@ type HeaderFormProps = {
   onTabChange: (tabId: string) => void;
   creatorName?: string;
   creatorLabel?: string;
-  statusLabel?: string;
+  saveState?: "saved" | "unsaved";
+  saveStateLabel?: string;
   creatorPlacement?: "left" | "right";
 };
 
@@ -25,9 +26,13 @@ export default function HeaderForm({
   onTabChange,
   creatorName,
   creatorLabel = "Créé par",
-  statusLabel,
+  saveState = "unsaved",
+  saveStateLabel,
   creatorPlacement = "right",
 }: HeaderFormProps) {
+  const computedSaveStateLabel =
+    saveStateLabel ?? (saveState === "saved" ? "Sauvegardé" : "Non sauvegardé");
+
   const creatorBlock = (
     <div className={`header-form-creator-group ${creatorPlacement === "left" ? "left" : "right"}`}>
       <span className="header-form-creator-name">{creatorName || "-"}</span>
@@ -43,7 +48,9 @@ export default function HeaderForm({
         <div className="header-form-title-group">
           <div className="header-form-title-row">
             <h1 className="header-form-title">{title}</h1>
-            {statusLabel && <span className="header-form-status">- {statusLabel}</span>}
+            <span className={`header-form-status ${saveState === "saved" ? "saved" : "unsaved"}`}>
+              - {computedSaveStateLabel}
+            </span>
           </div>
           <p className="header-form-entity">{entityName}</p>
         </div>

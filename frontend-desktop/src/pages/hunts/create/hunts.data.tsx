@@ -6,6 +6,8 @@ import TextInput from "../../../common/components/text_input/TextInput";
 import MapPicker from "../../../common/components/map/map";
 import { useFormContext } from "react-hook-form";
 
+export const HUNTS_CREATE_TABS = [{ id: "general", label: "Général" }];
+
 export function MapCoordinatesField() {
   const { setValue, watch } = useFormContext();
   const latitude = watch("latitude");
@@ -25,10 +27,10 @@ export function MapCoordinatesField() {
       : null;
 
   return (
-    <div className="map-container">
+    <div className="hunts-create-map-panel">
       <MapPicker
         value={markerValue}
-        onChange={(coords) => {
+        onChange={(coords: { lat: number; lng: number }) => {
           setValue("latitude", coords.lat, { shouldDirty: true, shouldValidate: true });
           setValue("longitude", coords.lng, { shouldDirty: true, shouldValidate: true });
         }}
