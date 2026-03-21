@@ -19,3 +19,7 @@ export function getHuntById(huntId) {
 export function editHunt(huntId, huntData) {
   return apiClient(`/hunt/edit/${huntId}`, { method: 'PUT', body: huntData });
 }
+
+export function deleteHunt(huntId) {
+  return apiClient(`/hunt/${huntId}`, { method: 'DELETE' });
+}

@@ -57,7 +57,7 @@ export default function App() {
           <Route path="/home/hunts/:id/edit" element={<HuntConsultation />} />
           <Route path="/home/steps/create" element={<StepsCreation />} />
           <Route path="/home/steps/:id" element={<StepConsultation />} />
-          <Route path="/home/steps/:id/edit" element={<div>Modifier l'étape</div>} />
+          <Route path="/home/steps/:id/edit" element={<StepConsultation />} />
         </Route>
 
         {/* Route publique */}

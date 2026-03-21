@@ -15,6 +15,15 @@
   align-items: start;
 }
 
+.osc-form.steps-consult-general-layout {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .steps-consult-info-panel {
   min-width: 0;
   background: #ffffff;
