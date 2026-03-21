@@ -6,7 +6,6 @@ import Ribbon from "../../../common/components/ribbon/ribbon";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
-import { editStep } from "../../../api/services/step.api";
 import {
   EditDirtyTracker,
   EditStepMapField,
@@ -24,7 +23,7 @@ export default function StepConsultation() {
   const isEditMode = location.pathname.endsWith("/edit");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeTabId, setActiveTabId] = useState("general");
-  const { step, isLoading, errorMessage, indexesForHunt } = useStepConsultData(id, location.pathname);
+  const { step, isLoading, errorMessage, indexesForHunt, buildEditStepSubmitHandler } = useStepConsultData(id, location.pathname);
 
   const indexOptions = useMemo(
     () =>
@@ -92,25 +91,11 @@ export default function StepConsultation() {
           isEditMode ? (
             <Form
               id="edit-step-form"
-              onSubmit={async (data: any) => {
-                if (!id) return;
-
-                const toNullableNumber = (value: any) =>
-                  value === "" || value === null || value === undefined ? null : Number(value);
-
-                const updated = await editStep(id, {
-                  title: data.title,
-                  description: data.description,
-                  points: Number(data.points),
-                  latitude: toNullableNumber(data.latitude),
-                  longitude: toNullableNumber(data.longitude),
-                  index_id: data.index_id || undefined,
-                });
-
-                if (updated) {
+              onSubmit={buildEditStepSubmitHandler(() => {
+                if (id) {
                   navigate(`/home/steps/${id}`);
                 }
-              }}
+              })}
               defaultValues={{
                 title: step.title,
                 description: step.description,

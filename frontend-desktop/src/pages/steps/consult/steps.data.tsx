@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import MapPicker from "../../../common/components/map/map";
 import { FullStepDTO } from "../../../api/models/steps/FullStepDto";
+import { EditStepFormDto } from "../../../api/models/steps/EditStepFormDto";
 import { getStepById } from "../../../api/services/step.api";
 import { getAllIndexByHunt } from "../../../api/services/index.api";
 import { useFormContext } from "react-hook-form";
+import { editStep } from "../../../api/services/step.api";
 
 export const STEPS_CONSULT_TABS = [
 	{ id: "general", label: "Général" },
@@ -100,10 +102,33 @@ export function useStepConsultData(stepId?: string, reloadKey?: string) {
 		fetchStep();
 	}, [stepId, reloadKey]);
 
+	const buildEditStepSubmitHandler = (onSuccess: () => void) => {
+		return async (data: EditStepFormDto) => {
+			if (!stepId) return;
+
+			const toNullableNumber = (value: number | string | null | undefined) =>
+				value === "" || value === null || value === undefined ? null : Number(value);
+
+			const updated = await editStep(stepId, {
+				title: data.title,
+				description: data.description,
+				points: Number(data.points),
+				latitude: toNullableNumber(data.latitude),
+				longitude: toNullableNumber(data.longitude),
+				index_id: data.index_id || undefined,
+			});
+
+			if (updated) {
+				onSuccess();
+			}
+		};
+	};
+
 	return {
 		step,
 		isLoading,
 		errorMessage,
 		indexesForHunt,
+		buildEditStepSubmitHandler,
 	};
 }

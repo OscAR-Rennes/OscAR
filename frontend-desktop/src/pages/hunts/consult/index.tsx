@@ -9,7 +9,6 @@ import { FormToogle } from "../../../common/components/form_elements/FormToogle"
 import { ReadOnlyField } from "../../../common/components/form_elements/ReadOnlyField";
 import Table from "../../../common/components/table/Table";
 import MapPicker from "../../../common/components/map/map";
-import { editHunt } from "../../../api/services/hunt.api";
 import {
   EditDirtyTracker,
   EditHuntMapField,
@@ -26,7 +25,7 @@ export default function HuntConsultation() {
   const isEditMode = location.pathname.endsWith("/edit");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const { hunt, difficulties, steps, stepsColumns } = useHuntConsultData(id, location.pathname);
+  const { hunt, difficulties, steps, stepsColumns, buildEditHuntSubmitHandler } = useHuntConsultData(id, location.pathname);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -65,24 +64,11 @@ export default function HuntConsultation() {
         {isEditMode ? (
           <Form
             id="edit-hunt-form"
-            onSubmit={async (data: any) => {
-              if (!id) return;
-
-              const updated = await editHunt(id, {
-                title: data.title,
-                description: data.description,
-                difficulty_id: data.difficulty_id,
-                points: Number(data.points),
-                latitude: Number(data.latitude),
-                longitude: Number(data.longitude),
-                picture_path: data.picture_path ?? "",
-                isactive: Boolean(data.active),
-              });
-
-              if (updated) {
+            onSubmit={buildEditHuntSubmitHandler(() => {
+              if (id) {
                 navigate(`/home/hunts/${id}`);
               }
-            }}
+            })}
             defaultValues={{
               title: hunt.title,
               points: hunt.points,

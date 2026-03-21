@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { getHuntById } from "../../../api/services/hunt.api";
 import { getAllDifficulty } from "../../../api/services/difficulty.api";
 import { FullHuntDTO } from "../../../api/models/hunts/FullHuntDto";
+import { EditHuntFormDto } from "../../../api/models/hunts/EditHuntFormDto";
 import { type Column } from "../../../common/components/table/Table";
 import MapPicker from "../../../common/components/map/map";
 import { useFormContext } from "react-hook-form";
+import { editHunt } from "../../../api/services/hunt.api";
 
 type StepRow = {
 	id: string;
@@ -45,11 +47,33 @@ export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 		fetchHunt();
 	}, [huntId, reloadKey]);
 
+	const buildEditHuntSubmitHandler = (onSuccess: () => void) => {
+		return async (data: EditHuntFormDto) => {
+			if (!huntId) return;
+
+			const updated = await editHunt(huntId, {
+				title: data.title,
+				description: data.description,
+				difficulty_id: data.difficulty_id,
+				points: Number(data.points),
+				latitude: Number(data.latitude),
+				longitude: Number(data.longitude),
+				picture_path: data.picture_path ?? "",
+				isactive: Boolean(data.active),
+			});
+
+			if (updated) {
+				onSuccess();
+			}
+		};
+	};
+
 	return {
 		hunt,
 		difficulties,
 		steps,
 		stepsColumns,
+		buildEditHuntSubmitHandler,
 	};
 }
 
