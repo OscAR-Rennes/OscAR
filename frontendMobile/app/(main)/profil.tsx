@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { theme } from '../../constants/theme';
 import StatsCard from '../../components/ui/stats-card';
@@ -9,11 +9,26 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../constants/language-en.json';
 import translationsFr from '../../constants/language-fr.json';
 import { getIconUri } from '../icon-mapping';
+import { useAuth } from '@/context/AuthContext';
+import { getUserById } from '@/api/services/users.api'
+import { FullUserDTO } from '@/common/dto/IUser'
 
 export default function ProfilScreen() {
     const router = useRouter();
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
+
+    const { userId, logout } = useAuth()
+
+    const [user, setUser] = useState<FullUserDTO | null>(null)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getUserById(userId);
+            setUser(data)
+        };
+        fetchData()
+    }, [])
 
     return (
         <View style={{ flex: 1 }}>
@@ -23,7 +38,7 @@ export default function ProfilScreen() {
                     <View style={{ width: 140, height: 140, borderRadius: 500, backgroundColor: '#dfdfdf', justifyContent: 'center', alignItems: 'center' }}>
                         <SvgUri uri={getIconUri("image-placeholder.svg")} width={60} height={60} color={theme.COLORS.background} />
                     </View>
-                    <Text style={{ fontSize: 25, fontWeight: '700', color: theme.COLORS.textPrimary, marginTop: theme.SPACING.small }}>{texts.profilePicturePlaceholder}</Text>
+                    <Text style={{ fontSize: 25, fontWeight: '700', color: theme.COLORS.textPrimary, marginTop: theme.SPACING.small }}>{user?.username}</Text>
                 </View>
 
                 {/* Total Points Section */}
@@ -48,7 +63,7 @@ export default function ProfilScreen() {
                 <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: theme.COLORS.background, borderWidth: 1, borderColor: theme.COLORS.border, marginBottom: theme.SPACING.medium }} onPress={() => router.push('/profil-modify')} >
                     <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.textPrimary, textAlign: 'center' }}>{texts.modifyProfileButton}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: '#ffebee', borderWidth: 1, borderColor: theme.COLORS.error }}>
+                <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: '#ffebee', borderWidth: 1, borderColor: theme.COLORS.error }} onPress={logout}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
                         <SvgUri uri={getIconUri("logout.svg")} width={25} height={25} color={theme.COLORS.error} />
                         <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.error }}>{texts.logoutButton}</Text>

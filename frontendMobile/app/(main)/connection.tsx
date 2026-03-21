@@ -9,11 +9,29 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../constants/language-en.json';
 import translationsFr from '../../constants/language-fr.json';
 import { getIconUri } from '../icon-mapping';
+import { logUser } from '@/api/services/auth.api'
+import { useAuth } from '@/context/AuthContext';
+import * as SecureStore from "expo-secure-store";
 
 export default function ConnexionScreen() {
     const router = useRouter();
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
+
+    const { login } = useAuth();
+    
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+
+    const handleLogin = async () => {
+        const credentials = { email, password };
+        const response = await logUser(credentials);
+
+        await SecureStore.setItemAsync("token", response.token);
+        login(response.user.id);
+        router.push("/profil");
+    };
+
 
     return (
         <View style={{ flex: 1 }}>
@@ -29,7 +47,14 @@ export default function ConnexionScreen() {
                         <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.emailLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
                             <SvgUri uri={getIconUri("mail.svg")} width={20} height={20} style={{ marginRight: theme.SPACING.small }} color={theme.COLORS.placeholder} />
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.emailPlaceholder} placeholderTextColor={theme.COLORS.placeholder} keyboardType="email-address" />
+                            <TextInput
+                                style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
+                                placeholder={texts.emailPlaceholder}
+                                placeholderTextColor={theme.COLORS.placeholder}
+                                keyboardType="email-address"
+                                value={email}
+                                onChangeText={setEmail}
+                            />                        
                         </View>
                     </View>
 
@@ -38,7 +63,14 @@ export default function ConnexionScreen() {
                         <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.passwordLabel}</Text>
                         <View style={[theme.INPUT_STYLES.container, { marginBottom: theme.SPACING.small }]}>
                             <SvgUri uri={getIconUri("lock.svg")} width={20} height={20} style={{ marginRight: theme.SPACING.small }} color={theme.COLORS.placeholder} />
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.passwordPlaceholder} placeholderTextColor={theme.COLORS.placeholder} secureTextEntry />
+                            <TextInput
+                                style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
+                                placeholder={texts.passwordPlaceholder}
+                                placeholderTextColor={theme.COLORS.placeholder}
+                                secureTextEntry
+                                value={password}
+                                onChangeText={setPassword}
+                            />                        
                         </View>
 
                         {/* Link "Forgot Password?" */}
@@ -50,7 +82,7 @@ export default function ConnexionScreen() {
                     </View>
 
                     {/* Button "Sign In" */}
-                    <TouchableOpacity style={[theme.BUTTON_STYLES.default, { width: '100%' }]}>
+                    <TouchableOpacity style={[theme.BUTTON_STYLES.default, { width: '100%' }]} onPress={handleLogin} >
                         <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%' }]} >
                             <Text style={[globalStyles.text, { color: theme.COLORS.background, fontWeight: '900', paddingHorizontal: theme.SPACING.large }]}>
                                 {texts.signInButton}

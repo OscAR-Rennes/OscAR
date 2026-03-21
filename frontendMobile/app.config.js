@@ -8,5 +8,8 @@ export default {
       deeplApiKey: process.env.DEEPL_API_KEY,
       apiUrl: "http://192.168.1.42:5000/api",
     },
+    android: {
+      package: "com.mtbvr.frontendmobile", 
+    },
   },
 };

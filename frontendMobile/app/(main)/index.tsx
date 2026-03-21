@@ -125,18 +125,27 @@ export default function MapsScreen() {
 
                         {/* Map View */}
                         <MapView ref={mapRef} style={{ flex: 1 }} initialRegion={mapInitialValues.initialRegion} >
-                            { lightCulturalCenterData.length > 0 && lightCulturalCenterData.map(center => {
-                                return (
+                            {lightCulturalCenterData.length > 0 &&
+                                lightCulturalCenterData
+                                    .filter(center =>
+                                    center.address &&
+                                    center.address.latitude != null &&
+                                    center.address.longitude != null
+                                    )
+                                    .map(center => (
                                     <Marker
                                         key={center.id}
-                                        coordinate={{ latitude: Number(center.address.latitude), longitude: Number(center.address.longitude) }}
+                                        coordinate={{
+                                        latitude: Number(center.address.latitude),
+                                        longitude: Number(center.address.longitude)
+                                        }}
                                         onPress={() => {
-                                            setModalVisible(true);
-                                            setSelectedCenter(center);
+                                        setModalVisible(true);
+                                        setSelectedCenter(center);
                                         }}
                                     />
-                                );
-                            })}
+                                    ))
+                                }
                         </MapView>
 
                         {/* Cultural Center Modal */}

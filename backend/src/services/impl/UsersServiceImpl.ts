@@ -8,6 +8,8 @@ import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UsersService } from "../UsersService.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import logger from "../../common-lib/utils/logger.js";
+import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import { FullUserDTO } from "../../common-lib/dto/users/FullUserDTO.js";
 
 export class UsersServiceImpl implements UsersService {
 
@@ -175,6 +177,31 @@ export class UsersServiceImpl implements UsersService {
       }
       throw new AppError({
         userMessage: "Erreur lors du changement de statut des utilisateurs",
+        statusCode: 500,
+      });
+    }
+  }
+
+  async getById(id: string, user: AuthResponseDTO): Promise<FullUserDTO> {
+    try {
+
+      if (user.rights.includes(RoleEnum.USER) && user.id != id) {
+        throw new AppError({
+          userMessage: "Consultation de l'utilisateur non autorisé",
+          statusCode: 403,
+        });
+      }
+
+      const userData = await this.userRepository.getById(id)
+
+      return userMapper.toFullDto(userData)
+
+    } catch (error: any) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError({
+        userMessage: "Erreur lors du chargement de l'utilisateur",
         statusCode: 500,
       });
     }

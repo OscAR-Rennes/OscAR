@@ -14,7 +14,7 @@ import translationsFr from '../../constants/language-fr.json';
 import { getIconUri } from '../icon-mapping';
 
 export default function SocialScreen() {
-    const { isAuthenticated } = useAuth();
+    const { isConnected } = useAuth();
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
@@ -22,7 +22,7 @@ export default function SocialScreen() {
         <ScrollView contentContainerStyle={{ paddingTop: theme.SPACING.small, paddingHorizontal: theme.SPACING.medium, height: '100%' }}>
             
             {/* Friend Requests - Display only if user is authenticated */}
-            {isAuthenticated && (
+            {isConnected && (
                 <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
                     <SectionTitle 
                         title={texts.friendRequestsTitle} 
@@ -40,7 +40,7 @@ export default function SocialScreen() {
                     iconUri={getIconUri("trophy.svg")} 
                     iconColor={theme.COLORS.secondary} 
                 />
-                {!isAuthenticated ? (
+                {!isConnected ? (
                     <PlaceholderNotConnected
                         icon="group.svg"
                         message={texts.friendRequestsPlaceholderMessage}

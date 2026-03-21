@@ -130,4 +130,11 @@ usersRoutes.post(
     "/users/mobile",
     (req, res, next) => usersController.createUserMobile(req, res, next)
 )
+
+usersRoutes.get(
+    "/users/getById/:id",
+    authMiddleware,
+    requireRole([RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.HUNT_MANAGER]),
+    (req, res, next) => usersController.getById(req,res,next)
+)
 export default usersRoutes;

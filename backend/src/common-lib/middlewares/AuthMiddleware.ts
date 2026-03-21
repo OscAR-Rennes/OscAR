@@ -42,15 +42,27 @@ export function requireRole(required: RoleEnum | RoleEnum[]) {
   const requiredRoles = Array.isArray(required) ? required : [required];
 
   return async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies?.token;
+
+    let token: string | undefined;
+    
+    if (req.cookies?.token) {
+      token = req.cookies.token;
+    }
+
+    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
 
     if (!token) {
-      return next(new AppError({
-        userMessage: 'Utilisateur non connecté',
-        statusCode: 401,
-        route: req.originalUrl,
-      }));
+      return next(
+        new AppError({
+          userMessage: "Utilisateur non connecté",
+          statusCode: 401,
+          route: req.originalUrl,
+        })
+      );
     }
+
 
     try {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
@@ -87,4 +99,6 @@ export function requireRole(required: RoleEnum | RoleEnum[]) {
       }));
     }
   };
+
+  
 }

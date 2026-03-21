@@ -38,7 +38,7 @@ export class AuthController {
 
       const { token, ...user } = result;
       logger.info("User authenticated", {route: req.originalUrl, userId: user.id});
-      return res.json(user);
+      return res.json(result);
     } catch (err) {
       logger.warn("Authentication failed", { route: req.originalUrl, ip: req.ip, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined});
       next(err);
