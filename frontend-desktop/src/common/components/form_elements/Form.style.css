@@ -25,6 +25,19 @@
 	font-weight: bold;
 }
 
+.osc-readonly-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.osc-readonly-lock-icon {
+	width: 1.75rem;
+	height: 1.75rem;
+	color: #000000;
+	flex-shrink: 0;
+}
+
 .osc-form-control-row {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import HeaderForm from "../../../common/components/header_form/HeaderForm";
+import { ReadOnlyField } from "../../../common/components/form_elements/ReadOnlyField";
 import Ribbon from "../../../common/components/ribbon/ribbon";
 import {
   STEPS_CONSULT_TABS,
@@ -16,7 +17,7 @@ export default function StepConsultation() {
   if (isLoading) {
     return (
       <div className="steps-consult-page">
-        <Ribbon formId="step-consult-form" />
+        <Ribbon showSave={false} />
         <div className="steps-consult-loading">Chargement...</div>
       </div>
     );
@@ -25,7 +26,7 @@ export default function StepConsultation() {
   if (errorMessage || !step) {
     return (
       <div className="steps-consult-page">
-        <Ribbon formId="step-consult-form" />
+        <Ribbon showSave={false} />
         <div className="steps-consult-error">{errorMessage ?? "Étape introuvable."}</div>
       </div>
     );
@@ -37,7 +38,7 @@ export default function StepConsultation() {
   
   return (
     <div className="steps-consult-page">
-      <Ribbon formId="step-consult-form" />
+      <Ribbon showSave={false} />
 
       <HeaderForm
         title={step.title}
@@ -83,22 +84,6 @@ export default function StepConsultation() {
           </div>
         )}
       </section>
-    </div>
-  );
-}
-
-function ReadOnlyField({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="osc-form-item">
-      <label className="osc-form-label">{label}</label>
-
-      <div className="osc-form-control-row">
-        <span className="osc-form-required is-hidden" aria-hidden="true">
-          *
-        </span>
-
-        <input className="osc-form-control" value={value} readOnly />
-      </div>
     </div>
   );
 }
