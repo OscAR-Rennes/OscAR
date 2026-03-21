@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStepsByCulturalCenter } from "../../../api/services/step.api";
+import { deleteStep, getStepsByCulturalCenter } from "../../../api/services/step.api";
 
 
 export function useStepsData() {
@@ -8,6 +8,7 @@ export function useStepsData() {
   const hasSelectedSteps = selectedStepsRows.length > 0;
   const hasSingleSelectedStep = selectedStepsRows.length === 1;
   const selectedStepId = hasSingleSelectedStep ? selectedStepsRows[0].id : undefined;
+  const selectedStepIds = selectedStepsRows.map((row: any) => row.id);
 
   const stepsColumns = 
     [
@@ -15,13 +16,22 @@ export function useStepsData() {
         { key: "description", label: "Description"},
     ]
 
+  const fetchSteps = async () => {
+    const stepsData = await getStepsByCulturalCenter();
+    setSteps(stepsData ?? []);
+  };
+
   useEffect(() => {
-    const fetchSteps = async () => {
-      const stepsData = await getStepsByCulturalCenter();
-      setSteps(stepsData);
-    };
     fetchSteps();
   },[]);
+
+  const deleteSelectedSteps = async () => {
+    if (!selectedStepIds.length) return;
+
+    await Promise.all(selectedStepIds.map((stepId: string) => deleteStep(stepId)));
+    setSelectedStepsRows([]);
+    await fetchSteps();
+  };
 
   return {
     steps,
@@ -30,6 +40,7 @@ export function useStepsData() {
     hasSelectedSteps,
     hasSingleSelectedStep,
     selectedStepId,
+    deleteSelectedSteps,
   }
 
 }

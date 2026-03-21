@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { getHuntById } from "../../../api/services/hunt.api";
+import { getAllDifficulty } from "../../../api/services/difficulty.api";
 import { FullHuntDTO } from "../../../api/models/hunts/FullHuntDto";
+import { EditHuntFormDto } from "../../../api/models/hunts/EditHuntFormDto";
 import { type Column } from "../../../common/components/table/Table";
+import MapPicker from "../../../common/components/map/map";
+import { useFormContext } from "react-hook-form";
+import { editHunt } from "../../../api/services/hunt.api";
 
 type StepRow = {
 	id: string;
@@ -9,9 +14,12 @@ type StepRow = {
 	description: string;
 };
 
-export function useHuntConsultData(huntId?: string) {
+export const HUNTS_CONSULT_TABS = [{ id: "general", label: "Général" }];
+
+export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 	const [hunt, setHunt] = useState<FullHuntDTO | null>(null);
 	const [steps, setSteps] = useState<StepRow[]>([]);
+	const [difficulties, setDifficulties] = useState<any[]>([]);
 
 	const stepsColumns: Column<StepRow>[] = [
 		{ key: "title", label: "Étape" },
@@ -21,8 +29,12 @@ export function useHuntConsultData(huntId?: string) {
 	useEffect(() => {
 		const fetchHunt = async () => {
 			if (!huntId) return;
-			const data = await getHuntById(huntId);
+			const [data, diff] = await Promise.all([
+				getHuntById(huntId),
+				getAllDifficulty(),
+			]);
 			setHunt(data);
+			setDifficulties(diff ?? []);
 			setSteps(
 				data.steps.map((step: any) => ({
 					id: step.id,
@@ -33,11 +45,73 @@ export function useHuntConsultData(huntId?: string) {
 		};
 
 		fetchHunt();
-	}, [huntId]);
+	}, [huntId, reloadKey]);
+
+	const buildEditHuntSubmitHandler = (onSuccess: () => void) => {
+		return async (data: EditHuntFormDto) => {
+			if (!huntId) return;
+
+			const updated = await editHunt(huntId, {
+				title: data.title,
+				description: data.description,
+				difficulty_id: data.difficulty_id,
+				points: Number(data.points),
+				latitude: Number(data.latitude),
+				longitude: Number(data.longitude),
+				picture_path: data.picture_path ?? "",
+				isactive: Boolean(data.active),
+			});
+
+			if (updated) {
+				onSuccess();
+			}
+		};
+	};
 
 	return {
 		hunt,
+		difficulties,
 		steps,
 		stepsColumns,
+		buildEditHuntSubmitHandler,
 	};
+}
+
+export function EditHuntMapField() {
+	const { watch, setValue } = useFormContext();
+	const latitude = watch("latitude");
+	const longitude = watch("longitude");
+
+	const markerValue =
+		latitude !== undefined &&
+		latitude !== null &&
+		latitude !== "" &&
+		longitude !== undefined &&
+		longitude !== null &&
+		longitude !== ""
+			? {
+					lat: Number(latitude),
+					lng: Number(longitude),
+				}
+			: null;
+
+	return (
+		<MapPicker
+			value={markerValue}
+			onChange={(coords: { lat: number; lng: number }) => {
+				setValue("latitude", coords.lat, { shouldDirty: true, shouldValidate: true });
+				setValue("longitude", coords.lng, { shouldDirty: true, shouldValidate: true });
+			}}
+		/>
+	);
+}
+
+export function EditDirtyTracker({ onDirtyChange }: { onDirtyChange: (value: boolean) => void }) {
+	const { formState } = useFormContext();
+
+	useEffect(() => {
+		onDirtyChange(formState.isDirty);
+	}, [formState.isDirty, onDirtyChange]);
+
+	return null;
 }

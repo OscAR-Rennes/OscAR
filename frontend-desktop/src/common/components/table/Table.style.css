@@ -14,6 +14,28 @@
   overflow: hidden;
 }
 
+.container.table-container--subgrid {
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  margin-top: 0;
+  padding: 1rem 1.5rem;
+}
+
+.container.table-container--subgrid .table-row-count-wrapper {
+  padding-top: 0.5rem;
+  padding-bottom: 0;
+  margin-bottom: 0.5rem;
+}
+
+.container.table-container--subgrid .table-all-items-label {
+  margin-left: 0;
+}
+
+.container.table-container--subgrid .table-row-count-wrapper > div {
+  margin-right: 0;
+}
+
 .table-content {
   flex: 1;
   min-height: 0;
