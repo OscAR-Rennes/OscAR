@@ -4,12 +4,27 @@ import { RoleEnum } from "../enum/roleEnum.js";
 import { PrismaClient, users } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { UserEntity } from "../entity/UsersEntity.js";
+import AppError from "../errors/AppError.js";
 
 export class UserRepository  {
   
   async findAll(): Promise<users[]> {
     const users = await prisma.users.findMany();
     return users;
+  }
+
+  async getById(id: string): Promise<users> {
+    const userRecord = await prisma.users.findUnique({
+      where: { id },
+    });
+    if (!userRecord) {
+      throw new AppError ({
+        userMessage: "User not found",
+        statusCode: 404
+      })
+    }
+
+    return userRecord
   }
 
   async create(
@@ -25,7 +40,7 @@ export class UserRepository  {
         email: userData.email,
         username: userData.username,
         password: hashedPassword,
-        id_cultural_center: userData.id_cultural_center,
+        id_cultural_center: userData.id_cultural_center ?? null,
       },
     });
 

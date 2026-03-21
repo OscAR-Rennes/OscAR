@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,11 +9,29 @@ import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
 import { getIconUri } from './icon-mapping';
+import { addUser } from '@/api/services/users.api'
 
 export default function InscriptionScreen() {
     const router = useRouter();
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
+
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleRegister = async() => {
+        const user = {
+            email,
+            username,
+            password
+        };
+
+        await addUser(user)
+        
+        router.push('/connection')
+    };
+
 
     return (
         <View style={{ flex: 1 }}>
@@ -29,7 +47,13 @@ export default function InscriptionScreen() {
                         <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.pseudoLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
                             <SvgUri uri={getIconUri("user.svg")} width={20} height={20} style={{ marginRight: theme.SPACING.small }} color={theme.COLORS.placeholder} />
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.pseudoPlaceholder} placeholderTextColor={theme.COLORS.placeholder} keyboardType="default" />
+                            <TextInput
+                                style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
+                                placeholder={texts.pseudoPlaceholder}
+                                placeholderTextColor={theme.COLORS.placeholder}
+                                value={username}
+                                onChangeText={setUsername}
+                            />                        
                         </View>
                     </View>
 
@@ -38,7 +62,14 @@ export default function InscriptionScreen() {
                         <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.emailLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
                             <SvgUri uri={getIconUri("mail.svg")} width={20} height={20} style={{ marginRight: theme.SPACING.small }} color={theme.COLORS.placeholder} />
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.emailPlaceholder} placeholderTextColor={theme.COLORS.placeholder} keyboardType="email-address" />
+                            <TextInput
+                                style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
+                                placeholder={texts.emailPlaceholder}
+                                placeholderTextColor={theme.COLORS.placeholder}
+                                keyboardType="email-address"
+                                value={email}
+                                onChangeText={setEmail}
+                            />
                         </View>
                     </View>
 
@@ -47,7 +78,14 @@ export default function InscriptionScreen() {
                         <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.passwordLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
                             <SvgUri uri={getIconUri("lock.svg")} width={20} height={20} style={{ marginRight: theme.SPACING.small }} color={theme.COLORS.placeholder} />
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.passwordPlaceholder} placeholderTextColor={theme.COLORS.placeholder} secureTextEntry />
+                            <TextInput
+                                style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
+                                placeholder={texts.passwordPlaceholder}
+                                placeholderTextColor={theme.COLORS.placeholder}
+                                secureTextEntry
+                                value={password}
+                                onChangeText={setPassword}
+                            />                        
                         </View>
                     </View>
 
@@ -61,7 +99,7 @@ export default function InscriptionScreen() {
                     </View>
 
                     {/* Registration Button */}
-                    <TouchableOpacity style={[theme.BUTTON_STYLES.default, { width: '100%' }]}>
+                    <TouchableOpacity style={[theme.BUTTON_STYLES.default, { width: '100%' }]} onPress={handleRegister} >
                         <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%' }]} >
                             <Text style={[globalStyles.text, { color: theme.COLORS.background, fontWeight: '900' }]}>
                                 {texts.signUpButton}
