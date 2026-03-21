@@ -111,8 +111,9 @@ yarn-error.*
 app-example
 
 # generated native folders
-/ios
-/android
-
+frontendMobile/ios
+frontendMobile/android
+frontendMobile/node_modules
+frontendMobile/package_lock.json
 # log
 backend/logs/

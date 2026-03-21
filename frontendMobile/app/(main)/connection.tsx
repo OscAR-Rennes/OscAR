@@ -28,8 +28,7 @@ export default function ConnexionScreen() {
         const response = await logUser(credentials);
 
         await SecureStore.setItemAsync("token", response.token);
-        login(response.user.id);
-        router.push("/profil");
+        login(response.id);
     };
 
 

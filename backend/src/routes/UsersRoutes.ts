@@ -133,7 +133,6 @@ usersRoutes.post(
 
 usersRoutes.get(
     "/users/getById/:id",
-    authMiddleware,
     requireRole([RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.HUNT_MANAGER]),
     (req, res, next) => usersController.getById(req,res,next)
 )

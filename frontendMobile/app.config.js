@@ -9,7 +9,12 @@ export default {
       apiUrl: "http://192.168.1.42:5000/api",
     },
     android: {
-      package: "com.mtbvr.frontendmobile", 
+      package: "com.mtbvr.frontendmobile",
+      config: {
+        googleMaps: {
+          apiKey: process.env.GOOGLE_API_KEY,
+        }
+      }
     },
   },
 };
