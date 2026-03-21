@@ -15,14 +15,14 @@ function normalizeRoute(route: string): string {
 export default function MainLayout() {
     const router = useRouter();
     const pathname = usePathname();
-    const { isAuthenticated } = useAuth();
+    const { isConnected } = useAuth();
 
     // Redirect logic for the "connection" / "profil" page
     useEffect(() => {
-        if (normalizeRoute(pathname) === '/connection' && isAuthenticated) {
+        if (normalizeRoute(pathname) === '/connection' && isConnected) {
             router.replace('/profil'); // Redirect to profil if already logged in
         }
-    }, [pathname, isAuthenticated]);
+    }, [pathname, isConnected]);
 
     // Check if the current route is "connection"
     const isConnectionPage = normalizeRoute(pathname) === '/connection';

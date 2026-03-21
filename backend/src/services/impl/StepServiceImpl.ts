@@ -102,7 +102,7 @@ export class StepServiceImpl implements StepService {
 
             await assertUserCanAccessHunt(user, step.hunts, userRepository);
 
-            await prisma.$transaction(async (tx) => {
+            await prisma.$transaction(async (tx: any) => {
                 const indexRepository = new IndexRepository();
                 const huntRepository = new HuntRepository();
                 await stepRepository.delete(stepId, tx);

@@ -9,7 +9,7 @@ import translationsFr from '../../constants/language-fr.json';
 import HuntSection from '../../components/hunt-section';
 
 export default function HuntScreen() {
-    const { isAuthenticated } = useAuth();
+    const { isConnected } = useAuth();
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
@@ -26,7 +26,7 @@ export default function HuntScreen() {
                     placeholderIcon="target-larger.svg"
                     placeholderMessage={texts.currentHuntsPlaceholderMessage}
                     buttonText={texts.connectButtonText}
-                    isAuthenticated={isAuthenticated}
+                    isAuthenticated={isConnected}
                     authMessage={texts.currentHuntsAuthMessage}
                 />
 
@@ -38,7 +38,7 @@ export default function HuntScreen() {
                     placeholderIcon="target-larger.svg"
                     placeholderMessage={texts.completedHuntsPlaceholderMessage}
                     buttonText={texts.connectButtonText}
-                    isAuthenticated={isAuthenticated}
+                    isAuthenticated={isConnected}
                     authMessage={texts.completedHuntsAuthMessage}
                 />
             </ScrollView>

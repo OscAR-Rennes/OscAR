@@ -88,7 +88,7 @@ export class IndexServiceImpl implements IndexService {
             
 
 
-            await prisma.$transaction(async (tx) => {
+            await prisma.$transaction(async (tx: any) => {
                 const stepRepository = new StepRepository();
                 const huntRepository = new HuntRepository();
                 

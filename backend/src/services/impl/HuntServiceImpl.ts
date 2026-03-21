@@ -9,10 +9,8 @@ import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO
 import { EditHuntResponseDTO } from "../../common-lib/dto/hunt/EditHuntResponseDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import logger from "../../common-lib/utils/logger.js";
-import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 import { FullHuntDTO } from "../../common-lib/dto/hunt/FullHuntDTO.js";
-import { hunts } from "@prisma/client";
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
@@ -147,7 +145,7 @@ export class HuntServiceImpl implements HuntService {
 
             await assertUserCanAccessHunt(user, hunt, userRepository);
 
-            await prisma.$transaction(async (tx) => {
+            await prisma.$transaction(async (tx: any) => {
                 const stepRepository = new StepRepository();
                 const indexRepository = new IndexRepository();
                 await stepRepository.deleteByHuntId(id, tx);
