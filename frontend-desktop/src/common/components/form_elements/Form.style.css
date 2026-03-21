@@ -107,6 +107,19 @@
 	box-sizing: border-box;
 }
 
+.osc-form-toggle--editable {
+	width: 3rem;
+	height: 1.55rem;
+	border: none;
+	background: #bfc5ce;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.osc-form-toggle--editable:disabled {
+	cursor: default;
+}
+
 .osc-form-toggle-thumb {
 	position: absolute;
 	top: 0.125rem;
@@ -120,11 +133,28 @@
 	box-sizing: border-box;
 }
 
+.osc-form-toggle--editable .osc-form-toggle-thumb {
+	top: 0.175rem;
+	left: 0.1875rem;
+	width: 1.2rem;
+	height: 1.2rem;
+	border: none;
+}
+
 .osc-form-toggle--active .osc-form-toggle-thumb {
 	transform: translateX(1.0625rem);
+}
+
+.osc-form-toggle--editable.osc-form-toggle--active .osc-form-toggle-thumb {
+	transform: translateX(1.4rem);
 }
 
 .osc-form-toggle--active {
 	border-color: #b3b3b3;
 	background: #e2e2e2;
+}
+
+.osc-form-toggle--editable.osc-form-toggle--active {
+	background: #4651cc;
+	border: none;
 }

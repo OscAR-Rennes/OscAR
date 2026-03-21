@@ -61,7 +61,7 @@ export function FormToogle({
               <div className="osc-form-toggle-wrap">
                 <button
                   type="button"
-                  className={`osc-form-toggle ${isActive ? "osc-form-toggle--active" : ""}`.trim()}
+                  className={`osc-form-toggle ${readOnly ? "osc-form-toggle--readonly" : "osc-form-toggle--editable"} ${isActive ? "osc-form-toggle--active" : ""}`.trim()}
                   role="switch"
                   aria-checked={isActive}
                   aria-label={isActive ? activeLabel : inactiveLabel}

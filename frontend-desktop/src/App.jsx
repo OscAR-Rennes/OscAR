@@ -54,7 +54,7 @@ export default function App() {
           <Route path="/home/cultural-center" element={<CulturalCenters />} />
           <Route path="/home/hunts/create" element={<HuntsCreation />} />
           <Route path="/home/hunts/:id" element={<HuntConsultation />} />
-          <Route path="/home/hunts/:id/edit" element={<div>Modifier la chasse</div>} />
+          <Route path="/home/hunts/:id/edit" element={<HuntConsultation />} />
           <Route path="/home/steps/create" element={<StepsCreation />} />
           <Route path="/home/steps/:id" element={<StepConsultation />} />
           <Route path="/home/steps/:id/edit" element={<div>Modifier l'étape</div>} />
