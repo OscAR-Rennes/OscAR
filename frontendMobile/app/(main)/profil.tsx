@@ -45,7 +45,7 @@ export default function ProfilScreen() {
                 <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0 }} style={[{ width: '100%', paddingHorizontal: theme.SPACING.medium, paddingVertical: theme.SPACING.medium, borderRadius: 12, marginBottom: theme.SPACING.medium, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]} >
                     <View>
                         <Text style={[{ color: theme.COLORS.background, fontWeight: '900' }]}>{texts.totalPointsTitle}</Text>
-                        <Text style={[{ color: theme.COLORS.background, fontSize: 30, fontWeight: '900' }]}>{texts.totalPointsValue}</Text>
+                        <Text style={[{ color: theme.COLORS.background, fontSize: 30, fontWeight: '900' }]}>{user?.points}</Text>
                     </View>
                     <View>
                         <SvgUri uri={getIconUri("trophy.svg")} width={60} height={60} color={theme.COLORS.background} />
