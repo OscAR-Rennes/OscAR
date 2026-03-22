@@ -134,4 +134,11 @@ export class UserRepository  {
         AND r.name = ${RoleEnum.CULTURAL_CENTER_MANAGER};
     `;
   }
+
+  async incrementUserPoints(user_id: string, points: number) {
+    await prisma.users.update({
+        where: { id: user_id },
+        data: { points: { increment: points } }
+    });
+  }
 }

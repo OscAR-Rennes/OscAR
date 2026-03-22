@@ -17,10 +17,13 @@ import { LightStepDTO } from '../common/dto/ILightStep';
 import { getIconUri } from './icon-mapping';
 import { getStepByHunt, getStepById } from '@/api/services/step.api'
 import { FullStepDTO } from '@/common/dto/IStep'
+import { saveProgress } from '@/api/services/progression.api'
+import { useAuth } from '@/context/AuthContext';
 
 const CurrentStepScreen: React.FC = () => {
     const router = useRouter();
     const { huntId } = useLocalSearchParams();
+    const { isConnected } = useAuth();
 
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -36,20 +39,29 @@ const CurrentStepScreen: React.FC = () => {
         setShowSuccessModal(true);
     };
 
-    const handleCloseModal = () => {
+    const handleCloseModal = async () => {
         setShowSuccessModal(false);
 
         if (currentStep) {
-        setTotalPoints(prev => prev + currentStep.points);
+
+            console.log(isConnected)
+            if (isConnected) {
+                await saveProgress({
+                    hunt_id: huntId as string,
+                    step_id: currentStep.id,
+                });
+            }
+
+            setTotalPoints(prev => prev + currentStep.points);
         }
 
         setCurrentStepIndex(prevIndex => {
-        if (prevIndex < steps.length - 1) {
-            return prevIndex + 1;
-        } else {
-            router.push('/');
-            return prevIndex;
-        }
+            if (prevIndex < steps.length - 1) {
+                return prevIndex + 1;
+            } else {
+                router.push('/');
+                return prevIndex;
+            }
         });
     };
 

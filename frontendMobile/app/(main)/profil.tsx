@@ -24,9 +24,7 @@ export default function ProfilScreen() {
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log("try to fetch", userId)
             const data = await getUserById(userId);
-            console.log(data)
             setUser(data)
         };
         fetchData()
