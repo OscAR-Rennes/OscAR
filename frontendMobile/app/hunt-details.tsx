@@ -80,6 +80,8 @@ const HuntDetailsScreen: React.FC = () => {
                 <TouchableOpacity
                     style={{ width: '100%', marginTop: theme.SPACING.medium }}
                     onPress={() => {
+                        console.log('huntId:', id);
+                        console.log('steps:', steps);
                         if (steps.length > 0) {
                             router.push({
                                 pathname: '/current-step',
