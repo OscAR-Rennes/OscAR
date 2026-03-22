@@ -30,6 +30,7 @@ type TableProps<T extends { id: string | number }> = {
   allItemsLabel?: string;
   allItemsPrefix?: string;
   getRowLink?: (row: T, currentPath: string) => string;
+  displayMode?: "view" | "subgrid";
 };
 
 type SortDirection = "asc" | "desc";
@@ -44,6 +45,7 @@ export default function Table<T extends { id: string | number }>({
   allItemsLabel,
   allItemsPrefix = "Tous les",
   getRowLink,
+  displayMode = "view",
 }: TableProps<T>) {
   const location = useLocation();
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -328,7 +330,7 @@ export default function Table<T extends { id: string | number }>({
 
   return (
     <>
-      <div className="container">
+      <div className={`container ${displayMode === "subgrid" ? "table-container--subgrid" : ""}`.trim()}>
         {/* Header */}
         <div className="table-row-count-wrapper">
           {allItemsLabel ? (

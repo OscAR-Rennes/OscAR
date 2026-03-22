@@ -19,6 +19,10 @@
 	align-items: center;
 }
 
+.osc-ribbon-right {
+	gap: 0.5rem;
+}
+
 .osc-ribbon-back-btn {
 	background: transparent;
 	border: none;
