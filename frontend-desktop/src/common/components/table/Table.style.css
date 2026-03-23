@@ -177,7 +177,7 @@
 .table-btn:disabled {
   background: transparent;
   color: #bdbdbd;
-  cursor: pointer;
+  cursor: default;
 }
 
 .table-pagination-btn {
