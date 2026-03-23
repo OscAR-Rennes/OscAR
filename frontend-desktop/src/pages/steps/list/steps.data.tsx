@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStepsByCulturalCenter } from "../../../api/services/step.api";
+import { deleteStep, getStepsByCulturalCenter } from "../../../api/services/step.api";
 
 
 export function useStepsData() {
@@ -14,6 +14,7 @@ export function useStepsData() {
   const hasSelectedSteps = selectedStepsRows.length > 0;
   const hasSingleSelectedStep = selectedStepsRows.length === 1;
   const selectedStepId = hasSingleSelectedStep ? selectedStepsRows[0].id : undefined;
+  const selectedStepIds = selectedStepsRows.map((row: any) => row.id);
 
   const stepsColumns = 
     [
@@ -21,36 +22,36 @@ export function useStepsData() {
         { key: "description", label: "Description"},
     ]
 
+  const fetchSteps = async () => {
+    const response = await getStepsByCulturalCenter({
+      page: pagination.page,
+      limit: pagination.limit,
+    });
+
+    setSteps(Array.isArray(response?.data) ? response.data : []);
+
+    setPagination((prev) => {
+      const next = {
+        page: response?.pagination?.page ?? prev.page,
+        limit: response?.pagination?.limit ?? prev.limit,
+        total: response?.pagination?.total ?? prev.total,
+        totalPages: response?.pagination?.totalPages ?? prev.totalPages,
+      };
+
+      if (
+        prev.page === next.page &&
+        prev.limit === next.limit &&
+        prev.total === next.total &&
+        prev.totalPages === next.totalPages
+      ) {
+        return prev;
+      }
+
+      return next;
+    });
+  };
+
   useEffect(() => {
-    const fetchSteps = async () => {
-      const response = await getStepsByCulturalCenter({
-        page: pagination.page,
-        limit: pagination.limit,
-      });
-
-      setSteps(Array.isArray(response?.data) ? response.data : []);
-
-      setPagination((prev) => {
-        const next = {
-          page: response?.pagination?.page ?? prev.page,
-          limit: response?.pagination?.limit ?? prev.limit,
-          total: response?.pagination?.total ?? prev.total,
-          totalPages: response?.pagination?.totalPages ?? prev.totalPages,
-        };
-
-        if (
-          prev.page === next.page &&
-          prev.limit === next.limit &&
-          prev.total === next.total &&
-          prev.totalPages === next.totalPages
-        ) {
-          return prev;
-        }
-
-        return next;
-      });
-    };
-
     fetchSteps();
   }, [pagination.page, pagination.limit]);
 
@@ -68,6 +69,14 @@ export function useStepsData() {
     });
   };
 
+  const deleteSelectedSteps = async () => {
+    if (!selectedStepIds.length) return;
+
+    await Promise.all(selectedStepIds.map((stepId: string) => deleteStep(stepId)));
+    setSelectedStepsRows([]);
+    await fetchSteps();
+  };
+
   return {
     steps,
     pagination,
@@ -77,6 +86,7 @@ export function useStepsData() {
     hasSelectedSteps,
     hasSingleSelectedStep,
     selectedStepId,
+    deleteSelectedSteps,
   }
 
 }

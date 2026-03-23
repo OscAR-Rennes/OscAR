@@ -10,6 +10,8 @@ export function FormInput({
   label,
   required = false,
   type = "text",
+    readOnly = false,
+    disabled = false,
 }) {
 
     const rules = required
@@ -24,11 +26,20 @@ export function FormInput({
             <FormItem>
             <FormLabel>{label}</FormLabel>
 
-            {type === "number" ? (
-                <InputNumber {...field} />
-            ) : (
-                <Input {...field} />
-            )}
+            <div className="osc-form-control-row">
+                            <span
+                                className={`osc-form-required ${required ? "" : "is-hidden"}`}
+                                aria-hidden="true"
+                            >
+                                *
+                            </span>
+
+              {type === "number" ? (
+                                <InputNumber {...field} readOnly={readOnly} disabled={disabled} />
+              ) : (
+                                <Input {...field} readOnly={readOnly} disabled={disabled} />
+              )}
+            </div>
 
             <FormError name={name} />
             </FormItem>

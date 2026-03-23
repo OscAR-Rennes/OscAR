@@ -97,7 +97,6 @@ export class StepServiceImpl implements StepService {
 
             for (const stepId of stepIds) {
                 const step = await stepRepository.getByIdWithHunt(stepId);
-
                 if (!step) {
                     throw new AppError({
                         userMessage: "Étape non trouvée",

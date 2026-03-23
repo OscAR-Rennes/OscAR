@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
+import { deleteHunt, getHuntsByCulturalCenter } from "../../../api/services/hunt.api";
 import { useAuthStore } from "../../../common/store/authStore";
 
 
@@ -16,6 +16,7 @@ export function useHuntsData() {
   const hasSelectedHunts = selectedHuntsRows.length > 0;
   const hasSingleSelectedHunt = selectedHuntsRows.length === 1;
   const selectedHuntId = hasSingleSelectedHunt ? selectedHuntsRows[0].id : undefined;
+  const selectedHuntIds = selectedHuntsRows.map((row: any) => row.id);
 
   const huntsColumns = 
     [
@@ -23,38 +24,38 @@ export function useHuntsData() {
         { key: "description", label: "Description"},
     ]
 
+  const fetchHunts = async () => {
+    if (!user) return;
+
+    const response = await getHuntsByCulturalCenter(
+      user.id_cultural_center ?? "no-cultural-center",
+      { page: pagination.page, limit: pagination.limit }
+    );
+
+    setHunts(Array.isArray(response?.data) ? response.data : []);
+
+    setPagination((prev) => {
+      const next = {
+        page: response?.pagination?.page ?? prev.page,
+        limit: response?.pagination?.limit ?? prev.limit,
+        total: response?.pagination?.total ?? prev.total,
+        totalPages: response?.pagination?.totalPages ?? prev.totalPages,
+      };
+
+      if (
+        prev.page === next.page &&
+        prev.limit === next.limit &&
+        prev.total === next.total &&
+        prev.totalPages === next.totalPages
+      ) {
+        return prev;
+      }
+
+      return next;
+    });
+  };
+
   useEffect(() => {
-    const fetchHunts = async () => {
-      if (!user) return;
-
-      const response = await getHuntsByCulturalCenter(
-        user.id_cultural_center ?? "no-cultural-center",
-        { page: pagination.page, limit: pagination.limit }
-      );
-
-      setHunts(Array.isArray(response?.data) ? response.data : []);
-
-      setPagination((prev) => {
-        const next = {
-          page: response?.pagination?.page ?? prev.page,
-          limit: response?.pagination?.limit ?? prev.limit,
-          total: response?.pagination?.total ?? prev.total,
-          totalPages: response?.pagination?.totalPages ?? prev.totalPages,
-        };
-
-        if (
-          prev.page === next.page &&
-          prev.limit === next.limit &&
-          prev.total === next.total &&
-          prev.totalPages === next.totalPages
-        ) {
-          return prev;
-        }
-
-        return next;
-      });
-    };
-
     fetchHunts();
   }, [user, pagination.page, pagination.limit]);
 
@@ -72,6 +73,14 @@ export function useHuntsData() {
     });
   };
 
+  const deleteSelectedHunts = async () => {
+    if (!selectedHuntIds.length) return;
+
+    await Promise.all(selectedHuntIds.map((huntId: string) => deleteHunt(huntId)));
+    setSelectedHuntsRows([]);
+    await fetchHunts();
+  };
+
   return {
     hunts,
     pagination,
@@ -81,6 +90,7 @@ export function useHuntsData() {
     hasSelectedHunts,
     hasSingleSelectedHunt,
     selectedHuntId,
+    deleteSelectedHunts,
   }
 
 }

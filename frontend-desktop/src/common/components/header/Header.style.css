@@ -46,7 +46,7 @@
     color: #ffffff;
     display: flex;
     align-items: center;
-    cursor: pointer;
+    cursor: default;
 }
 
 .user-name {

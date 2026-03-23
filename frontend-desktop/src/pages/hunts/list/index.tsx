@@ -11,6 +11,7 @@ import { ReactComponent as ModifyIcon } from "../../../common/assets/icon/pen.sv
 export default function HuntsList() {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     hunts,
@@ -21,6 +22,7 @@ export default function HuntsList() {
     hasSelectedHunts,
     hasSingleSelectedHunt,
     selectedHuntId,
+    deleteSelectedHunts,
   } = useHuntsData();
 
   return (
@@ -59,11 +61,20 @@ export default function HuntsList() {
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
-        message="Etes vous sur de vouloir supprimer ces chasses ?"
-        onCancel={() => setIsDeleteModalOpen(false)}
-        onConfirm={() => {
+        message="Êtes-vous sûr de vouloir supprimer ces chasses ?"
+        onCancel={() => {
+          if (isDeleting) return;
           setIsDeleteModalOpen(false);
         }}
+        onConfirm={async () => {
+          if (isDeleting) return;
+
+          setIsDeleting(true);
+          await deleteSelectedHunts();
+          setIsDeleting(false);
+          setIsDeleteModalOpen(false);
+        }}
+        showWarning={true}
       />
     </>
   );

@@ -81,7 +81,6 @@ export class IndexServiceImpl implements IndexService {
 
             for (const indexId of indexIds) {
                 const index = await indexRepository.getByIdWithHunt(indexId);
-
                 if (!index) {
                     throw new AppError({
                         userMessage: "Index non trouvé",

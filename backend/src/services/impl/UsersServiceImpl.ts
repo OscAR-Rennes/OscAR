@@ -12,6 +12,8 @@ import { prisma } from "../../common-lib/config/prismaClient.js";
 import logger from "../../common-lib/utils/logger.js";
 import { paginateArray } from "../../common-lib/utils/pagination.js";
 import { LightUserDTO } from "../../common-lib/dto/users/LightUserDTO.js";
+import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import { FullUserDTO } from "../../common-lib/dto/users/FullUserDTO.js";
 
 export class UsersServiceImpl implements UsersService {
 
@@ -97,6 +99,40 @@ export class UsersServiceImpl implements UsersService {
     });
   }
 
+  async createUserMobile(userData: NewUserRequestDTO) {
+    try {
+      let userToCreate = { ...userData };
+      userToCreate = {
+          ...userToCreate,
+          rights: [RoleEnum.USER]
+        };
+      const newUser = await this.userRepository.create(userToCreate);
+      return userMapper.toDTONewUser(newUser);
+    } catch(error: any) {
+      if (error instanceof AppError) throw error;
+
+      if (error.code === "P2002") {
+        let field = error.meta?.target?.[0];
+
+        if (!field && typeof error.message === "string") {
+          const match = error.message.match(/\(`(.+)`\)/);
+          if (match) field = match[1];
+        }
+
+        field = field || "un champ unique";
+        console.log(error)
+        throw new AppError({
+          userMessage: `Conflit d'unicité sur: ${field}`,
+          statusCode: 409,
+        });
+      }
+      throw new AppError({
+        userMessage: "Erreur lors de la création de l'utilisateur",
+        statusCode: 500,
+      });
+    };
+  }
+
   async getAllUsers(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>> {
     try {
       const users = await this.userRepository.findAll();
@@ -145,6 +181,31 @@ export class UsersServiceImpl implements UsersService {
       }
       throw new AppError({
         userMessage: "Erreur lors du changement de statut des utilisateurs",
+        statusCode: 500,
+      });
+    }
+  }
+
+  async getById(id: string, user: AuthResponseDTO): Promise<FullUserDTO> {
+    try {
+
+      if (user.rights.includes(RoleEnum.USER) && user.id != id) {
+        throw new AppError({
+          userMessage: "Consultation de l'utilisateur non autorisé",
+          statusCode: 403,
+        });
+      }
+
+      const userData = await this.userRepository.getById(id)
+
+      return userMapper.toFullDto(userData)
+
+    } catch (error: any) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError({
+        userMessage: "Erreur lors du chargement de l'utilisateur",
         statusCode: 500,
       });
     }

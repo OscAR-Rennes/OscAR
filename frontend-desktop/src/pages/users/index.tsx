@@ -51,7 +51,7 @@ export default function Users() {
 
           <ConfirmModal
             isOpen={isSwitchStatusModalOpen}
-            message="Etes vous sur de vouloir désactiver/réactiver ces utilisateurs ?"
+            message="Êtes-vous sûr de vouloir désactiver/réactiver ces utilisateurs ?"
             onCancel={() => setIsSwitchStatusModalOpen(false)}
             onConfirm={() => {
               executeActivateDeactivateUsers();
@@ -61,11 +61,12 @@ export default function Users() {
 
           <ConfirmModal
             isOpen={isDeleteModalOpen}
-            message="Etes vous sur de vouloir supprimer ces utilisateurs ?"
+            message="Êtes-vous sûr de vouloir supprimer ces utilisateurs ?"
             onCancel={() => setIsDeleteModalOpen(false)}
             onConfirm={() => {
               setIsDeleteModalOpen(false);
             }}
+            showWarning={true}
           />
         </>
       )}

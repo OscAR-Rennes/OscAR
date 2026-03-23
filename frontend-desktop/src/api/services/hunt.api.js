@@ -21,3 +21,11 @@ export function getHuntsByCulturalCenter(culturalCenterId, params = {}) {
 export function getHuntById(huntId) {
   return apiClient(`/hunt/getbyid/${huntId}`);
 }
+
+export function editHunt(huntId, huntData) {
+  return apiClient(`/hunt/edit/${huntId}`, { method: 'PUT', body: huntData });
+}
+
+export function deleteHunt(huntId) {
+  return apiClient(`/hunt/${huntId}`, { method: 'DELETE' });
+}

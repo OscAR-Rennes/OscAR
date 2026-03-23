@@ -9,6 +9,8 @@ const normalizeText = (value: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
+const MIN_SEARCH_CHARS = 3;
+
 
 export type Column<T> = {
   key: keyof T;
@@ -39,6 +41,8 @@ type TableProps<T extends { id: string | number }> = {
     page: number;
     limit: number;
   }) => void;
+  getRowLink?: (row: T, currentPath: string) => string;
+  displayMode?: "view" | "subgrid";
 };
 
 type SortDirection = "asc" | "desc";
@@ -54,6 +58,8 @@ export default function Table<T extends { id: string | number }>({
   allItemsPrefix = "Tous les",
   serverPagination,
   onServerPaginationChange,
+  getRowLink,
+  displayMode = "view",
 }: TableProps<T>) {
   const location = useLocation();
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -85,15 +91,18 @@ export default function Table<T extends { id: string | number }>({
     isServerPaginationEnabled
       ? Math.max(1, serverPagination?.limit ?? 15)
       : itemsPerPage;
-
+  const trimmedSearchQuery = searchQuery.trim();
   const normalizedSearchQuery = normalizeText(
-    searchQuery.trim()
+    trimmedSearchQuery
   );
+  const isSearchTooShort =
+    trimmedSearchQuery.length > 0 &&
+    trimmedSearchQuery.length < MIN_SEARCH_CHARS;
 
   const filteredData = useMemo(() => {
     if (!Array.isArray(data)) return [];
 
-    if (!normalizedSearchQuery) {
+    if (!normalizedSearchQuery || isSearchTooShort) {
       return data;
     }
 
@@ -164,7 +173,7 @@ export default function Table<T extends { id: string | number }>({
         }
       )
     );
-  }, [data, normalizedSearchQuery]);
+  }, [data, isSearchTooShort, normalizedSearchQuery]);
 
   const sortedData = useMemo(() => {
     if (!sortKey) {
@@ -339,13 +348,31 @@ export default function Table<T extends { id: string | number }>({
     column: Column<T>,
     columnIndex: number
   ) => {
-    const value = column.render
-      ? column.render(row)
-      : (row[column.key] as React.ReactNode);
+    const rawValue = row[column.key];
+    const isStatusColumn =
+      !column.render &&
+      String(column.key) === "isActive" &&
+      typeof rawValue === "boolean";
+
+    const value = isStatusColumn ? (
+      <span
+        className={`table-status-badge ${rawValue ? "table-status-badge--active" : "table-status-badge--inactive"}`}
+      >
+        {rawValue ? "Actif" : "Inactif"}
+      </span>
+    ) : column.render ? (
+      column.render(row)
+    ) : (
+      rawValue as React.ReactNode
+    );
 
     if (columnIndex === 0) {
+      const rowLink = getRowLink
+        ? getRowLink(row, location.pathname)
+        : `${location.pathname}/${row.id}`;
+
       return (
-        <Link to={`${location.pathname}/${row.id}`}>
+        <Link to={rowLink}>
           {value}
         </Link>
       );
@@ -381,7 +408,7 @@ export default function Table<T extends { id: string | number }>({
 
   return (
     <>
-      <div className="container">
+      <div className={`container ${displayMode === "subgrid" ? "table-container--subgrid" : ""}`.trim()}>
         {/* Header */}
         <div className="table-row-count-wrapper">
           {allItemsLabel ? (
@@ -393,22 +420,32 @@ export default function Table<T extends { id: string | number }>({
           <div className="table-header-actions">
             {renderActionButton?.()}
 
-            <label className="table-search-wrapper">
-              <img
-                src={searchIcon}
-                alt="Rechercher"
-                className="table-search-icon"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) =>
-                  setSearchQuery(e.target.value)
-                }
-                placeholder="Rechercher"
-                className="table-search-input"
-              />
-            </label>
+            <div className="table-search-field">
+              <label className="table-search-wrapper">
+                <img
+                  src={searchIcon}
+                  alt="Rechercher"
+                  className="table-search-icon"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) =>
+                    setSearchQuery(e.target.value)
+                  }
+                  placeholder="Rechercher"
+                  className="table-search-input"
+                />
+              </label>
+              {isSearchTooShort ? (
+                <span
+                  className="table-search-error"
+                  aria-live="polite"
+                >
+                  Min. 3 caractères
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
 

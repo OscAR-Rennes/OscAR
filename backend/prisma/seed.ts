@@ -67,7 +67,7 @@ async function main() {
   // RIGHTS
   // =====================
   const rights: Record<string, any> = {};
-  for (const name of ["ADMIN", "CULTURAL_CENTER_MANAGER", "HUNT_MANAGER"]) {
+  for (const name of ["USER", "ADMIN", "CULTURAL_CENTER_MANAGER", "HUNT_MANAGER"]) {
     let right = await prisma.rights.findUnique({ where: { name } });
     if (!right) {
       right = await prisma.rights.create({ data: { name } });

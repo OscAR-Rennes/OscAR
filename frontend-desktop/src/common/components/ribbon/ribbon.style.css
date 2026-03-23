@@ -1,19 +1,46 @@
 .osc-ribbon {
 	width: auto;
 	max-width: 100%;
-	margin: 1rem 1rem 0;
-	padding: 0.75rem 1.5rem;
+	margin: 1rem 0 0;
+	padding: 0.5rem 0.5rem 0.5rem 1rem;
+	min-height: 3rem;
 	box-sizing: border-box;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	background: #ffffff;
-	border-radius: 1rem;
-	box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+	border-radius: 0.5rem;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.18);
 }
 
 .osc-ribbon-left,
 .osc-ribbon-right {
 	display: flex;
 	align-items: center;
+}
+
+.osc-ribbon-right {
+	gap: 0.5rem;
+}
+
+.osc-ribbon-back-btn {
+	background: transparent;
+	border: none;
+	min-width: auto;
+	padding: 0.125rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 0;
+}
+
+.osc-ribbon-back-btn:hover {
+	background: transparent;
+}
+
+.osc-ribbon-back-icon {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: #4b5563;
+	display: block;
 }

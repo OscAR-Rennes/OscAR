@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../common/components/table/Table";
 import "../../../common/components/table/Table.style.css";
@@ -19,10 +19,12 @@ export default function StepsList() {
     hasSelectedSteps,
     hasSingleSelectedStep,
     selectedStepId,
+    deleteSelectedSteps,
   } = useStepsData();
 
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <>
@@ -38,7 +40,9 @@ export default function StepsList() {
             <div className="table-action-buttons">
               <button 
               className="table-btn" 
-              onClick={() => navigate("/home/steps/create")}
+              onClick={() => {
+                navigate("/home/steps/create");
+              }}
               >
                 <PlusIcon className="table-btn-icon-larger" aria-hidden="true" focusable="false" />
                 <span>Créer</span>
@@ -71,11 +75,20 @@ export default function StepsList() {
 
         <ConfirmModal
           isOpen={isDeleteModalOpen}
-          message="Etes vous sur de vouloir supprimer ces étapes ?"
-          onCancel={() => setIsDeleteModalOpen(false)}
-          onConfirm={() => {
+          message="Êtes-vous sûr de vouloir supprimer ces étapes ?"
+          onCancel={() => {
+            if (isDeleting) return;
             setIsDeleteModalOpen(false);
           }}
+          onConfirm={async () => {
+            if (isDeleting) return;
+
+            setIsDeleting(true);
+            await deleteSelectedSteps();
+            setIsDeleting(false);
+            setIsDeleteModalOpen(false);
+          }}
+          showWarning={true}
         />
     </>
   );

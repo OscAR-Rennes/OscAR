@@ -85,11 +85,7 @@ export function useUsersnData() {
     const culturalCentersColumns = 
         [
             { key: "name", label: "Nom du centre" },
-            {
-            key: "isActive",
-            label: "Status",
-            render: (row: { isActive: boolean; }) => (row.isActive ? "🟢 Actif" : "🔴 Inactif"),
-            }
+            { key: "isActive", label: "Status" }
         ]
 
 

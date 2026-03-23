@@ -7,6 +7,7 @@ export default function DynamicForm({
   submitLabel = "Valider",
   onFieldChange = undefined,
   resetSignal = 0,
+  externalValues = undefined,
 }) {
   const [values, setValues] = useState(() =>
     fields.reduce((acc, field) => {
@@ -23,6 +24,24 @@ export default function DynamicForm({
       }, {})
     );
   }, [resetSignal, fields]);
+
+  useEffect(() => {
+    if (!externalValues) return;
+
+    setValues((prev) => {
+      let hasChanged = false;
+      const nextValues = { ...prev };
+
+      Object.entries(externalValues).forEach(([key, value]) => {
+        if (value !== undefined && nextValues[key] !== value) {
+          nextValues[key] = value;
+          hasChanged = true;
+        }
+      });
+
+      return hasChanged ? nextValues : prev;
+    });
+  }, [externalValues]);
 
   const handleChange = (name, type, value) => {
     const parsed = type === "number" ? (value === "" ? "" : Number(value)) : value;

@@ -88,11 +88,7 @@ export function useUsersnData() {
         [
             { key: "username", label: "Nom d'utilisateur" },
             { key: "email", label: "Email"},
-            {
-                key: "isActive",
-                label: "Status",
-                render: (row: { isActive: boolean; }) => (row.isActive ? "🟢 Actif" : "🔴 Inactif"),
-            }
+            { key: "isActive", label: "Status" }
         ]
 
     // Handlers

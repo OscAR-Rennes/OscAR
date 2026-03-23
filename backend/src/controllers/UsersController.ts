@@ -36,6 +36,18 @@ export class UsersController  {
     }
   }
 
+  async createUserMobile(req: Request, res: Response, next: any) {
+    try {
+      const userData = req.body;
+      const newUser = await this.usersService.createUserMobile(userData);
+      logger.info("User created successfully", { route: req.originalUrl, userId: newUser.id });
+      res.status(201).json(newUser);
+    } catch (err) {
+      logger.error("Error creating user", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
       const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
@@ -74,6 +86,27 @@ export class UsersController  {
     } catch (err){
       logger.error("Error switching users status", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err)
+    }
+  }
+
+  async getById(req: Request, res: Response, next: any) {
+    try {
+      const id = req.params.id;
+      const user = req.user
+      if (!user) {
+        logger.warn("User missing in request for get user by id", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+      const data = await this.usersService.getById(id, user)
+      if (!data) {
+        logger.warn(`User with id ${id} not found`, { route: req.originalUrl })
+        res.status(404)
+      }
+      logger.info(`User with id ${id} retrieved succesfully`, { route: req.originalUrl })
+      res.status(200).json(data)
+    } catch (err) {
+      logger.error("Error getting user by id", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
     }
   }
 };
