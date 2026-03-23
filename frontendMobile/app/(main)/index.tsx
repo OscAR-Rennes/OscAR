@@ -457,8 +457,8 @@ export default function MapsScreen() {
                                         >
                                             <View
                                                 style={{
-                                                    width: 42,
-                                                    height: 42,
+                                                    width: 27,
+                                                    height: 27,
                                                     borderRadius: 21,
                                                     backgroundColor: '#62B5DE',
                                                     alignItems: 'center',
