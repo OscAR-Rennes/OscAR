@@ -22,7 +22,7 @@ export default function Header() {
   return (
     <header className="header-bar">
       <MenuBurgerIcon className="header-menu-burger" />
-      <h1 className="header-title">OscAR</h1>
+      <h1 className="header-title">Lootopia</h1>
       <p className="separator-header"></p>
       <p className="user-rights">{userRightsLabel}</p>
       <p className="user-name">{userName}</p>
