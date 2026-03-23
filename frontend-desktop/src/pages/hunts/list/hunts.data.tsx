@@ -5,6 +5,12 @@ import { useAuthStore } from "../../../common/store/authStore";
 
 export function useHuntsData() {
   const [hunts, setHunts] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 15,
+    total: 0,
+    totalPages: 1,
+  });
   const [selectedHuntsRows, setSelectedHuntsRows] = useState([]);
   const user = useAuthStore((state) => state.user);
   const hasSelectedHunts = selectedHuntsRows.length > 0;
@@ -19,15 +25,57 @@ export function useHuntsData() {
 
   useEffect(() => {
     const fetchHunts = async () => {
-      console.log(user)
-      const huntsData = await getHuntsByCulturalCenter(user.id_cultural_center ?? "no-cultural-center");
-      setHunts(huntsData);
+      if (!user) return;
+
+      const response = await getHuntsByCulturalCenter(
+        user.id_cultural_center ?? "no-cultural-center",
+        { page: pagination.page, limit: pagination.limit }
+      );
+
+      setHunts(Array.isArray(response?.data) ? response.data : []);
+
+      setPagination((prev) => {
+        const next = {
+          page: response?.pagination?.page ?? prev.page,
+          limit: response?.pagination?.limit ?? prev.limit,
+          total: response?.pagination?.total ?? prev.total,
+          totalPages: response?.pagination?.totalPages ?? prev.totalPages,
+        };
+
+        if (
+          prev.page === next.page &&
+          prev.limit === next.limit &&
+          prev.total === next.total &&
+          prev.totalPages === next.totalPages
+        ) {
+          return prev;
+        }
+
+        return next;
+      });
     };
+
     fetchHunts();
-  },[user]);
+  }, [user, pagination.page, pagination.limit]);
+
+  const handlePaginationChange = ({ page, limit }: { page: number; limit: number }) => {
+    setPagination((prev) => {
+      if (prev.page === page && prev.limit === limit) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        page,
+        limit,
+      };
+    });
+  };
 
   return {
     hunts,
+    pagination,
+    handlePaginationChange,
     huntsColumns,
     setSelectedHuntsRows,
     hasSelectedHunts,

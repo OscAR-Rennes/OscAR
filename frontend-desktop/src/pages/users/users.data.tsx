@@ -8,6 +8,12 @@ export function useUsersnData() {
 
     const [selectedUsersRows, setSelectedUsersRows] = useState([]);
     const [users, setUsers] = useState([]);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 15,
+        total: 0,
+        totalPages: 1,
+    });
 
     const checkRights = useCheckRights();
 
@@ -20,26 +26,60 @@ export function useUsersnData() {
         if (!user) return;
 
         const fetchData = async () => {
-            const usersData = await (
+            const response = await (
             isAdmin
-                ? getAllUsers()
-                : getUsersByCulturalCenter()
+                ? getAllUsers({ page: pagination.page, limit: pagination.limit })
+                : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit })
             );
 
-            setUsers(usersData)
+            setUsers(Array.isArray(response?.data) ? response.data : []);
+
+            setPagination((prev) => {
+                const next = {
+                    page: response?.pagination?.page ?? prev.page,
+                    limit: response?.pagination?.limit ?? prev.limit,
+                    total: response?.pagination?.total ?? prev.total,
+                    totalPages: response?.pagination?.totalPages ?? prev.totalPages,
+                };
+
+                if (
+                    prev.page === next.page &&
+                    prev.limit === next.limit &&
+                    prev.total === next.total &&
+                    prev.totalPages === next.totalPages
+                ) {
+                    return prev;
+                }
+
+                return next;
+            });
         }
 
         fetchData()
-    }, [user])
+    }, [user, isAdmin, pagination.page, pagination.limit])
 
     // Refresh data
     const refreshUsers = async () => {
-        const usersData = await (
+        const response = await (
         isAdmin
-            ? getAllUsers()
-            : getUsersByCulturalCenter()
+            ? getAllUsers({ page: pagination.page, limit: pagination.limit })
+            : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit })
         );
-        setUsers(usersData)
+        setUsers(Array.isArray(response?.data) ? response.data : [])
+    };
+
+    const handlePaginationChange = ({ page, limit }: { page: number; limit: number }) => {
+        setPagination((prev) => {
+            if (prev.page === page && prev.limit === limit) {
+                return prev;
+            }
+
+            return {
+                ...prev,
+                page,
+                limit,
+            };
+        });
     };
 
 
@@ -72,6 +112,8 @@ export function useUsersnData() {
         isAdmin,
 
         users,
+        pagination,
+        handlePaginationChange,
 
         setSelectedUsersRows,
 

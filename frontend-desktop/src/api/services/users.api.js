@@ -1,15 +1,21 @@
 import { apiClient } from '../apiClient';
 
+function toPaginationQuery(params = {}) {
+  const page = Number(params.page) > 0 ? Number(params.page) : 1;
+  const limit = Number(params.limit) > 0 ? Number(params.limit) : 15;
+  return `?page=${page}&limit=${limit}`;
+}
+
 export function addUser(userData) {
   return apiClient('/users/web', { method: 'POST', body: userData });
 }
 
-export function getAllUsers() {
-  return apiClient('/users');
+export function getAllUsers(params = {}) {
+  return apiClient(`/users${toPaginationQuery(params)}`);
 }
 
-export function getUsersByCulturalCenter() {
-  return apiClient(`/users/culturalcenter`)
+export function getUsersByCulturalCenter(params = {}) {
+  return apiClient(`/users/culturalcenter${toPaginationQuery(params)}`)
 }
 
 export function activateDeactivateUsers(ids) {

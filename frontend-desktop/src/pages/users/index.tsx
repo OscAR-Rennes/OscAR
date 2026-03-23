@@ -9,6 +9,8 @@ export default function Users() {
   const {
     isAdmin,
     users,
+    pagination,
+    handlePaginationChange,
     setSelectedUsersRows,
     userColumns,
     hasSelectedUsers,
@@ -25,6 +27,8 @@ export default function Users() {
           <Table
             data={users}
             columns={userColumns}
+            serverPagination={pagination}
+            onServerPaginationChange={handlePaginationChange}
             onRowSelect={setSelectedUsersRows}
             allItemsLabel="utilisateurs"
             renderActionButton={() => (

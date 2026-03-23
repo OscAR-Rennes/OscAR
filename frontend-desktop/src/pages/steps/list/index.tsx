@@ -12,6 +12,8 @@ export default function StepsList() {
 
   const {
     steps,
+    pagination,
+    handlePaginationChange,
     stepsColumns,
     setSelectedStepsRows,
     hasSelectedSteps,
@@ -27,6 +29,8 @@ export default function StepsList() {
         <Table
           data={steps}
           columns={stepsColumns}
+          serverPagination={pagination}
+          onServerPaginationChange={handlePaginationChange}
           onRowSelect={(rows) => setSelectedStepsRows(rows)}
           allItemsPrefix="Toutes les"
           allItemsLabel="étapes"

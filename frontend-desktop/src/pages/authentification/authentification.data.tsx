@@ -17,8 +17,8 @@ export function useAuthentificationData() {
     // Fetch active cultural centers au chargement
     useEffect(() => {
         const fetchData = async () => {
-            const culturalCentersData = await getActiveCulturalCenter();
-            setCulturalCenters(culturalCentersData)
+            const response = await getActiveCulturalCenter({ page: 1, limit: 200 });
+            setCulturalCenters(Array.isArray(response?.data) ? response.data : []);
         };
         fetchData()
     }, []);

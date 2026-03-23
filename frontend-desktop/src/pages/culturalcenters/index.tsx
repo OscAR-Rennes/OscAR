@@ -9,6 +9,8 @@ export default function CulturalCenters() {
   const {
     isAdmin,
     culturalCenters,
+    pagination,
+    handlePaginationChange,
     setSelectedCulturalCenterssRows,
     culturalCentersColumns,
     hasSelectedCulturalCenters,
@@ -25,6 +27,8 @@ export default function CulturalCenters() {
           <Table
             data={culturalCenters}
             columns={culturalCentersColumns}
+            serverPagination={pagination}
+            onServerPaginationChange={handlePaginationChange}
             onRowSelect={(rows) => setSelectedCulturalCenterssRows(rows)}
             allItemsLabel="centres culturels"
             renderActionButton={() => (

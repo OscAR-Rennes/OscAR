@@ -14,6 +14,8 @@ export default function HuntsList() {
 
   const {
     hunts,
+    pagination,
+    handlePaginationChange,
     huntsColumns,
     setSelectedHuntsRows,
     hasSelectedHunts,
@@ -26,6 +28,8 @@ export default function HuntsList() {
       <Table
         data={hunts}
         columns={huntsColumns}
+        serverPagination={pagination}
+        onServerPaginationChange={handlePaginationChange}
         onRowSelect={(rows) => setSelectedHuntsRows(rows)}
         allItemsPrefix="Toutes les"
         allItemsLabel="chasses"
