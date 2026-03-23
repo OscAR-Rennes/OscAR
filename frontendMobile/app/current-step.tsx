@@ -52,7 +52,6 @@ const CurrentStepScreen: React.FC = () => {
 
         if (currentStep) {
 
-            console.log(isConnected)
             if (isConnected) {
                 await saveProgress({
                     hunt_id: huntId as string,
