@@ -92,8 +92,8 @@ export function useStepsData() {
   }, [selectedHuntId]);
 
   const refreshHunts = async () => {
-    const huntsData = await getHuntsByCulturalCenter(user.id_cultural_center);
-    setHunts(huntsData);
+    const response = await getHuntsByCulturalCenter(user.id_cultural_center, { page: 1, limit: 200 });
+    setHunts(Array.isArray(response?.data) ? response.data : []);
   };
 
   // Champs des formulaires

@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'backend/**'
+      - '.github/workflows/BackendCI.yml'
   pull_request:
     paths:
       - 'backend/**'
+      - '.github/workflows/BackendCI.yml'
 
 jobs:
   backend:
@@ -20,6 +22,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
 
       - name: Install dependencies
         run: |
@@ -38,7 +42,12 @@ jobs:
       - name: Run tests
         run: |
           cd backend
-          npm test -- --watch=false
+          TEST_SCRIPT=$(node -p "require('./package.json').scripts?.test || ''")
+          if [ -z "$TEST_SCRIPT" ] || [[ "$TEST_SCRIPT" == *"No tests configured"* ]]; then
+            echo "No backend test script configured, skipping tests"
+          else
+            npm test -- --watch=false
+          fi
 
       - name: Build TypeScript (if tsconfig.json exists)
         run: |

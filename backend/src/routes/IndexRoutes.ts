@@ -77,7 +77,7 @@ indexRoutes.put(
 );
 
 indexRoutes.delete(
-    "/index/:id",
+    "/index",
     authMiddleware,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => indexController.deleteIndex(req, res, next)

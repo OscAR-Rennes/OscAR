@@ -1,8 +1,8 @@
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { LanguageProvider } from '../context/LanguageContext';
 import { AuthProvider } from '@/context/AuthContext';
 
-// Root layout defining the main navigation stack
 
 export default function RootLayout() {
     return (

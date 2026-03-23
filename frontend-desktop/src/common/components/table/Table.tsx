@@ -31,6 +31,16 @@ type TableProps<T extends { id: string | number }> = {
   renderActionButton?: () => React.ReactNode;
   allItemsLabel?: string;
   allItemsPrefix?: string;
+  serverPagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages?: number;
+  };
+  onServerPaginationChange?: (pagination: {
+    page: number;
+    limit: number;
+  }) => void;
   getRowLink?: (row: T, currentPath: string) => string;
   displayMode?: "view" | "subgrid";
 };
@@ -46,6 +56,8 @@ export default function Table<T extends { id: string | number }>({
   renderActionButton,
   allItemsLabel,
   allItemsPrefix = "Tous les",
+  serverPagination,
+  onServerPaginationChange,
   getRowLink,
   displayMode = "view",
 }: TableProps<T>) {
@@ -66,6 +78,19 @@ export default function Table<T extends { id: string | number }>({
   const [sortDirection, setSortDirection] =
     useState<SortDirection>("asc");
 
+  const isServerPaginationEnabled =
+    Boolean(serverPagination) &&
+    typeof onServerPaginationChange === "function";
+
+  const effectiveCurrentPage =
+    isServerPaginationEnabled
+      ? Math.max(1, serverPagination?.page ?? 1)
+      : currentPage;
+
+  const effectiveItemsPerPage =
+    isServerPaginationEnabled
+      ? Math.max(1, serverPagination?.limit ?? 15)
+      : itemsPerPage;
   const trimmedSearchQuery = searchQuery.trim();
   const normalizedSearchQuery = normalizeText(
     trimmedSearchQuery
@@ -194,16 +219,32 @@ export default function Table<T extends { id: string | number }>({
     return sorted;
   }, [filteredData, sortDirection, sortKey]);
 
+  const totalRows = isServerPaginationEnabled
+    ? Math.max(0, serverPagination?.total ?? 0)
+    : sortedData.length;
+
 
   const totalPages = Math.max(
     1,
-    Math.ceil(sortedData.length / itemsPerPage)
+    isServerPaginationEnabled
+      ? serverPagination?.totalPages ??
+          Math.ceil(totalRows / effectiveItemsPerPage)
+      : Math.ceil(sortedData.length / effectiveItemsPerPage)
   );
 
   const currentData = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return sortedData.slice(start, start + itemsPerPage);
-  }, [sortedData, currentPage, itemsPerPage]);
+    if (isServerPaginationEnabled) {
+      return sortedData;
+    }
+
+    const start = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
+    return sortedData.slice(start, start + effectiveItemsPerPage);
+  }, [
+    sortedData,
+    isServerPaginationEnabled,
+    effectiveCurrentPage,
+    effectiveItemsPerPage,
+  ]);
 
   const allRowIds = useMemo(
     () => sortedData.map((row) => row.id),
@@ -249,7 +290,9 @@ export default function Table<T extends { id: string | number }>({
   };
 
   const toggleSort = (columnKey: keyof T) => {
-    setCurrentPage(1);
+    if (!isServerPaginationEnabled) {
+      setCurrentPage(1);
+    }
 
     if (sortKey === columnKey) {
       setSortDirection((prev) =>
@@ -264,12 +307,17 @@ export default function Table<T extends { id: string | number }>({
 
   useEffect(() => {
     setSelectedIds([]);
-    setCurrentPage(1);
-  }, [data, itemsPerPage]);
+
+    if (!isServerPaginationEnabled) {
+      setCurrentPage(1);
+    }
+  }, [data, itemsPerPage, isServerPaginationEnabled]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
+    if (!isServerPaginationEnabled) {
+      setCurrentPage(1);
+    }
+  }, [searchQuery, isServerPaginationEnabled]);
 
   useEffect(() => {
     if (!columns.length) {
@@ -331,6 +379,30 @@ export default function Table<T extends { id: string | number }>({
     }
 
     return value;
+  };
+
+  const goToPage = (nextPage: number) => {
+    if (isServerPaginationEnabled) {
+      onServerPaginationChange?.({
+        page: nextPage,
+        limit: effectiveItemsPerPage,
+      });
+      return;
+    }
+
+    setCurrentPage(nextPage);
+  };
+
+  const handleItemsPerPageChange = (nextLimit: number) => {
+    if (isServerPaginationEnabled) {
+      onServerPaginationChange?.({
+        page: 1,
+        limit: nextLimit,
+      });
+      return;
+    }
+
+    setItemsPerPage(nextLimit);
   };
 
 
@@ -439,30 +511,30 @@ export default function Table<T extends { id: string | number }>({
         {/* Footer / Pagination */}
         <div className="table-footer">
           <span className="table-row-count">
-            Lignes : {filteredData.length}
+            Lignes : {isServerPaginationEnabled ? totalRows : filteredData.length}
           </span>
 
           <div className="table-pagination-actions">
             <button
               className="table-pagination-btn"
-              disabled={currentPage === 1}
+              disabled={effectiveCurrentPage === 1}
               onClick={() =>
-                setCurrentPage((p) => Math.max(1, p - 1))
+                goToPage(Math.max(1, effectiveCurrentPage - 1))
               }
             >
               Précédent
             </button>
 
             <span>
-              Page {currentPage} / {totalPages}
+              Page {effectiveCurrentPage} / {totalPages}
             </span>
 
             <button
               className="table-pagination-btn"
-              disabled={currentPage === totalPages}
+              disabled={effectiveCurrentPage === totalPages}
               onClick={() =>
-                setCurrentPage((p) =>
-                  Math.min(totalPages, p + 1)
+                goToPage(
+                  Math.min(totalPages, effectiveCurrentPage + 1)
                 )
               }
             >
@@ -472,9 +544,9 @@ export default function Table<T extends { id: string | number }>({
             <span>
               Afficher&nbsp;
               <select
-                value={itemsPerPage}
+                value={effectiveItemsPerPage}
                 onChange={(e) =>
-                  setItemsPerPage(Number(e.target.value))
+                  handleItemsPerPageChange(Number(e.target.value))
                 }
               >
                 {[15, 30, 50].map((n) => (

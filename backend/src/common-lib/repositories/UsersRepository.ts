@@ -1,7 +1,7 @@
 import { NewUserRequestDTO } from "../dto/users/NewUserRequestDTO.js";
 import bcrypt from "bcrypt";
 import { RoleEnum } from "../enum/roleEnum.js";
-import { PrismaClient, users } from "@prisma/client";
+import { Prisma, PrismaClient, users } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { UserEntity } from "../entity/UsersEntity.js";
 import AppError from "../errors/AppError.js";
@@ -133,6 +133,16 @@ export class UserRepository  {
         AND u.id_cultural_center = ${centerId}
         AND r.name = ${RoleEnum.CULTURAL_CENTER_MANAGER};
     `;
+  }
+
+  async unassignUsersByCenter(centerId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).users.updateMany({
+      where: { id_cultural_center: centerId },
+      data: {
+        id_cultural_center: null,
+        isActive: false,
+      },
+    });
   }
 
   async incrementUserPoints(user_id: string, points: number) {

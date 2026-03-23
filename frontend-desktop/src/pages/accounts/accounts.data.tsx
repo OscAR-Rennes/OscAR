@@ -6,7 +6,9 @@ export function useAccountsData() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    getAllUsers().then(setAccounts);
+    getAllUsers({ page: 1, limit: 200 }).then((response) => {
+      setAccounts(Array.isArray(response?.data) ? response.data : []);
+    });
     fetch("http://localhost:5000/api/users")
       .then(res => res.json())
       .then(data => {

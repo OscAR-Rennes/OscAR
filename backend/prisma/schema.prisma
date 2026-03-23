@@ -10,8 +10,8 @@ model address {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   zip              String?            @db.VarChar
   city             String?            @db.VarChar
-  longitude        Int
-  latitude         Int
+  longitude        Float
+  latitude         Float
   street           String?            @db.VarChar
   street_number    String?            @db.VarChar
   created_at       DateTime           @default(now()) @db.Timestamp(6)
