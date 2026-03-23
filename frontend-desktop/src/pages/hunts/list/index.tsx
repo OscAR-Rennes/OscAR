@@ -57,7 +57,7 @@ export default function HuntsList() {
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
-        message="Etes vous sur de vouloir supprimer ces chasses ?"
+        message="Êtes-vous sûr de vouloir supprimer ces chasses ?"
         onCancel={() => {
           if (isDeleting) return;
           setIsDeleteModalOpen(false);
@@ -70,6 +70,7 @@ export default function HuntsList() {
           setIsDeleting(false);
           setIsDeleteModalOpen(false);
         }}
+        showWarning={true}
       />
     </>
   );

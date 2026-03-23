@@ -306,6 +306,7 @@ export default function MapPicker({ value, onChange = undefined, readOnly = fals
         zoom={12}
         onLoad={setMap}
         onClick={readOnly ? undefined : handleMapClick}
+        options={{ gestureHandling: 'greedy' }}
       />
     </div>
   ) : (

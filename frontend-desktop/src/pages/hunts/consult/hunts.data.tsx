@@ -51,6 +51,12 @@ export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 		return async (data: EditHuntFormDto) => {
 			if (!huntId) return;
 
+			const activeValue = data.active as unknown;
+			const normalizedIsActive =
+				typeof activeValue === "string"
+					? activeValue.toLowerCase() === "true"
+					: Boolean(activeValue);
+
 			const updated = await editHunt(huntId, {
 				title: data.title,
 				description: data.description,
@@ -59,7 +65,7 @@ export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 				latitude: Number(data.latitude),
 				longitude: Number(data.longitude),
 				picture_path: data.picture_path ?? "",
-				isactive: Boolean(data.active),
+				isactive: normalizedIsActive,
 			});
 
 			if (updated) {

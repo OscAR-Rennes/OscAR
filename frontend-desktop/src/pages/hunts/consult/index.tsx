@@ -180,6 +180,7 @@ export default function HuntConsultation() {
                 <ReadOnlyField label="Difficulté" value={hunt.difficulty.name} />
                 <ReadOnlyField label="Centre culturel" value={hunt.culturalCenter.name} />
                 <Form
+                  key={`hunt-status-${hunt.id}-${String(hunt.isActive)}`}
                   onSubmit={async () => {}}
                   defaultValues={{
                     active: hunt.isActive,

@@ -1,6 +1,9 @@
 import './Sidebar.style.css';
 import { useAuthStore } from "../../store/authStore";
 import { useLocation, useNavigate } from "react-router-dom";
+import { logoutUser } from "../../../api/services/auth.api";
+import { useState } from "react";
+import ConfirmModal from "../confirmmodal/ConfirmModal";
 
 const menuItemsBase = [
   { icon: <img src={require("../../assets/icon/dashboard.svg").default} alt="Dashboard"/>, label: "Tableau de bord", path: "/home/dashboard" },
@@ -11,11 +14,22 @@ const menuItemsBase = [
 ];
 
 const settingsIcon = <img src={require("../../assets/icon/settings.svg").default} alt="settings" />;
+const logoutIcon = <img src={require("../../assets/icon/logout.svg").default} alt="logout" />;
 
 const Sidebar = () => {
-  const userRights = useAuthStore((state) => state.user.rights);
+
+  const userRights = useAuthStore((state) => state.user?.rights ?? []);
+  const clearUser = useAuthStore((state) => state.clearUser);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await logoutUser();
+    clearUser();
+    navigate('/home/authentification', { replace: true });
+  };
 
   const menuItems = [...menuItemsBase];
   if (
@@ -63,16 +77,25 @@ const Sidebar = () => {
           )}
         </ul>
         <div className="sidebar-settings-container">
-          <li className="sidebar-settings-item">
-            <span className="sidebar-icon">{settingsIcon}</span>
-            <span className="sidebar-label">Paramètres</span>
+          <li className="sidebar-settings-item" onClick={() => setIsLogoutModalOpen(true)}>
+            <span className="sidebar-icon">{logoutIcon}</span>
+            <span className="sidebar-label">Se déconnecter</span>
           </li>
         </div>
       </nav>
       <div className="sidebar-navigation">
-        <button onClick={() => navigate('/')}>
+        <button onClick={() => navigate('/')}> 
         </button>
       </div>
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        message="Êtes-vous sûr de vouloir vous déconnecter ?"
+        onCancel={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => {
+          setIsLogoutModalOpen(false);
+          handleLogout();
+        }}
+      />
     </div>
   );
 };

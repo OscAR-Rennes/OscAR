@@ -9,6 +9,8 @@ const normalizeText = (value: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
+const MIN_SEARCH_CHARS = 3;
+
 
 export type Column<T> = {
   key: keyof T;
@@ -64,14 +66,18 @@ export default function Table<T extends { id: string | number }>({
   const [sortDirection, setSortDirection] =
     useState<SortDirection>("asc");
 
+  const trimmedSearchQuery = searchQuery.trim();
   const normalizedSearchQuery = normalizeText(
-    searchQuery.trim()
+    trimmedSearchQuery
   );
+  const isSearchTooShort =
+    trimmedSearchQuery.length > 0 &&
+    trimmedSearchQuery.length < MIN_SEARCH_CHARS;
 
   const filteredData = useMemo(() => {
     if (!Array.isArray(data)) return [];
 
-    if (!normalizedSearchQuery) {
+    if (!normalizedSearchQuery || isSearchTooShort) {
       return data;
     }
 
@@ -142,7 +148,7 @@ export default function Table<T extends { id: string | number }>({
         }
       )
     );
-  }, [data, normalizedSearchQuery]);
+  }, [data, isSearchTooShort, normalizedSearchQuery]);
 
   const sortedData = useMemo(() => {
     if (!sortKey) {
@@ -342,22 +348,32 @@ export default function Table<T extends { id: string | number }>({
           <div className="table-header-actions">
             {renderActionButton?.()}
 
-            <label className="table-search-wrapper">
-              <img
-                src={searchIcon}
-                alt="Rechercher"
-                className="table-search-icon"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) =>
-                  setSearchQuery(e.target.value)
-                }
-                placeholder="Rechercher"
-                className="table-search-input"
-              />
-            </label>
+            <div className="table-search-field">
+              <label className="table-search-wrapper">
+                <img
+                  src={searchIcon}
+                  alt="Rechercher"
+                  className="table-search-icon"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) =>
+                    setSearchQuery(e.target.value)
+                  }
+                  placeholder="Rechercher"
+                  className="table-search-input"
+                />
+              </label>
+              {isSearchTooShort ? (
+                <span
+                  className="table-search-error"
+                  aria-live="polite"
+                >
+                  Min. 3 caractères
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
 
