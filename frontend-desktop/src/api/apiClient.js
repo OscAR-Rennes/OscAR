@@ -3,7 +3,12 @@ import { useNotificationStore } from '../common/store/notificationStore';
 
 export async function apiClient(
   path,
-  { method = 'GET', body, headers = {} } = {}
+  {
+    method = 'GET',
+    body,
+    headers = {},
+    suppressErrorNotification = false,
+  } = {}
 ) {
   const res = await fetch(`${API_URL}${path}`, {
     method,
@@ -38,7 +43,15 @@ export async function apiClient(
       }
     }
 
-    useNotificationStore.getState().addNotification(errorMessage, errorDetails, statusCode);
+    const shouldSuppress =
+      typeof suppressErrorNotification === 'function'
+        ? suppressErrorNotification(statusCode, path)
+        : Boolean(suppressErrorNotification);
+
+    if (!shouldSuppress) {
+      useNotificationStore.getState().addNotification(errorMessage, errorDetails, statusCode);
+    }
+
     return null;
   }
 
