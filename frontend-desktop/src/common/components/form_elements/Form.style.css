@@ -158,3 +158,28 @@
 	background: #4651cc;
 	border: none;
 }
+
+.osc-form-file-wrap {
+	width: 100%;
+	display: grid;
+	gap: 0.4rem;
+}
+
+.osc-form-file-input {
+	padding: 0.35rem 0.5rem;
+	background: #ffffff;
+	cursor: pointer;
+}
+
+.osc-form-file-selected {
+	margin: 0;
+	font-size: 0.8rem;
+	color: #4b5563;
+}
+
+.osc-form-file-readonly {
+	display: flex;
+	align-items: center;
+	background: #f4f6f9;
+	color: #6b7280;
+}

@@ -4,6 +4,10 @@
   gap: 1rem;
 }
 
+.steps-consult-page.has-notification-ribbon {
+  padding-top: 3rem;
+}
+
 .steps-consult-content {
   margin: 0;
 }
@@ -13,6 +17,10 @@
   grid-template-columns: minmax(0, 60fr) minmax(0, 40fr);
   gap: 1rem;
   align-items: start;
+}
+
+.steps-consult-general-layout.steps-consult-general-layout--documents {
+  grid-template-columns: 1fr;
 }
 
 .osc-form.steps-consult-general-layout {
@@ -85,6 +93,30 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.18);
   color: #4b5563;
   padding: 1rem 1.25rem;
+}
+
+.steps-consult-documents-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.steps-consult-info-panel.is-hidden,
+.steps-consult-map-wrap.is-hidden {
+  display: none;
+}
+
+.steps-consult-map-wrap {
+  min-width: 0;
+}
+
+.osc-form.steps-consult-documents-layout {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 @media (max-width: 62rem) {

@@ -13,7 +13,43 @@ import Ribbon from "../../../common/components/ribbon/ribbon";
 import { Form } from "../../../common/components/form_elements/Form";
 import { FormInput } from "../../../common/components/form_elements/FormInput";
 import { FormSelect } from "../../../common/components/form_elements/FormSelect";
+import { FormFile } from "../../../common/components/form_elements/FormFile";
+import NotificationRibbon from "../../../common/components/notification_ribbon/NotificationRibbon";
 import "./index.style.css";
+
+const STEP_TAB_BY_FIELD: Record<string, string> = {
+  title: "Général",
+  description: "Général",
+  points: "Général",
+  latitude: "Général",
+  longitude: "Général",
+  hunt_id: "Général",
+  index_id: "Général",
+  model_file: "Documents",
+  image_file: "Documents",
+};
+
+const INDEX_TAB_BY_FIELD: Record<string, string> = {
+  name: "Index",
+  hunt_id: "Index",
+};
+
+function buildMissingTabsMessage(errors: any, tabByField: Record<string, string>) {
+  const missingTabs = new Set<string>();
+
+  Object.keys(errors ?? {}).forEach((fieldName) => {
+    const tabLabel = tabByField[fieldName];
+    if (tabLabel) {
+      missingTabs.add(tabLabel);
+    }
+  });
+
+  if (missingTabs.size === 0) {
+    return "Veuillez renseignez les champs obligatoires.";
+  }
+
+  return `Veuillez renseignez les champs obligatoires dans les onglets : ${Array.from(missingTabs).join(", ")}`;
+}
 
 export default function StepsCreation() {
   const {
@@ -27,6 +63,7 @@ export default function StepsCreation() {
   const [resetIndexForm, setResetIndexForm] = useState(0);
   const [resetStepForm, setResetStepForm] = useState(0);
   const [activeTabId, setActiveTabId] = useState("general");
+  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
   const connectedUserName = useAuthStore((state) => state.user?.username);
 
   const huntOptions = useMemo(
@@ -45,7 +82,14 @@ export default function StepsCreation() {
   const activeFormId = activeTabId === "index" ? "create-index-form" : "create-step-form";
 
   return (
-    <div className="steps-create-page">
+    <div className={`steps-create-page ${notificationMessage ? "has-notification-ribbon" : ""}`.trim()}>
+      {notificationMessage ? (
+        <NotificationRibbon
+          message={notificationMessage}
+          onClose={() => setNotificationMessage(null)}
+        />
+      ) : null}
+
       <Ribbon formId={activeFormId} />
 
       <HeaderForm
@@ -60,12 +104,14 @@ export default function StepsCreation() {
       />
 
       <section className="steps-create-content">
-        {activeTabId === "general" && (
+        {activeTabId !== "index" && (
           <div className="steps-create-general-layout">
             <Form
               key={`step-form-${resetStepForm}`}
               id="create-step-form"
               onSubmit={async (data: any) => {
+                setNotificationMessage(null);
+
                 const payload: CreateStepDto = {
                   title: data.title,
                   description: data.description,
@@ -80,6 +126,9 @@ export default function StepsCreation() {
                 setResetStepForm((n) => n + 1);
                 setSelectedHuntId(null);
               }}
+              onInvalid={(errors: any) => {
+                setNotificationMessage(buildMissingTabsMessage(errors, STEP_TAB_BY_FIELD));
+              }}
               defaultValues={{
                 title: "",
                 description: "",
@@ -88,12 +137,14 @@ export default function StepsCreation() {
                 longitude: "",
                 hunt_id: "",
                 index_id: "",
+                model_file: null,
+                image_file: null,
               }}
-              className="steps-step-form"
+              className={activeTabId === "documents" ? "steps-step-form steps-step-form--documents" : "steps-step-form"}
             >
               <HuntSelectionSync onHuntChange={setSelectedHuntId} />
 
-              <div className="steps-step-form-left">
+              <div className={activeTabId === "general" ? "steps-step-form-left" : "steps-step-form-left is-hidden"}>
                 <p className="steps-create-section-title">Informations de l'étape</p>
                 <FormInput name="title" label="Titre" required={true} />
                 <FormInput name="description" label="Description" required={true} />
@@ -105,14 +156,28 @@ export default function StepsCreation() {
                 <FormSelect name="index_id" label="Index" options={indexOptions} required={false} />
               </div>
 
-              <StepsMapField />
-            </Form>
-          </div>
-        )}
+              <div className={activeTabId === "documents" ? "steps-step-form-left" : "steps-step-form-left is-hidden"}>
+                <p className="steps-create-section-title">Documents de l'étape</p>
 
-        {activeTabId === "documents" && (
-          <div className="steps-create-placeholder">
-            Aucun document à configurer pour le moment.
+                <FormFile
+                  name="model_file"
+                  label="Modèle 3D (.obj)"
+                  accept=".obj"
+                  required={true}
+                />
+
+                <FormFile
+                  name="image_file"
+                  label="Image (.png, .jpg)"
+                  accept=".png,.jpg,.jpeg"
+                  required={true}
+                />
+              </div>
+
+              <div className={activeTabId === "general" ? "steps-step-form-map" : "steps-step-form-map is-hidden"}>
+                <StepsMapField />
+              </div>
+            </Form>
           </div>
         )}
 
@@ -122,8 +187,12 @@ export default function StepsCreation() {
               key={`index-form-${resetIndexForm}`}
               id="create-index-form"
               onSubmit={async (data: CreateIndexDto) => {
+                setNotificationMessage(null);
                 await handleAddIndex(data);
                 setResetIndexForm((n) => n + 1);
+              }}
+              onInvalid={(errors: any) => {
+                setNotificationMessage(buildMissingTabsMessage(errors, INDEX_TAB_BY_FIELD));
               }}
               defaultValues={{
                 name: "",
