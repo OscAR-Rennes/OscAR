@@ -4,6 +4,10 @@
   gap: 1rem;
 }
 
+.hunts-create-page.has-notification-ribbon {
+  padding-top: 3rem;
+}
+
 .hunts-create-content {
   margin: 0;
 }

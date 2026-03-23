@@ -9,6 +9,7 @@ import { FormToogle } from "../../../common/components/form_elements/FormToogle"
 import { ReadOnlyField } from "../../../common/components/form_elements/ReadOnlyField";
 import Table from "../../../common/components/table/Table";
 import MapPicker from "../../../common/components/map/map";
+import NotificationRibbon from "../../../common/components/notification_ribbon/NotificationRibbon";
 import {
   EditDirtyTracker,
   EditHuntMapField,
@@ -18,25 +19,60 @@ import {
 import "../../../common/components/map/map.style.css";
 import "./index.style.css";
 
+const HUNT_TAB_BY_FIELD: Record<string, string> = {
+  title: "Général",
+  points: "Général",
+  longitude: "Général",
+  latitude: "Général",
+  description: "Général",
+  difficulty_id: "Général",
+};
+
+function buildMissingTabsMessage(errors: any) {
+  const missingTabs = new Set<string>();
+
+  Object.keys(errors ?? {}).forEach((fieldName) => {
+    const tabLabel = HUNT_TAB_BY_FIELD[fieldName];
+    if (tabLabel) {
+      missingTabs.add(tabLabel);
+    }
+  });
+
+  if (missingTabs.size === 0) {
+    return "Veuillez renseigner les champs obligatoires.";
+  }
+
+  return `Veuillez renseigner les champs obligatoires dans les onglets : ${Array.from(missingTabs).join(", ")}`;
+}
+
 export default function HuntConsultation() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
   const isEditMode = location.pathname.endsWith("/edit");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
 
   const { hunt, difficulties, steps, stepsColumns, buildEditHuntSubmitHandler } = useHuntConsultData(id, location.pathname);
 
   useEffect(() => {
     if (!isEditMode) {
       setHasUnsavedChanges(false);
+      setNotificationMessage(null);
     }
   }, [isEditMode]);
 
   if (!hunt) return <p>Chargement...</p>;
 
   return (
-    <div className="hunts-consult-page">
+    <div className={`hunts-consult-page ${notificationMessage ? "has-notification-ribbon" : ""}`.trim()}>
+      {notificationMessage ? (
+        <NotificationRibbon
+          message={notificationMessage}
+          onClose={() => setNotificationMessage(null)}
+        />
+      ) : null}
+
       <Ribbon
         showSave={isEditMode}
         formId={isEditMode ? "edit-hunt-form" : undefined}
@@ -65,10 +101,14 @@ export default function HuntConsultation() {
           <Form
             id="edit-hunt-form"
             onSubmit={buildEditHuntSubmitHandler(() => {
+              setNotificationMessage(null);
               if (id) {
                 navigate(`/home/hunts/${id}`);
               }
             })}
+            onInvalid={(errors: any) => {
+              setNotificationMessage(buildMissingTabsMessage(errors));
+            }}
             defaultValues={{
               title: hunt.title,
               points: hunt.points,

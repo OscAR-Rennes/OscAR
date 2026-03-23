@@ -4,6 +4,10 @@
   gap: 1rem;
 }
 
+.hunts-consult-page.has-notification-ribbon {
+  padding-top: 3rem;
+}
+
 .hunts-consult-content {
   margin: 0;
 }

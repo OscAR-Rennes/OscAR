@@ -4,6 +4,10 @@
   gap: 1rem;
 }
 
+.steps-create-page.has-notification-ribbon {
+  padding-top: 3rem;
+}
+
 .steps-create-content {
   margin: 0;
 }
@@ -31,6 +35,10 @@
   align-items: start;
 }
 
+.steps-create-general-layout .steps-step-form.steps-step-form--documents {
+  grid-template-columns: 1fr;
+}
+
 .steps-step-form-left {
   min-width: 0;
   background: #ffffff;
@@ -41,6 +49,11 @@
 
 .steps-step-form-left .osc-form-item {
   margin-bottom: 0.625rem;
+}
+
+.steps-step-form-left.is-hidden,
+.steps-step-form-map.is-hidden {
+  display: none;
 }
 
 .steps-create-map-panel {
@@ -85,6 +98,10 @@
   margin: 0 0 1.5rem;
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+.steps-step-form-map {
+  min-width: 0;
 }
 
 @media (max-width: 62rem) {
