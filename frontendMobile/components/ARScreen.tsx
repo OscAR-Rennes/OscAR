@@ -8,6 +8,8 @@ import {
     ViroARTrackingTargets,
     Viro3DObject,
     ViroAmbientLight,
+    ViroAnimations,
+    ViroNode,
 } from '@reactvision/react-viro';
 
 ViroARTrackingTargets.createTargets({
@@ -18,27 +20,44 @@ ViroARTrackingTargets.createTargets({
     },
 });
 
-const REQUIRED_MS = 5000;
+ViroAnimations.registerAnimations({
+    rotate: {
+        properties: {
+            rotateZ: '+=360',
+        },
+        duration: 4000,
+    },
+});
+
+const REQUIRED_MS = 2000;
 
 const ARScene = ({ onHoldStart, onHoldEnd }: { onHoldStart: () => void, onHoldEnd: () => void }) => {
     return (
         <ViroARScene>
-            <ViroAmbientLight color="#ffffff" intensity={200} />
+            <ViroAmbientLight color="#ffffff" intensity={300} />
             <ViroARImageMarker target="paintingTarget">
-                <Viro3DObject
-                    source={require('../assets/ar/object.obj')}
-                    position={[0, 0.1, 0]}
-                    scale={[0.1, 0.1, 0.1]}
-                    type="OBJ"
-                    onClickState={(stateValue) => {
-                        // stateValue: 1 = click down, 2 = click up, 3 = clicked
-                        if (stateValue === 1) {
-                            onHoldStart();
-                        } else if (stateValue === 2) {
-                            onHoldEnd();
-                        }
+                <ViroNode
+                    position={[0, 0, 0]}
+                    dragType="FixedToWorld"
+                    animation={{
+                        name: 'rotate',
+                        run: true,
+                        loop: true,
+                        interruptible: true,
                     }}
-                />
+                >
+                    <Viro3DObject
+                        source={require('../assets/ar/12190_Heart_v1_L3.obj')}
+                        position={[0, 0, 0]}
+                        rotation={[0, 0, 0]}
+                        scale={[0.01, 0.01, 0.01]}
+                        type="OBJ"
+                        onClickState={(stateValue) => {
+                            if (stateValue === 1) onHoldStart();
+                            else if (stateValue === 2) onHoldEnd();
+                        }}
+                    />
+                </ViroNode>
             </ViroARImageMarker>
         </ViroARScene>
     );
@@ -103,7 +122,6 @@ export default function ARScreen({ onClose, onValidated }: ARScreenProps) {
                 style={StyleSheet.absoluteFill}
             />
 
-            {/* Timer circulaire — visible uniquement pendant le hold */}
             {isHolding && (
                 <View style={styles.timerContainer}>
                     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -157,7 +175,7 @@ const styles = StyleSheet.create({
     closeText: { color: '#fff', fontSize: 18 },
     hint: {
         position: 'absolute',
-        bottom: 40,
+        bottom: 60,
         left: 20,
         right: 20,
         backgroundColor: 'rgba(0,0,0,0.5)',
