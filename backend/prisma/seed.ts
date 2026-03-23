@@ -3,9 +3,9 @@ import { prisma } from "../src/common-lib/config/prismaClient.js";
 
 const SEED_CONFIG = {
   culturalCenters: 500,
-  huntManagersPerCenter: 1,
-  huntsPerCenter: 1,
-  indexesPerHunt: 2,
+  huntManagersPerCenter: 3,
+  huntsPerCenter: 5,
+  indexesPerHunt: 3,
   stepsPerIndex: 3,
 } as const;
 

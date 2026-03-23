@@ -23,11 +23,11 @@ type MapBounds = {
     maxLng: number;
 };
 
-const BOUNDS_MARGIN_FACTOR = 0.4;
-const FETCH_DEBOUNCE_MS = 500;
-const ZOOM_THRESHOLD_FACTOR = 0.5; // Invalidate cache if zoom changes by >50%
+const BOUNDS_MARGIN_FACTOR = 0.25;
+const FETCH_DEBOUNCE_MS = 800;
+const ZOOM_THRESHOLD_FACTOR = 0.3; // Invalidate cache if zoom changes by >30%
 const API_LIMIT = 150; // Reduced limit for better performance with optimized minimal DTOs
-const MAX_CENTERS_IN_MEMORY = 400; // Clean up distant centers if exceed this
+const MAX_CENTERS_IN_MEMORY = 1200; // Clean up distant centers if exceed this
 
 export default function MapsScreen() {
     const { language, setLanguage } = useLanguage();
@@ -62,6 +62,7 @@ export default function MapsScreen() {
         return `${round(bounds.minLat)}:${round(bounds.maxLat)}:${round(bounds.minLng)}:${round(bounds.maxLng)}`;
     };
 
+    
     const getExpandedBounds = (bounds: MapBounds): MapBounds => {
         const latSpan = bounds.maxLat - bounds.minLat;
         const lngSpan = bounds.maxLng - bounds.minLng;
@@ -89,11 +90,13 @@ export default function MapsScreen() {
             return false;
         }
 
-        // Calculate zoom change ratio: if zoom changes by >50%, invalidate cache
+        // Calculate zoom change ratio: if zoom changes by >120%, invalidate cache
+        // This prevents losing pins when scrolling or slightly zooming
         const zoomRatio = currentZoomLevel / lastZoomLevelRef.current;
         const shouldInvalidate = zoomRatio < (1 - ZOOM_THRESHOLD_FACTOR) || zoomRatio > (1 + ZOOM_THRESHOLD_FACTOR);
 
         if (shouldInvalidate) {
+            console.log(`Cache invalidated: zoom ratio ${zoomRatio.toFixed(2)}`);
             lastZoomLevelRef.current = currentZoomLevel;
             loadedBoundsRef.current.clear();
             coveredBoundsRef.current = [];
@@ -115,6 +118,12 @@ export default function MapsScreen() {
             return centers;
         }
 
+        // Only cleanup if significantly over limit - don't delete too aggressively
+        const threshold = MAX_CENTERS_IN_MEMORY * 1.2; // Allow 20% overflow before cleaning
+        if (centers.length <= threshold) {
+            return centers;
+        }
+
         // Calculate distance for each center from map center
         const centersWithDistance = centers.map((center) => {
             const lat = center.latitude ?? center.address?.latitude ?? 0;
@@ -123,10 +132,10 @@ export default function MapsScreen() {
             return { center, distance };
         });
 
-        // Keep only closest centers
+        // Keep only closest centers, but keep 20% more than limit to avoid constant re-cleaning
         return centersWithDistance
             .sort((a, b) => a.distance - b.distance)
-            .slice(0, MAX_CENTERS_IN_MEMORY)
+            .slice(0, Math.ceil(MAX_CENTERS_IN_MEMORY * 1.2))
             .map((item) => item.center);
     };
 
@@ -136,7 +145,11 @@ export default function MapsScreen() {
             merged.set(center.id, center);
         });
         const merged_array = Array.from(merged.values());
-        return cleanupDistantCenters(merged_array, mapCenter);
+        // Only cleanup if we have a LOT of centers - avoid losing pins on zoom
+        if (merged_array.length > MAX_CENTERS_IN_MEMORY * 1.5) {
+            return cleanupDistantCenters(merged_array, mapCenter);
+        }
+        return merged_array;
     };
 
     const loadCentersInBounds = async (bounds: MapBounds) => {
@@ -167,7 +180,14 @@ export default function MapsScreen() {
             });
             const centers = response?.data ?? response ?? [];
             if (Array.isArray(centers)) {
-                setLightCultutalCenterData((prev) => mergeCenters(prev, centers, mapRegion));
+                // Use the current bounds for cleanup, not the stored mapRegion
+                const regionFromBounds: Region = {
+                    latitude: (expandedBounds.minLat + expandedBounds.maxLat) / 2,
+                    longitude: (expandedBounds.minLng + expandedBounds.maxLng) / 2,
+                    latitudeDelta: expandedBounds.maxLat - expandedBounds.minLat,
+                    longitudeDelta: expandedBounds.maxLng - expandedBounds.minLng,
+                };
+                setLightCultutalCenterData((prev) => mergeCenters(prev, centers, regionFromBounds));
             }
             loadedBoundsRef.current.add(boundsKey);
             coveredBoundsRef.current.push(expandedBounds);
@@ -186,7 +206,8 @@ export default function MapsScreen() {
         try {
             const permission = await Location.requestForegroundPermissionsAsync();
             if (permission.status !== 'granted') {
-                return;
+                console.warn('Location permission denied, using default region');
+                return null;
             }
 
             const location = await Location.getCurrentPositionAsync({
@@ -196,31 +217,47 @@ export default function MapsScreen() {
             const region: Region = {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                latitudeDelta: 0.18,
-                longitudeDelta: 0.18,
+                latitudeDelta: 0.08,
+                longitudeDelta: 0.08,
             };
 
             userCenteredRef.current = true;
-            setMapRegion(region);
-            mapRef.current?.animateToRegion(region, 700);
-            loadCentersInBounds(buildBoundsFromRegion(region));
+            return region;
         } catch (error) {
             console.error('Unable to get user location:', error);
+            return null;
         }
     };
 
     const getCenterCoordinates = (center: CulturalCenterLight) => {
         const latitude = center.latitude ?? center.address?.latitude;
         const longitude = center.longitude ?? center.address?.longitude;
-        return { latitude: Number(latitude), longitude: Number(longitude) };
+        const lat = Number(latitude);
+        const lng = Number(longitude);
+        // Return null if coordinates are invalid
+        if (isNaN(lat) || isNaN(lng)) {
+            return null;
+        }
+        return { latitude: lat, longitude: lng };
     };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const initialRegion = mapInitialValues.initialRegion as Region;
-                loadCentersInBounds(buildBoundsFromRegion(initialRegion));
-                await centerMapOnUserLocation();
+                // First try to get user location
+                const userRegion = await centerMapOnUserLocation();
+                const regionsToUse = userRegion || (mapInitialValues.initialRegion as Region);
+                
+                // Set the map region with either user location or default
+                setMapRegion(regionsToUse);
+                
+                // Load pins immediately with this region
+                await loadCentersInBounds(buildBoundsFromRegion(regionsToUse));
+                
+                // Animate to region if we got user location
+                if (userRegion) {
+                    mapRef.current?.animateToRegion(userRegion, 500);
+                }
             } catch (error) {
                 console.error('Error while loading cultural centers:', error);
                 setLightCultutalCenterData([]);
@@ -266,12 +303,14 @@ export default function MapsScreen() {
     const handleCenterSelect = (center: CulturalCenterLight) => {
         if (mapRef.current) {
             const coordinates = getCenterCoordinates(center);
-            mapRef.current.animateToRegion({
-                latitude: coordinates.latitude,
-                longitude: coordinates.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-            });
+            if (coordinates) {
+                mapRef.current.animateToRegion({
+                    latitude: coordinates.latitude,
+                    longitude: coordinates.longitude,
+                    latitudeDelta: 0.02,
+                    longitudeDelta: 0.02,
+                });
+            }
         }
         setSearchQuery('');
         setFilteredCenters([]);
@@ -342,12 +381,20 @@ export default function MapsScreen() {
                             clusterColor="#62B5DE"
                             renderCluster={(cluster: any) => {
                                 const pointCount = cluster?.properties?.point_count ?? cluster?.pointCount ?? 0;
+                                if (!cluster?.geometry?.coordinates || cluster.geometry.coordinates.length < 2) {
+                                    return null;
+                                }
+                                const lat = Number(cluster.geometry.coordinates[1]);
+                                const lng = Number(cluster.geometry.coordinates[0]);
+                                if (isNaN(lat) || isNaN(lng)) {
+                                    return null;
+                                }
                                 return (
                                     <Marker
                                         key={`cluster-${cluster?.clusterId ?? `${cluster?.geometry?.coordinates?.[0]}-${cluster?.geometry?.coordinates?.[1]}`}`}
                                         coordinate={{
-                                            latitude: cluster.geometry.coordinates[1],
-                                            longitude: cluster.geometry.coordinates[0],
+                                            latitude: lat,
+                                            longitude: lng,
                                         }}
                                         onPress={cluster?.onPress}
                                     >
@@ -371,6 +418,9 @@ export default function MapsScreen() {
                         >
                             { lightCulturalCenterData.length > 0 && lightCulturalCenterData.map(center => {
                                 const coordinates = getCenterCoordinates(center);
+                                if (!coordinates) {
+                                    return null;
+                                }
                                 return (
                                     <Marker
                                         key={center.id}
