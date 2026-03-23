@@ -27,7 +27,8 @@ const BOUNDS_MARGIN_FACTOR = 0.25;
 const FETCH_DEBOUNCE_MS = 800;
 const ZOOM_THRESHOLD_FACTOR = 0.3; // Invalidate cache if zoom changes by >30%
 const API_LIMIT = 150; // Reduced limit for better performance with optimized minimal DTOs
-const MAX_CENTERS_IN_MEMORY = 1200; // Clean up distant centers if exceed this
+const MAX_CENTERS_IN_MEMORY = 600; // Reduce memory pressure to avoid native map crashes
+const ENABLE_CLUSTERING = true; // Re-enabled clustering
 
 export default function MapsScreen() {
     const { language, setLanguage } = useLanguage();
@@ -50,12 +51,33 @@ export default function MapsScreen() {
     const lastZoomLevelRef = useRef<number | null>(null); // Track zoom level for cache invalidation
     const [mapRegion, setMapRegion] = useState<Region>(mapInitialValues.initialRegion as Region);
 
+    const logMapError = (scope: string, error: unknown, context?: Record<string, unknown>) => {
+        if (error instanceof Error) {
+            console.error(`[MapCrash][${scope}] ${error.message}`, {
+                stack: error.stack,
+                context,
+            });
+            return;
+        }
+
+        console.error(`[MapCrash][${scope}] Unknown error`, {
+            error,
+            context,
+        });
+    };
+
     const buildBoundsFromRegion = (region: Region): MapBounds => ({
         minLat: region.latitude - region.latitudeDelta / 2,
         maxLat: region.latitude + region.latitudeDelta / 2,
         minLng: region.longitude - region.longitudeDelta / 2,
         maxLng: region.longitude + region.longitudeDelta / 2,
     });
+
+    const isValidCoordinate = (latitude: unknown, longitude: unknown): boolean => {
+        const lat = Number(latitude);
+        const lng = Number(longitude);
+        return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    };
 
     const getBoundsKey = (bounds: MapBounds): string => {
         const round = (value: number) => value.toFixed(2);
@@ -153,33 +175,39 @@ export default function MapsScreen() {
     };
 
     const loadCentersInBounds = async (bounds: MapBounds) => {
-        if (inFlightRef.current) {
-            return;
-        }
-
-        // Check if zoom level changed dramatically
-        const currentZoomLevel = Math.max(bounds.maxLat - bounds.minLat, bounds.maxLng - bounds.minLng);
-        shouldInvalidateCache(currentZoomLevel);
-
-        if (isBoundsCovered(bounds)) {
-            return;
-        }
-
-        const expandedBounds = getExpandedBounds(bounds);
-        const boundsKey = getBoundsKey(expandedBounds);
-        if (loadedBoundsRef.current.has(boundsKey)) {
-            coveredBoundsRef.current.push(expandedBounds);
-            return;
-        }
-
-        inFlightRef.current = true;
         try {
+            if (inFlightRef.current) {
+                return;
+            }
+
+            // Check if zoom level changed dramatically
+            const currentZoomLevel = Math.max(bounds.maxLat - bounds.minLat, bounds.maxLng - bounds.minLng);
+            shouldInvalidateCache(currentZoomLevel);
+
+            if (isBoundsCovered(bounds)) {
+                return;
+            }
+
+            const expandedBounds = getExpandedBounds(bounds);
+            const boundsKey = getBoundsKey(expandedBounds);
+            if (loadedBoundsRef.current.has(boundsKey)) {
+                coveredBoundsRef.current.push(expandedBounds);
+                return;
+            }
+
+            inFlightRef.current = true;
             const response = await getActiveCulturalCenterMapByBounds({
                 ...expandedBounds,
                 limit: API_LIMIT
             });
             const centers = response?.data ?? response ?? [];
             if (Array.isArray(centers)) {
+                const sanitizedCenters = centers.filter((center) => {
+                    const latitude = center?.latitude ?? center?.address?.latitude;
+                    const longitude = center?.longitude ?? center?.address?.longitude;
+                    return isValidCoordinate(latitude, longitude);
+                });
+
                 // Use the current bounds for cleanup, not the stored mapRegion
                 const regionFromBounds: Region = {
                     latitude: (expandedBounds.minLat + expandedBounds.maxLat) / 2,
@@ -187,12 +215,12 @@ export default function MapsScreen() {
                     latitudeDelta: expandedBounds.maxLat - expandedBounds.minLat,
                     longitudeDelta: expandedBounds.maxLng - expandedBounds.minLng,
                 };
-                setLightCultutalCenterData((prev) => mergeCenters(prev, centers, regionFromBounds));
+                setLightCultutalCenterData((prev) => mergeCenters(prev, sanitizedCenters, regionFromBounds));
             }
             loadedBoundsRef.current.add(boundsKey);
             coveredBoundsRef.current.push(expandedBounds);
         } catch (error) {
-            console.error('Error while loading map centers in bounds:', error);
+            logMapError('loadCentersInBounds', error, { bounds });
         } finally {
             inFlightRef.current = false;
         }
@@ -206,7 +234,6 @@ export default function MapsScreen() {
         try {
             const permission = await Location.requestForegroundPermissionsAsync();
             if (permission.status !== 'granted') {
-                console.warn('Location permission denied, using default region');
                 return null;
             }
 
@@ -232,12 +259,12 @@ export default function MapsScreen() {
     const getCenterCoordinates = (center: CulturalCenterLight) => {
         const latitude = center.latitude ?? center.address?.latitude;
         const longitude = center.longitude ?? center.address?.longitude;
-        const lat = Number(latitude);
-        const lng = Number(longitude);
         // Return null if coordinates are invalid
-        if (isNaN(lat) || isNaN(lng)) {
+        if (!isValidCoordinate(latitude, longitude)) {
             return null;
         }
+        const lat = Number(latitude);
+        const lng = Number(longitude);
         return { latitude: lat, longitude: lng };
     };
 
@@ -266,6 +293,7 @@ export default function MapsScreen() {
         fetchData();
 
         return () => {
+            console.log('[MapCrash][MapsScreen] unmounted');
             if (debounceRef.current) {
                 clearTimeout(debounceRef.current);
             }
@@ -273,15 +301,21 @@ export default function MapsScreen() {
     }, [])
 
     const handleRegionChangeComplete = (region: Region) => {
-        setMapRegion(region);
+        try {
+            setMapRegion(region);
 
-        if (debounceRef.current) {
-            clearTimeout(debounceRef.current);
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
+            }
+
+            debounceRef.current = setTimeout(() => {
+                loadCentersInBounds(buildBoundsFromRegion(region)).catch((error) => {
+                    logMapError('handleRegionChangeComplete-debouncedLoad', error, { region });
+                });
+            }, FETCH_DEBOUNCE_MS);
+        } catch (error) {
+            logMapError('handleRegionChangeComplete', error, { region });
         }
-
-        debounceRef.current = setTimeout(() => {
-            loadCentersInBounds(buildBoundsFromRegion(region));
-        }, FETCH_DEBOUNCE_MS);
     };
 
     // Handle search input changes
@@ -301,23 +335,28 @@ export default function MapsScreen() {
 
     // Handle cultural center selection from the list
     const handleCenterSelect = (center: CulturalCenterLight) => {
-        if (mapRef.current) {
-            const coordinates = getCenterCoordinates(center);
-            if (coordinates) {
-                mapRef.current.animateToRegion({
-                    latitude: coordinates.latitude,
-                    longitude: coordinates.longitude,
-                    latitudeDelta: 0.02,
-                    longitudeDelta: 0.02,
-                });
+        try {
+            if (mapRef.current) {
+                const coordinates = getCenterCoordinates(center);
+                if (coordinates) {
+                    mapRef.current.animateToRegion({
+                        latitude: coordinates.latitude,
+                        longitude: coordinates.longitude,
+                        latitudeDelta: 0.02,
+                        longitudeDelta: 0.02,
+                    });
+                }
             }
-        }
-        setSearchQuery('');
-        setFilteredCenters([]);
-        setFlatListVisible(false);
 
-        setSelectedCenter(center);
-        setModalVisible(true);
+            setSearchQuery('');
+            setFilteredCenters([]);
+            setFlatListVisible(false);
+
+            setSelectedCenter(center);
+            setModalVisible(true);
+        } catch (error) {
+            logMapError('handleCenterSelect', error, { centerId: center?.id, centerName: center?.name });
+        }
     };
 
     // Handle language change using DeepL API (simulated here)
@@ -377,60 +416,94 @@ export default function MapsScreen() {
                             style={{ flex: 1 }}
                             initialRegion={mapRegion}
                             onRegionChangeComplete={handleRegionChangeComplete}
+                            onUserLocationChange={(event) => {
+                                try {
+                                    const coords = event?.nativeEvent?.coordinate;
+                                    if (coords && isValidCoordinate(coords.latitude, coords.longitude)) {
+                                        console.log('[MapCrash][MapView] onUserLocationChange', {
+                                            latitude: coords.latitude,
+                                            longitude: coords.longitude,
+                                        });
+                                    }
+                                } catch (error) {
+                                    logMapError('onUserLocationChange', error);
+                                }
+                            }}
                             showsUserLocation
+                            clusteringEnabled={ENABLE_CLUSTERING}
                             clusterColor="#62B5DE"
                             renderCluster={(cluster: any) => {
-                                const pointCount = cluster?.properties?.point_count ?? cluster?.pointCount ?? 0;
-                                if (!cluster?.geometry?.coordinates || cluster.geometry.coordinates.length < 2) {
+                                if (!ENABLE_CLUSTERING) {
                                     return null;
                                 }
-                                const lat = Number(cluster.geometry.coordinates[1]);
-                                const lng = Number(cluster.geometry.coordinates[0]);
-                                if (isNaN(lat) || isNaN(lng)) {
-                                    return null;
-                                }
-                                return (
-                                    <Marker
-                                        key={`cluster-${cluster?.clusterId ?? `${cluster?.geometry?.coordinates?.[0]}-${cluster?.geometry?.coordinates?.[1]}`}`}
-                                        coordinate={{
-                                            latitude: lat,
-                                            longitude: lng,
-                                        }}
-                                        onPress={cluster?.onPress}
-                                    >
-                                        <View
-                                            style={{
-                                                width: 42,
-                                                height: 42,
-                                                borderRadius: 21,
-                                                backgroundColor: '#62B5DE',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                borderWidth: 2,
-                                                borderColor: '#ffffff',
+                                try {
+                                    const pointCount = cluster?.properties?.point_count ?? cluster?.pointCount ?? 0;
+                                    if (!cluster?.geometry?.coordinates || cluster.geometry.coordinates.length < 2) {
+                                        return null;
+                                    }
+                                    const lat = Number(cluster.geometry.coordinates[1]);
+                                    const lng = Number(cluster.geometry.coordinates[0]);
+                                    if (isNaN(lat) || isNaN(lng)) {
+                                        return null;
+                                    }
+                                    return (
+                                        <Marker
+                                            key={`cluster-${cluster?.clusterId ?? `${cluster?.geometry?.coordinates?.[0]}-${cluster?.geometry?.coordinates?.[1]}`}`}
+                                            coordinate={{
+                                                latitude: lat,
+                                                longitude: lng,
                                             }}
+                                            onPress={cluster?.onPress}
                                         >
-                                            <Text style={{ color: '#ffffff', fontWeight: '700' }}>{pointCount}</Text>
-                                        </View>
-                                    </Marker>
-                                );
+                                            <View
+                                                style={{
+                                                    width: 42,
+                                                    height: 42,
+                                                    borderRadius: 21,
+                                                    backgroundColor: '#62B5DE',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    borderWidth: 2,
+                                                    borderColor: '#ffffff',
+                                                }}
+                                            >
+                                                <Text style={{ color: '#ffffff', fontWeight: '700' }}>{pointCount}</Text>
+                                            </View>
+                                        </Marker>
+                                    );
+                                } catch (error) {
+                                    logMapError('renderCluster', error, {
+                                        clusterId: cluster?.clusterId,
+                                        coordinates: cluster?.geometry?.coordinates,
+                                    });
+                                    return null;
+                                }
                             }}
                         >
                             { lightCulturalCenterData.length > 0 && lightCulturalCenterData.map(center => {
-                                const coordinates = getCenterCoordinates(center);
-                                if (!coordinates) {
+                                try {
+                                    const coordinates = getCenterCoordinates(center);
+                                    if (!coordinates) {
+                                        return null;
+                                    }
+                                    return (
+                                        <Marker
+                                            key={center.id}
+                                            coordinate={{ latitude: coordinates.latitude, longitude: coordinates.longitude }}
+                                            onPress={() => {
+                                                try {
+                                                    setModalVisible(true);
+                                                    setSelectedCenter(center);
+                                                } catch (error) {
+                                                    logMapError('markerOnPress', error, { centerId: center?.id });
+                                                }
+                                            }}
+                                        />
+                                    );
+                                } catch (error) {
+                                    logMapError('renderMarker', error, { centerId: center?.id, centerName: center?.name });
                                     return null;
                                 }
-                                return (
-                                    <Marker
-                                        key={center.id}
-                                        coordinate={{ latitude: coordinates.latitude, longitude: coordinates.longitude }}
-                                        onPress={() => {
-                                            setModalVisible(true);
-                                            setSelectedCenter(center);
-                                        }}
-                                    />
-                                );
                             })}
                         </MapView>
 
