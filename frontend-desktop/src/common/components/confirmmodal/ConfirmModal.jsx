@@ -5,6 +5,7 @@ export default function ConfirmModal({
   message,
   onConfirm,
   onCancel,
+  showWarning = false,
 }) {
   if (!isOpen) {
     return null;
@@ -14,8 +15,9 @@ export default function ConfirmModal({
     <div className="confirm-modal-overlay" role="dialog" aria-modal="true">
       <div className="confirm-modal-content">
         <p className="confirm-modal-message">{message}</p>
-        <p className="confirm-modal-warning">Cette action est définitive</p>
-
+        {showWarning && (
+          <p className="confirm-modal-warning">Cette action est définitive</p>
+        )}
         <div className="confirm-modal-actions">
           <button className="confirm-modal-btn confirm-modal-btn-cancel" onClick={onCancel}>
             Annuler

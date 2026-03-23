@@ -73,7 +73,7 @@ export default function StepsList() {
 
         <ConfirmModal
           isOpen={isDeleteModalOpen}
-          message="Etes vous sur de vouloir supprimer ces étapes ?"
+          message="Êtes-vous sûr de vouloir supprimer ces étapes ?"
           onCancel={() => {
             if (isDeleting) return;
             setIsDeleteModalOpen(false);
@@ -86,6 +86,7 @@ export default function StepsList() {
             setIsDeleting(false);
             setIsDeleteModalOpen(false);
           }}
+          showWarning={true}
         />
     </>
   );

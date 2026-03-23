@@ -47,7 +47,7 @@ export default function CulturalCenters() {
 
           <ConfirmModal
             isOpen={isSwitchStatusModalOpen}
-            message="Etes vous sur de vouloir désactiver/réactiver ces centres culturels ?"
+            message="Êtes-vous sûr de vouloir désactiver/réactiver ces centres culturels ?"
             onCancel={() => setIsSwitchStatusModalOpen(false)}
             onConfirm={() => {
               executeActivateDeactivateCulturalCenters();
@@ -57,11 +57,12 @@ export default function CulturalCenters() {
 
           <ConfirmModal
             isOpen={isDeleteModalOpen}
-            message="Etes vous sur de vouloir supprimer ces centres culturels ?"
+            message="Êtes-vous sûr de vouloir supprimer ces centres culturels ?"
             onCancel={() => setIsDeleteModalOpen(false)}
             onConfirm={() => {
               setIsDeleteModalOpen(false);
             }}
+            showWarning={true}
           />
         </>
       )}
