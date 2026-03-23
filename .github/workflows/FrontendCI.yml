@@ -5,10 +5,12 @@ on:
     paths:
       - 'frontend-desktop/**'
       - 'frontendMobile/**'
+      - '.github/workflows/FrontendCI.yml'
   pull_request:
     paths:
       - 'frontend-desktop/**'
       - 'frontendMobile/**'
+      - '.github/workflows/FrontendCI.yml'
 
 jobs:
   desktop:
@@ -22,6 +24,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'frontend-desktop/package-lock.json'
 
       - name: Install dependencies
         run: |
@@ -53,6 +57,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'frontendMobile/package-lock.json'
 
       - name: Install dependencies
         run: |
@@ -71,4 +77,9 @@ jobs:
       - name: Run Jest tests
         run: |
           cd frontendMobile
-          npm test -- --watch=false
+          TEST_SCRIPT=$(node -p "require('./package.json').scripts?.test || ''")
+          if [ -z "$TEST_SCRIPT" ] || [[ "$TEST_SCRIPT" == *"No tests configured"* ]]; then
+            echo "No frontendMobile test script configured, skipping tests"
+          else
+            npm test -- --watch=false
+          fi

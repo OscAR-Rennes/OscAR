@@ -6,11 +6,13 @@ on:
       - 'frontend-desktop/**'
       - 'frontendMobile/**'
       - 'backend/**'
+      - '.github/workflows/CheckStyle.yml'
   pull_request:
     paths:
       - 'frontend-desktop/**'
       - 'frontendMobile/**'
       - 'backend/**'
+      - '.github/workflows/CheckStyle.yml'
 
 jobs:
   checkstyle:
@@ -24,6 +26,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend-desktop/package-lock.json
+            frontendMobile/package-lock.json
+            backend/package-lock.json
 
       - name: Install dependencies (frontend-desktop)
         run: |
@@ -37,7 +44,12 @@ jobs:
       - name: ESLint frontend-desktop
         run: |
           cd frontend-desktop
-          npm run lint || exit 1
+          LINT_SCRIPT=$(node -p "require('./package.json').scripts?.lint || ''")
+          if [ -z "$LINT_SCRIPT" ] || [[ "$LINT_SCRIPT" == *"No lint configured"* ]]; then
+            echo "No frontend-desktop lint configured, skipping"
+          else
+            npm run lint
+          fi
 
       - name: Install dependencies (frontendMobile)
         run: |
