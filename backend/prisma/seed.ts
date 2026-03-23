@@ -7,6 +7,7 @@ const SEED_CONFIG = {
   huntsPerCenter: 5,
   indexesPerHunt: 3,
   stepsPerIndex: 3,
+  playersPerCenter: 10,
 } as const;
 
 const FRANCE_CITIES = [
@@ -56,6 +57,18 @@ function randomInt(min: number, max: number): number {
 
 function pickRandomCity() {
   return FRANCE_CITIES[Math.floor(Math.random() * FRANCE_CITIES.length)];
+}
+
+function getRandomProgressionDate(daysAgo: number = 30): Date {
+  const now = new Date();
+  const randomDays = randomInt(0, daysAgo);
+  const randomHours = randomInt(0, 23);
+  const randomMinutes = randomInt(0, 59);
+  
+  const date = new Date(now);
+  date.setDate(date.getDate() - randomDays);
+  date.setHours(randomHours, randomMinutes, 0, 0);
+  return date;
 }
 
 async function main() {
@@ -284,17 +297,127 @@ async function main() {
         }
       }
     }
+
+    // =====================
+    // PLAYERS FOR THIS CENTER
+    // =====================
+    const players = [];
+    for (let p = 1; p <= SEED_CONFIG.playersPerCenter; p++) {
+      let player = await prisma.users.findUnique({
+        where: { email: `player_${c}_${p}@oscar.com` },
+      });
+      if (!player) {
+        player = await prisma.users.create({
+          data: {
+            username: `player_${c}_${p}`,
+            firstname: `Joueur`,
+            lastname: `${c}_${p}`,
+            email: `player_${c}_${p}@oscar.com`,
+            password: hashedPassword,
+            isActive: true,
+            id_cultural_center: center.id,
+            age: randomInt(18, 65),
+            points: 0,
+          },
+        });
+      }
+
+      const playerRight = await prisma.right_user.findUnique({
+        where: { user_id_right_id: { user_id: player.id, right_id: rights.USER.id } },
+      });
+      if (!playerRight) {
+        await prisma.right_user.create({
+          data: { user_id: player.id, right_id: rights.USER.id },
+        });
+      }
+
+      players.push(player);
+    }
+
+    // =====================
+    // PROGRESSIONS FOR PLAYERS
+    // =====================
+    // Get all hunts for this center
+    const centerHunts = await prisma.hunts.findMany({
+      where: { cultural_center_id: center.id },
+      include: {
+        index: {
+          include: {
+            steps: {
+              orderBy: { title: "asc" },
+            },
+          },
+          orderBy: { index: "asc" },
+        },
+      },
+    });
+
+    for (const hunt of centerHunts) {
+      // Get all steps for this hunt in order
+      const huntSteps = [];
+      for (const idx of hunt.index) {
+        huntSteps.push(...idx.steps);
+      }
+
+      for (const player of players) {
+        // Probability: 70% chance player attempts this hunt
+        if (Math.random() > 0.7) {
+          continue;
+        }
+
+        // Probability: 30% chance hunt is incomplete, 70% chance it's complete
+        const isComplete = Math.random() > 0.3;
+        const stepsToComplete = isComplete ? huntSteps.length : randomInt(1, Math.max(1, huntSteps.length - 1));
+
+        // Create a start date for this hunt
+        const huntStartDate = getRandomProgressionDate(60);
+
+        // For each step the player completes
+        for (let stepIndex = 0; stepIndex < stepsToComplete; stepIndex++) {
+          const step = huntSteps[stepIndex];
+
+          // Check if progression already exists
+          const existingProgression = await prisma.progression.findFirst({
+            where: {
+              user_id: player.id,
+              hunt_id: hunt.id,
+              step_id: step.id,
+            },
+          });
+
+          if (!existingProgression) {
+            // Add progressively more time between steps (5-60 minutes per step)
+            const minutesPerStep = randomInt(5, 60);
+            const stepDate = new Date(huntStartDate);
+            stepDate.setMinutes(stepDate.getMinutes() + stepIndex * minutesPerStep);
+
+            await prisma.progression.create({
+              data: {
+                user_id: player.id,
+                hunt_id: hunt.id,
+                step_id: step.id,
+                created_at: huntStartDate,
+                updated_at: stepDate,
+              },
+            });
+          }
+        }
+      }
+    }
   }
 
   const totalHunts = SEED_CONFIG.culturalCenters * SEED_CONFIG.huntsPerCenter;
   const totalIndexes = totalHunts * SEED_CONFIG.indexesPerHunt;
   const totalSteps = totalIndexes * SEED_CONFIG.stepsPerIndex;
+  const totalPlayers = SEED_CONFIG.culturalCenters * SEED_CONFIG.playersPerCenter;
 
   console.log("Seed terminé !");
   console.log(`Volumes cibles: ${SEED_CONFIG.culturalCenters} centres, ${totalHunts} hunts, ${totalIndexes} index, ${totalSteps} steps`);
   console.log("Admin: admin@oscar.com / Admin1234!");
   console.log(`Managers centres: ${SEED_CONFIG.culturalCenters} comptes cc_manager_X@oscar.com`);
   console.log(`Hunt managers: ${SEED_CONFIG.culturalCenters * SEED_CONFIG.huntManagersPerCenter} comptes hunt_manager_X_Y@oscar.com`);
+  console.log(`Joueurs: ${totalPlayers} comptes player_X_Y@oscar.com`);
+  console.log(`Les données incluent des progressions partielles et complètes avec dates variées pour les dashboards.`);
 }
 
 main()
