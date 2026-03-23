@@ -18,6 +18,7 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "../swagger/swagger.js";
 import { requestLogger } from '../common-lib/middlewares/LoggerMiddleware.js';
 import logger from '../common-lib/utils/logger.js';
+import progressionRoutes from '../routes/ProgressionRoutes.js';
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -37,6 +38,7 @@ app.use('/api', stepsRoutes);
 app.use('/api', indexRoutes);
 app.use('/api', difficultyRoutes)
 app.use('/api', culturalCenterRoutes)
+app.use('/api', progressionRoutes)
 
 // Routes admin protégées par le middleware requireRole
 app.use('/api/admin', requireRole(RoleEnum.ADMIN), adminRoutes);
