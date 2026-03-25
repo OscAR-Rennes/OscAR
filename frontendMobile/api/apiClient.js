@@ -1,7 +1,24 @@
 import Constants from "expo-constants";
 import * as SecureStore from "expo-secure-store";
 
-const API_URL = "http://10.101.0.56:5000/api" //Constants.expoConfig?.extra?.apiUrl;
+function resolveApiUrl() {
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    Constants.expoGoConfig?.debuggerHost;
+  const host = hostUri?.split(":")?.[0];
+
+  if (host) {
+    return `http://${host}:5000/api`;
+  }
+
+  if (Constants.expoConfig?.extra?.apiUrl) {
+    return Constants.expoConfig.extra.apiUrl;
+  }
+
+  return "http://localhost:5000/api";
+}
+
+const API_URL = resolveApiUrl();
 
 export async function apiClient(
   path,

@@ -1,6 +1,63 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../src/common-lib/config/prismaClient.js";
 
+const SEED_CONFIG = {
+  culturalCenters: 500,
+  huntManagersPerCenter: 3,
+  huntsPerCenter: 5,
+  indexesPerHunt: 3,
+  stepsPerIndex: 3,
+} as const;
+
+const FRANCE_CITIES = [
+  { name: "Paris", zipPrefix: "75", lat: 48.8566, lng: 2.3522 },
+  { name: "Marseille", zipPrefix: "13", lat: 43.2965, lng: 5.3698 },
+  { name: "Lyon", zipPrefix: "69", lat: 45.764, lng: 4.8357 },
+  { name: "Toulouse", zipPrefix: "31", lat: 43.6047, lng: 1.4442 },
+  { name: "Nice", zipPrefix: "06", lat: 43.7102, lng: 7.262 },
+  { name: "Nantes", zipPrefix: "44", lat: 47.2184, lng: -1.5536 },
+  { name: "Montpellier", zipPrefix: "34", lat: 43.6119, lng: 3.8772 },
+  { name: "Strasbourg", zipPrefix: "67", lat: 48.5734, lng: 7.7521 },
+  { name: "Bordeaux", zipPrefix: "33", lat: 44.8378, lng: -0.5792 },
+  { name: "Lille", zipPrefix: "59", lat: 50.6292, lng: 3.0573 },
+  { name: "Rennes", zipPrefix: "35", lat: 48.1173, lng: -1.6778 },
+  { name: "Reims", zipPrefix: "51", lat: 49.2583, lng: 4.0317 },
+  { name: "Le Havre", zipPrefix: "76", lat: 49.4944, lng: 0.1079 },
+  { name: "Saint-Etienne", zipPrefix: "42", lat: 45.4397, lng: 4.3872 },
+  { name: "Toulon", zipPrefix: "83", lat: 43.1242, lng: 5.928 },
+  { name: "Grenoble", zipPrefix: "38", lat: 45.1885, lng: 5.7245 },
+  { name: "Dijon", zipPrefix: "21", lat: 47.322, lng: 5.0415 },
+  { name: "Angers", zipPrefix: "49", lat: 47.4784, lng: -0.5632 },
+  { name: "Nimes", zipPrefix: "30", lat: 43.8367, lng: 4.3601 },
+  { name: "Clermont-Ferrand", zipPrefix: "63", lat: 45.7772, lng: 3.087 },
+  { name: "Brest", zipPrefix: "29", lat: 48.3904, lng: -4.4861 },
+  { name: "Tours", zipPrefix: "37", lat: 47.3941, lng: 0.6848 },
+  { name: "Amiens", zipPrefix: "80", lat: 49.8941, lng: 2.2958 },
+  { name: "Limoges", zipPrefix: "87", lat: 45.8336, lng: 1.2611 },
+  { name: "Perpignan", zipPrefix: "66", lat: 42.6887, lng: 2.8948 },
+  { name: "Metz", zipPrefix: "57", lat: 49.1193, lng: 6.1757 },
+  { name: "Besancon", zipPrefix: "25", lat: 47.2378, lng: 6.0241 },
+  { name: "Orleans", zipPrefix: "45", lat: 47.903, lng: 1.9093 },
+  { name: "Mulhouse", zipPrefix: "68", lat: 47.7508, lng: 7.3359 },
+  { name: "Ajaccio", zipPrefix: "20", lat: 41.9192, lng: 8.7386 },
+] as const;
+
+function randomBetween(min: number, max: number): number {
+  return min + Math.random() * (max - min);
+}
+
+function randomOffset(base: number, spread: number): number {
+  return base + randomBetween(-spread, spread);
+}
+
+function randomInt(min: number, max: number): number {
+  return Math.floor(randomBetween(min, max + 1));
+}
+
+function pickRandomCity() {
+  return FRANCE_CITIES[Math.floor(Math.random() * FRANCE_CITIES.length)];
+}
+
 async function main() {
   console.log("Seeding database...");
 
@@ -65,31 +122,39 @@ async function main() {
   // =====================
   // CULTURAL CENTERS LOOP
   // =====================
-  for (let c = 1; c <= 5; c++) {
+  for (let c = 1; c <= SEED_CONFIG.culturalCenters; c++) {
+    const city = pickRandomCity();
+    const cityName = city.name;
+
+    // Spread centers around city center so map feels natural and dense where needed.
+    const centerLat = randomOffset(city.lat, 0.18);
+    const centerLng = randomOffset(city.lng, 0.18);
+    const zipSuffix = String(randomInt(1, 999)).padStart(3, "0");
+
     // ADDRESS
     let address = await prisma.address.findFirst({
-      where: { zip: `3500${c}`, street_number: `${c}` },
+      where: { zip: `${city.zipPrefix}${zipSuffix}`, street_number: `${c}` },
     });
     if (!address) {
       address = await prisma.address.create({
         data: {
-          zip: `3500${c}`,
-          city: "Rennes",
-          street: `Rue Culturelle ${c}`,
+          zip: `${city.zipPrefix}${zipSuffix}`,
+          city: cityName,
+          street: `Avenue Culturelle ${c}`,
           street_number: `${c}`,
-          latitude: 48 + c,
-          longitude: -1 + c,
+          latitude: centerLat,
+          longitude: centerLng,
         },
       });
     }
 
     // CULTURAL CENTER
-    let center = await prisma.cultural_centers.findUnique({ where: { name: `Centre Culturel ${c}` } });
+    let center = await prisma.cultural_centers.findUnique({ where: { name: `Centre Culturel ${cityName} ${c}` } });
     if (!center) {
       center = await prisma.cultural_centers.create({
         data: {
-          name: `Centre Culturel ${c}`,
-          description: `Centre culturel numéro ${c}`,
+          name: `Centre Culturel ${cityName} ${c}`,
+          description: `Centre culturel ${cityName} #${c}`,
           isActive: true,
           address_id: address.id,
         },
@@ -123,7 +188,7 @@ async function main() {
 
     // HUNT MANAGERS
     const huntManagers = [];
-    for (let hm = 1; hm <= 3; hm++) {
+    for (let hm = 1; hm <= SEED_CONFIG.huntManagersPerCenter; hm++) {
       let manager = await prisma.users.findUnique({ where: { email: `hunt_manager_${c}_${hm}@oscar.com` } });
       if (!manager) {
         manager = await prisma.users.create({
@@ -150,13 +215,17 @@ async function main() {
     }
 
     // HUNTS
-    for (let h = 1; h <= 3; h++) {
+    for (let h = 1; h <= SEED_CONFIG.huntsPerCenter; h++) {
       let hunt = await prisma.hunts.findFirst({
         where: { title: `Chasse ${h} Centre ${c}`, cultural_center_id: center.id },
       });
       if (!hunt) {
         const creator = huntManagers[Math.floor(Math.random() * huntManagers.length)];
         const difficulty = Object.values(difficulties)[Math.floor(Math.random() * 3)];
+
+        const huntLat = randomOffset(centerLat, 0.03);
+        const huntLng = randomOffset(centerLng, 0.03);
+
         hunt = await prisma.hunts.create({
           data: {
             title: `Chasse ${h} Centre ${c}`,
@@ -164,50 +233,68 @@ async function main() {
             difficulty_id: difficulty.id,
             isactive: true,
             points: 100 * h,
-            latitude: 48.1 + h,
-            longitude: -1.6 + h,
+            latitude: huntLat,
+            longitude: huntLng,
             creator_id: creator.id,
             cultural_center_id: center.id,
           },
         });
       }
 
-      // INDEX
-      let huntIndex = await prisma.index.findFirst({
-        where: { name: "Index principal", hunt_id: hunt.id },
-      });
-      if (!huntIndex) {
-        huntIndex = await prisma.index.create({
-          data: { name: "Index principal", index: 1, hunt_id: hunt.id },
-        });
-      }
+      const huntLatBase = hunt.latitude;
+      const huntLngBase = hunt.longitude;
 
-      // STEPS
-      for (let s = 1; s <= 4; s++) {
-        let step = await prisma.steps.findFirst({
-          where: { title: `Step ${s}`, index_id: huntIndex.id },
+      // INDEXES
+      for (let i = 1; i <= SEED_CONFIG.indexesPerHunt; i++) {
+        const indexName = `Index ${String(i).padStart(2, "0")}`;
+
+        let huntIndex = await prisma.index.findFirst({
+          where: { name: indexName, hunt_id: hunt.id },
         });
-        if (!step) {
-          await prisma.steps.create({
-            data: {
-              title: `Step ${s}`,
-              description: `Step ${s} description`,
-              points: 25 * s,
-              hunt_id: hunt.id,
-              latitude: 48.11 + s,
-              longitude: -1.61 + s,
-              index_id: huntIndex.id,
-            },
+
+        if (!huntIndex) {
+          huntIndex = await prisma.index.create({
+            data: { name: indexName, index: i, hunt_id: hunt.id },
           });
+        }
+
+        // STEPS
+        for (let s = 1; s <= SEED_CONFIG.stepsPerIndex; s++) {
+          const stepTitle = `Step ${String(s).padStart(2, "0")}`;
+          let step = await prisma.steps.findFirst({
+            where: { title: stepTitle, index_id: huntIndex.id },
+          });
+
+          if (!step) {
+            const stepLat = randomOffset(huntLatBase, 0.006);
+            const stepLng = randomOffset(huntLngBase, 0.006);
+
+            await prisma.steps.create({
+              data: {
+                title: stepTitle,
+                description: `Step ${s} description for hunt ${h} center ${c} index ${i}`,
+                points: 10 + s,
+                hunt_id: hunt.id,
+                latitude: stepLat,
+                longitude: stepLng,
+                index_id: huntIndex.id,
+              },
+            });
+          }
         }
       }
     }
   }
 
+  const totalHunts = SEED_CONFIG.culturalCenters * SEED_CONFIG.huntsPerCenter;
+  const totalIndexes = totalHunts * SEED_CONFIG.indexesPerHunt;
+  const totalSteps = totalIndexes * SEED_CONFIG.stepsPerIndex;
+
   console.log("Seed terminé !");
+  console.log(`Volumes cibles: ${SEED_CONFIG.culturalCenters} centres, ${totalHunts} hunts, ${totalIndexes} index, ${totalSteps} steps`);
   console.log("Admin: admin@oscar.com / Admin1234!");
-  console.log("5 Cultural center managers: cc_manager_1@oscar.com → cc_manager_5@oscar.com");
-  console.log("15 Hunt managers: hunt_manager_X_Y@oscar.com");
+  console.log(`Managers centres: ${SEED_CONFIG.culturalCenters} comptes cc_manager_X@oscar.com`);
+  console.log(`Hunt managers: ${SEED_CONFIG.culturalCenters * SEED_CONFIG.huntManagersPerCenter} comptes hunt_manager_X_Y@oscar.com`);
 }
 
 main()

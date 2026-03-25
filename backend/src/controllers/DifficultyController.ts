@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { DifficultyServiceImpl } from "../services/impl/DifficultyServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 
 export class DifficultyController  {
 
@@ -12,8 +13,9 @@ export class DifficultyController  {
 
   async getAll(req: Request, res: Response, next: any) {
     try {
-      const difficulties = await this.difficultyService.getAllDifficulty();
-      logger.debug("Difficulties retrieved successfully", { route: req.originalUrl, count: difficulties.length });
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      const difficulties = await this.difficultyService.getAllDifficulty(pagination);
+      logger.debug("Difficulties retrieved successfully", { route: req.originalUrl, count: difficulties.data.length, page: difficulties.pagination.page, limit: difficulties.pagination.limit, total: difficulties.pagination.total });
       res.status(200).json(difficulties);
     } catch (err) {
       logger.error("Error while getting all difficulties", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });

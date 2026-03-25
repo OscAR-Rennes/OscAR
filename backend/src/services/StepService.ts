@@ -1,4 +1,6 @@
 import { AuthResponseDTO } from "../common-lib/dto/auth/AuthResponseDTO.js";
+import { PaginationParamsDTO } from "../common-lib/dto/common/PaginationParamsDTO.js";
+import { PaginatedResponseDTO } from "../common-lib/dto/common/PaginatedResponseDTO.js";
 import { CreateStepRequestDTO } from "../common-lib/dto/step/CreateStepRequestDTO.js";
 import { CreateStepResponseDTO } from "../common-lib/dto/step/CreateStepResponseDTO.js";
 import { EditStepRequestDTO } from "../common-lib/dto/step/EditStepRequestDTO.js";
@@ -9,8 +11,8 @@ import { LightStepDTO } from "../common-lib/dto/step/LightStepDTO.js";
 export interface StepService {
   createStep(stepData: any, imageFile?: Express.Multer.File, modelFile?: Express.Multer.File): Promise<CreateStepResponseDTO>;
   editStep(stepData: EditStepRequestDTO, user: AuthResponseDTO): Promise<EditStepResponseDTO>;
-  deleteStep(user: AuthResponseDTO, stepId: string): Promise<void>;
-  getStepsByCulturalCenter(user: AuthResponseDTO): Promise<LightStepDTO[]>;
-  getStepsByIndex(indexId: string): Promise<LightStepDTO[]>;
+  deleteStep(user: AuthResponseDTO, stepIds: string[]): Promise<void>;
+  getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>>;
+  getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>>;
   getStepById(id: string): Promise<FullStepDTO | null>;
 }

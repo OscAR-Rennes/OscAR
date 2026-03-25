@@ -6,7 +6,7 @@ export function logUser(loginData) {
 }
 
 export function currentUser() {
-  return apiClient('/auth/me');
+  return apiClient('/auth/me', { suppressErrorNotification: (statusCode) => statusCode === 401 });
 }
 
 export function logoutUser() {

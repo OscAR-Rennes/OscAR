@@ -4,7 +4,12 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 export async function apiClient(
   path,
-  { method = 'GET', body, headers = {} } = {}
+  {
+    method = 'GET',
+    body,
+    headers = {},
+    suppressErrorNotification = false,
+  } = {}
 ) {
   const isFormData = body instanceof FormData;
 
@@ -41,7 +46,15 @@ export async function apiClient(
       }
     }
 
-    useNotificationStore.getState().addNotification(errorMessage, errorDetails, statusCode);
+    const shouldSuppress =
+      typeof suppressErrorNotification === 'function'
+        ? suppressErrorNotification(statusCode, path)
+        : Boolean(suppressErrorNotification);
+
+    if (!shouldSuppress) {
+      useNotificationStore.getState().addNotification(errorMessage, errorDetails, statusCode);
+    }
+
     return null;
   }
 

@@ -6,8 +6,12 @@ import { NewUserRequestDTO } from "../../common-lib/dto/users/NewUserRequestDTO.
 import AppError from "../../common-lib/errors/AppError.js";
 import { RoleEnum } from "../../common-lib/enum/roleEnum.js";
 import { UsersService } from "../UsersService.js";
+import { PaginationParamsDTO } from "../../common-lib/dto/common/PaginationParamsDTO.js";
+import { PaginatedResponseDTO } from "../../common-lib/dto/common/PaginatedResponseDTO.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import logger from "../../common-lib/utils/logger.js";
+import { paginateArray } from "../../common-lib/utils/pagination.js";
+import { LightUserDTO } from "../../common-lib/dto/users/LightUserDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { FullUserDTO } from "../../common-lib/dto/users/FullUserDTO.js";
 
@@ -129,10 +133,10 @@ export class UsersServiceImpl implements UsersService {
     };
   }
 
-  async getAllUsers() {
+  async getAllUsers(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>> {
     try {
       const users = await this.userRepository.findAll();
-      return users.map(userMapper.toLightDTO);
+      return paginateArray(users.map(userMapper.toLightDTO), pagination);
     } catch (error:any) {
       if (error instanceof AppError) {
         throw error;
@@ -144,10 +148,10 @@ export class UsersServiceImpl implements UsersService {
     }
   }
 
-  async getAllUsersByCulturalCenter(culturalcenter_id: string) {
+  async getAllUsersByCulturalCenter(culturalcenter_id: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>> {
     try {
       const users = await this.userRepository.findAllByCulturalCenter(culturalcenter_id);
-      return users.map(userMapper.toLightDTO);
+      return paginateArray(users.map(userMapper.toLightDTO), pagination);
     } catch (error: any) {
       if (error instanceof AppError) {
         throw error;

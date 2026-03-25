@@ -2,8 +2,8 @@ export interface GetAllActiveCulturalCenterResponseDTO {
     id: string;
     name: string;
     address: {
-        longitude: string;
-        latitude: string;
+        longitude: number;
+        latitude: number;
     }
     description: string;
     picture_path?:string;

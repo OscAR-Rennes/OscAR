@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HuntServiceImpl } from "../services/impl/HuntServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 import { EditHuntBodyRequestDTO } from "../common-lib/dto/hunt/EditHuntBodyRequestDTO.js";
 
 export class HuntsController  {
@@ -32,9 +33,10 @@ export class HuntsController  {
 
   async getAllHunt(req: Request, res: Response, next: any) {
     try {
-      const allHunt = await this.huntsService.getAllHunt();
-      logger.debug("Hunts retrieved successfully", { route: req.originalUrl, count: allHunt.length });
-      res.status(201).json(allHunt);
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      const allHunt = await this.huntsService.getAllHunt(pagination);
+      logger.debug("Hunts retrieved successfully", { route: req.originalUrl, count: allHunt.data.length, page: allHunt.pagination.page, limit: allHunt.pagination.limit, total: allHunt.pagination.total });
+      res.status(200).json(allHunt);
     } catch(err) {
       logger.error("Error getting all hunts", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);
@@ -68,7 +70,12 @@ export class HuntsController  {
     try {
       const id = req.params.id;
       const user = req.user;
-      const hunts = await this.huntsService.getHuntByCulturalCenter(id, user);
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      if (!user) {
+        logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+      const hunts = await this.huntsService.getHuntByCulturalCenter(id,user, pagination);
       logger.info(`Hunts retrieved succesfully`, { route: req.originalUrl })
       res.status(200).json(hunts);
     } catch (err) {
@@ -96,15 +103,20 @@ export class HuntsController  {
   async deleteHunt(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
-      const id = req.params.id;
+      const ids = req.body?.ids;
 
       if (!user) {
         logger.warn("User missing in request for deleting hunt", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
 
-      await this.huntsService.deleteHunt(user, id);
-      logger.info(`Hunt with id ${id} deleted successfully`, { route: req.originalUrl, deletedBy: user.id });
+      if (!Array.isArray(ids) || ids.length === 0 || ids.some((id) => typeof id !== "string" || !id.trim())) {
+        logger.warn("Invalid ids payload for deleting hunts", { route: req.originalUrl });
+        throw new Error("Invalid ids payload");
+      }
+
+      await this.huntsService.deleteHunt(user, ids);
+      logger.info(`Hunts deleted successfully`, { route: req.originalUrl, deletedBy: user.id, deletedCount: ids.length });
       res.status(204).send();
     } catch (err) {
       logger.error("Error deleting hunt", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });

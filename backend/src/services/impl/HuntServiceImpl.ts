@@ -8,10 +8,13 @@ import { LightHuntDTO } from "../../common-lib/dto/hunt/LightHuntDTO.js";
 import { EditHuntRequestDTO } from "../../common-lib/dto/hunt/EditHuntRequestDTO.js";
 import { EditHuntResponseDTO } from "../../common-lib/dto/hunt/EditHuntResponseDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
+import { PaginationParamsDTO } from "../../common-lib/dto/common/PaginationParamsDTO.js";
+import { PaginatedResponseDTO } from "../../common-lib/dto/common/PaginatedResponseDTO.js";
 import logger from "../../common-lib/utils/logger.js";
 import { UserRepository } from "../../common-lib/repositories/UsersRepository.js";
 import { FullHuntDTO } from "../../common-lib/dto/hunt/FullHuntDTO.js";
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
+import { paginateArray } from "../../common-lib/utils/pagination.js";
 import { prisma } from "../../common-lib/config/prismaClient.js";
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
 import { IndexRepository } from "../../common-lib/repositories/IndexRepository.js";
@@ -37,10 +40,10 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getAllHunt(): Promise<LightHuntDTO[]> {
+    async getAllHunt(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>> {
         try {
             const hunts = await huntRepository.getAll();
-            return hunts.map(huntMapper.toLightDTO);
+            return paginateArray(hunts.map(huntMapper.toLightDTO), pagination);
         } catch (error: any) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des chasses',
@@ -75,24 +78,24 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntByCulturalCenter(id: string, user?: AuthResponseDTO): Promise<LightHuntDTO[]> {
+    async getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>> {
         try {
             if (!user) {
-                return (await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO);
+                return paginateArray((await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO), pagination);
             }
             if (user.rights.includes('ADMIN')) {
-                return (await huntRepository.getAll()).map(huntMapper.toLightDTO);
+                return paginateArray((await huntRepository.getAll()).map(huntMapper.toLightDTO), pagination);
             }
 
             if (user.rights.includes('HUNT_MANAGER')) {
-                return (await huntRepository.getByCreator(user.id)).map(huntMapper.toLightDTO);
+                return paginateArray((await huntRepository.getByCreator(user.id)).map(huntMapper.toLightDTO), pagination);
             }
 
             if (
                 user.rights.includes('CULTURAL_CENTER_MANAGER') &&
                 user.id_cultural_center
             ) {
-                return (await huntRepository.getByCulturalCenter(user.id_cultural_center)).map(huntMapper.toLightDTO);
+                return paginateArray((await huntRepository.getByCulturalCenter(user.id_cultural_center)).map(huntMapper.toLightDTO), pagination);
             }
 
             throw new AppError({
@@ -131,29 +134,32 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async deleteHunt(user: AuthResponseDTO, id: string): Promise<void> {
+    async deleteHunt(user: AuthResponseDTO, ids: string[]): Promise<void> {
         try {
             const userRepository = new UserRepository();
-            const hunt = await huntRepository.getByID(id);
 
-            if (!hunt) {
-                throw new AppError({
-                    userMessage: "Chasse non trouvée",
-                    statusCode: 404,
+            for (const id of ids) {
+                const hunt = await huntRepository.getByID(id);
+
+                if (!hunt) {
+                    throw new AppError({
+                        userMessage: "Chasse non trouvée",
+                        statusCode: 404,
+                    });
+                }
+
+                await assertUserCanAccessHunt(user, hunt, userRepository);
+
+                await prisma.$transaction(async (tx) => {
+                    const stepRepository = new StepRepository();
+                    const indexRepository = new IndexRepository();
+                    await stepRepository.deleteByHuntId(id, tx);
+                    await indexRepository.deleteByHuntId(id, tx);
+                    await huntRepository.delete(id, tx);
                 });
+
+                logger.info(`Hunt deleted successfully with ID: ${id}`, { huntId: id, deletedBy: user.id });
             }
-
-            await assertUserCanAccessHunt(user, hunt, userRepository);
-
-            await prisma.$transaction(async (tx: any) => {
-                const stepRepository = new StepRepository();
-                const indexRepository = new IndexRepository();
-                await stepRepository.deleteByHuntId(id, tx);
-                await indexRepository.deleteByHuntId(id, tx);
-                await huntRepository.delete(id, tx);
-            });
-
-            logger.info(`Hunt deleted successfully with ID: ${id}`, { huntId: id, deletedBy: user.id });
         } catch (error) {
             if (error instanceof AppError) {
                 throw error;

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { StepServiceImpl } from "../services/impl/StepServiceImpl.js";
 import logger from "../common-lib/utils/logger.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
 import { EditStepBodyRequestDTO } from "../common-lib/dto/step/EditStepBodyRequestDTO.js";
 
 export class StepsController  {
@@ -31,11 +32,12 @@ export class StepsController  {
   async getStepsByCulturalCenter(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getStepsByCulturalCenter", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const steps = await this.stepService.getStepsByCulturalCenter(user);
+      const steps = await this.stepService.getStepsByCulturalCenter(user, pagination);
       res.status(200).json(steps);
     } catch (err) {
       logger.error("Error getting steps by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -87,15 +89,20 @@ export class StepsController  {
   async deleteStep(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
-      const id = req.params.id;
+      const ids = req.body?.ids;
 
       if (!user) {
         logger.warn("User missing in request for deleting step", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
 
-      await this.stepService.deleteStep(user, id);
-      logger.info(`Step with id ${id} deleted successfully`, { route: req.originalUrl, deletedBy: user.id });
+      if (!Array.isArray(ids) || ids.length === 0 || ids.some((id) => typeof id !== "string" || !id.trim())) {
+        logger.warn("Invalid ids payload for deleting steps", { route: req.originalUrl });
+        throw new Error("Invalid ids payload");
+      }
+
+      await this.stepService.deleteStep(user, ids);
+      logger.info("Steps deleted successfully", { route: req.originalUrl, deletedBy: user.id, deletedCount: ids.length });
       res.status(204).send();
     } catch (err) {
       logger.error("Error deleting step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -107,11 +114,12 @@ export class StepsController  {
     try {
       const user = req.user;
       const indexId = req.params.indexId;
+      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getting steps by index", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const steps = await this.stepService.getStepsByIndex(indexId);
+      const steps = await this.stepService.getStepsByIndex(indexId, pagination);
       logger.info(`Steps for index ${indexId} retrieved successfully`, { route: req.originalUrl });
       res.status(200).json(steps);
     } catch (err) {
