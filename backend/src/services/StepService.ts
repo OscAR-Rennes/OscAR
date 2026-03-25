@@ -7,7 +7,7 @@ import { FullStepDTO } from "../common-lib/dto/step/FullStepDTO.js";
 import { LightStepDTO } from "../common-lib/dto/step/LightStepDTO.js";
 
 export interface StepService {
-  createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO>;
+  createStep(stepData: any, imageFile?: Express.Multer.File, modelFile?: Express.Multer.File): Promise<CreateStepResponseDTO>;
   editStep(stepData: EditStepRequestDTO, user: AuthResponseDTO): Promise<EditStepResponseDTO>;
   deleteStep(user: AuthResponseDTO, stepId: string): Promise<void>;
   getStepsByCulturalCenter(user: AuthResponseDTO): Promise<LightStepDTO[]>;

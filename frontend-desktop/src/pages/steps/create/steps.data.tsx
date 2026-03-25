@@ -96,50 +96,23 @@ export function useStepsData() {
     setHunts(huntsData);
   };
 
-  // Champs des formulaires
-
-  const addStepFields = useMemo(() => [
-    { name: "title", label: "Titre", type: "text", required: true },
-    { name: "description", label: "Description", type: "text", required: true },
-    { name: "points", label: "Points", type: "number", required: true },
-    { name: "latitude", label: "Latitude", type: "number", required: false },
-    { name: "longitude", label: "Longitude", type: "number", required: false },
-    {
-      name: "hunt_id",
-      label: "Chasse",
-      type: "select",
-      required: true,
-      options: hunts.map(h => ({ label: h.title, value: h.id }))
-    },
-    {
-      name: "index_id",
-      label: "Index",
-      type: "select",
-      required: false,
-      options: indexesForHunt
-        .filter(i => i.name)
-        .map(i => ({ label: i.name, value: i.id }))
-    }
-  ], [hunts, indexesForHunt]);
-
-  const addIndexFields = useMemo(() => [
-    { name: "name", label: "Nom de l'index", type: "text", required: true },
-    {
-      name: "hunt_id",
-      label: "Chasse",
-      type: "select",
-      required: true,
-      options: hunts.map(h => ({ label: h.title, value: h.id }))
-    }
-  ], [hunts]);
-
   // Handlers
 
-  const handleAddStep = async (data: CreateStepDto) => {
-    const step = await addStep(data);
-    console.log("Étape créée:", step);
-  };
+  const handleAddStep = async (data: any) => {
+      const payload: CreateStepDto = {
+          title: data.title,
+          description: data.description,
+          hunt_id: data.hunt_id,
+          points: Number(data.points),
+          latitude: data.latitude === "" ? 0 : Number(data.latitude),
+          longitude: data.longitude === "" ? 0 : Number(data.longitude),
+          index_id: data.index_id || undefined,
+      };
 
+      const step = await addStep(payload, data.model_file, data.image_file);
+      console.log("Étape créée:", step);
+  };
+  
   const handleAddIndex = async (data: CreateIndexDto) => {
     const index = await addIndex(data);
     console.log("Index créé:", index);
@@ -150,9 +123,6 @@ export function useStepsData() {
     indexesForHunt,
     selectedHuntId,
     setSelectedHuntId,
-
-    addStepFields,
-    addIndexFields,
 
     handleAddStep,
     handleAddIndex

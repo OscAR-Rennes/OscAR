@@ -1,18 +1,19 @@
 const API_URL = process.env.REACT_APP_API_URL;
-import { useNotificationStore } from '../common/store/notificationStore';
 
 export async function apiClient(
   path,
   { method = 'GET', body, headers = {} } = {}
 ) {
+  const isFormData = body instanceof FormData;
+
   const res = await fetch(`${API_URL}${path}`, {
     method,
     credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData ? body : body ? JSON.stringify(body) : undefined,
   });
 
   const contentType = res.headers.get("content-type") || '';

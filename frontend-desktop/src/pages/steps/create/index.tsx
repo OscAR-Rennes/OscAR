@@ -112,17 +112,7 @@ export default function StepsCreation() {
               onSubmit={async (data: any) => {
                 setNotificationMessage(null);
 
-                const payload: CreateStepDto = {
-                  title: data.title,
-                  description: data.description,
-                  hunt_id: data.hunt_id,
-                  points: Number(data.points),
-                  latitude: data.latitude === "" ? 0 : Number(data.latitude),
-                  longitude: data.longitude === "" ? 0 : Number(data.longitude),
-                  index_id: data.index_id || undefined,
-                };
-
-                await handleAddStep(payload);
+                await handleAddStep(data);
                 setResetStepForm((n) => n + 1);
                 setSelectedHuntId(null);
               }}
@@ -132,9 +122,9 @@ export default function StepsCreation() {
               defaultValues={{
                 title: "",
                 description: "",
-                points: "",
-                latitude: "",
-                longitude: "",
+                points: null,
+                latitude: null,
+                longitude: null,
                 hunt_id: "",
                 index_id: "",
                 model_file: null,
@@ -161,8 +151,8 @@ export default function StepsCreation() {
 
                 <FormFile
                   name="model_file"
-                  label="Modèle 3D (.obj)"
-                  accept=".obj"
+                  label="Modèle 3D (.zip)"
+                  accept=".zip"
                   required={true}
                 />
 
