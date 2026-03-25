@@ -1,3 +1,5 @@
+import { useNotificationStore } from '../common/store/notificationStore';
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 export async function apiClient(
