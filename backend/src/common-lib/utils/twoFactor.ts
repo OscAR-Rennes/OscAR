@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import AppError from "../errors/AppError.js";
 import { UserEntity } from "../entity/UsersEntity.js";
 import { RoleEnum } from "../enum/roleEnum.js";
+import logger from "./logger.js";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 const resend = process.env.EMAIL_API_KEY ? new Resend(process.env.EMAIL_API_KEY) : null;
@@ -59,7 +60,12 @@ export async function sendTwoFactorCodeEmail(email: string, code: number) {
     });
   }
 
-  const from = "Lootopia <onboarding@resend.dev>";
+  const from = `Lootopia <no-reply@${process.env.EMAIL_DOMAIN}>`;
+
+  logger.info("Sending two-factor code email", {
+    email,
+    code
+  });
 
   await resend.emails.send({
     from,

@@ -77,7 +77,6 @@ export class UsersServiceImpl implements UsersService {
       }
       const newUser = await this.userRepository.create(userToCreate, tx);
       const code = generateTwoFactorCode();
-      emailCode = code;
       const twoFactorExpiresAt = generateTwoFactorExpiryDate();
       const challengeToken = await createTwoFactorChallengeToken(newUser as any);
 
@@ -153,6 +152,7 @@ export class UsersServiceImpl implements UsersService {
           route: "/users/mobile",
           email: newUser.email,
           userId: newUser.id,
+          code: code
         });
         await sendTwoFactorCodeEmail(newUser.email, code);
       } catch (emailError) {
