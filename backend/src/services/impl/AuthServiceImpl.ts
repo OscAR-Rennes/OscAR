@@ -38,15 +38,6 @@ export class AuthServiceImpl implements AuthService {
       });
     }
 
-    const isBasicUser = user.rights.length === 1 && user.rights[0] === RoleEnum.USER;
-
-    if (!isBasicUser && !user.isActive) {
-      throw new AppError({
-        userMessage: "Compte inactif. Veuillez contacter un administrateur.",
-        statusCode: 403,
-      });
-    }
-
     const isValid = await bcrypt.compare(userData.password, user.password);
     if (!isValid) {
       throw new AppError({
@@ -59,6 +50,14 @@ export class AuthServiceImpl implements AuthService {
       try {
         const trustedUserId = await resolveTrustedDeviceToken(userData.trustedDeviceToken);
         if (trustedUserId === user.id) {
+          const isBasicUser = user.rights.length === 1 && user.rights[0] === RoleEnum.USER;
+          if (!isBasicUser && !user.isActive) {
+            return {
+              ...authMapper.toResponseAuthDTO(user),
+              accountPendingApproval: true,
+            };
+          }
+
           const userDTO = authMapper.toResponseAuthDTO(user);
           const token = await generateToken(userDTO);
 
@@ -123,8 +122,13 @@ export class AuthServiceImpl implements AuthService {
 
     const trustedDeviceToken = await createTrustedDeviceToken(user.id);
 
-    if (!user.isActive) {
-      await userRepository.setActive(user.id, true);
+    const isBasicUser = user.rights.length === 1 && user.rights[0] === RoleEnum.USER;
+    if (!isBasicUser && !user.isActive) {
+      return {
+        ...authMapper.toResponseAuthDTO(user),
+        trustedDeviceToken,
+        accountPendingApproval: true,
+      };
     }
 
     const userDTO = authMapper.toResponseAuthDTO(user);

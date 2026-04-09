@@ -6,4 +6,5 @@ export interface AuthLoginResponseDTO extends AuthResponseDTO {
   challengeToken?: string;
   twoFactorExpiresAt?: string;
   trustedDeviceToken?: string;
+  accountPendingApproval?: boolean;
 }

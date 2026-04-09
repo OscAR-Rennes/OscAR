@@ -59,9 +59,7 @@ export async function sendTwoFactorCodeEmail(email: string, code: number) {
     });
   }
 
-  const from = process.env.EMAIL_DOMAIN
-    ? `Lootopia <noreply@${process.env.EMAIL_DOMAIN}>`
-    : "Lootopia <noreply@lootopia.com>";
+  const from = "Lootopia <onboarding@resend.dev>";
 
   await resend.emails.send({
     from,

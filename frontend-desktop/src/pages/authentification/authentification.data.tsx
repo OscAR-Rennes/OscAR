@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getActiveCulturalCenter } from "../../api/services/culturalcenter.api";
 import { addUser } from "../../api/services/users.api";
-import { CreateUserDto } from "../../api/models/users/AddUserDto";
-import { logoutUser, logUser } from "../../api/services/auth.api";
+import { logUser, resendTwoFactorCode, verifyTwoFactorCode } from "../../api/services/auth.api";
 import { LogUserDto } from "../../api/models/users/LogUserDto";
 import { useAuthStore } from "../../common/store/authStore";
 
@@ -12,7 +11,9 @@ export function useAuthentificationData() {
     const setUser = useAuthStore((state) => state.setUser);
 
     const [culturalCenters, setCulturalCenters] = useState([]);
-    const [isNewCenter, setIsNewCenter] = useState(false);
+    const [twoFactorChallengeToken, setTwoFactorChallengeToken] = useState<string | null>(null);
+    const [twoFactorEmail, setTwoFactorEmail] = useState<string>("");
+    const [pendingApproval, setPendingApproval] = useState(false);
     
     // Fetch active cultural centers au chargement
     useEffect(() => {
@@ -116,6 +117,10 @@ export function useAuthentificationData() {
         { name: "password", label: "Mot de passe", type: "password", required: true },
     ], [] )
 
+    const twoFactorFields = useMemo(() => [
+        { name: "code", label: "Code de vérification", type: "text", required: true },
+    ], []);
+
 
     // Handlers
     const handleSubmitSignin = async (values: any) => {
@@ -151,8 +156,15 @@ export function useAuthentificationData() {
         delete payload["newCulturalCenter.address.street_number"];
     }
 
-    const newUser = await addUser(payload);
-    console.log(newUser);
+        const newUser = await addUser(payload);
+        if (!newUser) return;
+
+        if (newUser.requiresTwoFactor && newUser.challengeToken) {
+            clearUser();
+            setPendingApproval(false);
+            setTwoFactorEmail(values.email);
+            setTwoFactorChallengeToken(newUser.challengeToken);
+        }
     };
 
 
@@ -164,23 +176,82 @@ export function useAuthentificationData() {
         }
     
         const newUser = await logUser(values);
-        setUser(newUser);
+                if (!newUser) return;
+
+                if (newUser.accountPendingApproval) {
+                    clearUser();
+                    setPendingApproval(true);
+                    setTwoFactorChallengeToken(null);
+                    return;
+                }
+
+                if (newUser.requiresTwoFactor && newUser.challengeToken) {
+                    clearUser();
+                    setPendingApproval(false);
+                    setTwoFactorEmail(values.email);
+                    setTwoFactorChallengeToken(newUser.challengeToken);
+                    return;
+                }
+
+                setPendingApproval(false);
+                setTwoFactorChallengeToken(null);
+                setUser(newUser);
     };
+
+        const handleSubmitTwoFactorCode = async (values: { code: string }) => {
+            if (!twoFactorChallengeToken || !values.code) {
+                return;
+            }
+
+            const response = await verifyTwoFactorCode({
+                challengeToken: twoFactorChallengeToken,
+                code: values.code,
+            });
+
+            if (!response) return;
+
+            if (response.accountPendingApproval) {
+                clearUser();
+                setPendingApproval(true);
+                setTwoFactorChallengeToken(null);
+                return;
+            }
+
+            setPendingApproval(false);
+            setTwoFactorChallengeToken(null);
+            setUser(response);
+        };
+
+        const handleResendTwoFactorCode = async () => {
+            if (!twoFactorChallengeToken) return;
+
+            const response = await resendTwoFactorCode({ challengeToken: twoFactorChallengeToken });
+            if (response?.challengeToken) {
+                setTwoFactorChallengeToken(response.challengeToken);
+            }
+        };
+
+        const resetAuthFlow = () => {
+            setPendingApproval(false);
+            setTwoFactorChallengeToken(null);
+            setTwoFactorEmail("");
+        };
     
-    //   const handleLogout = async () => {
-    //     await logoutUser();
-    //     clearUser();
-    // };
-
-
     return {
 
         addSigninFields,
         addLoginFields,
+        twoFactorFields,
 
         handleSubmitSignin,
         handleSubmitLogin,
-        //handleLogout
+        handleSubmitTwoFactorCode,
+        handleResendTwoFactorCode,
+        resetAuthFlow,
+
+        isTwoFactorStep: !!twoFactorChallengeToken,
+        pendingApproval,
+        twoFactorEmail,
     }
 
 };
