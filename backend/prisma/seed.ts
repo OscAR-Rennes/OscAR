@@ -2,12 +2,12 @@ import bcrypt from "bcrypt";
 import { prisma } from "../src/common-lib/config/prismaClient.js";
 
 const SEED_CONFIG = {
-  culturalCenters: 500,
+  culturalCenters: 200,
   huntManagersPerCenter: 3,
   huntsPerCenter: 5,
   indexesPerHunt: 3,
   stepsPerIndex: 3,
-  playersPerCenter: 10,
+  playersPerCenter: 5,
 } as const;
 
 const FRANCE_CITIES = [
