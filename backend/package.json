@@ -22,14 +22,14 @@
     "lint": "^1.1.2",
     "node-appwrite": "^21.1.0",
     "nodemailer": "^7.0.12",
+    "nodemon": "^3.0.3",
     "pg": "^8.18.0",
     "react-router-dom": "^7.10.1",
-    "resend": "^6.8.0",
+    "resend": "^6.10.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
-    "zustand": "^5.0.10",
-    "nodemon": "^3.0.3"
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

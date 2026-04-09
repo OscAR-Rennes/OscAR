@@ -1,0 +1,101 @@
+import { SignJWT, jwtVerify } from "jose";
+import { Resend } from "resend";
+import AppError from "../errors/AppError.js";
+import { UserEntity } from "../entity/UsersEntity.js";
+import { RoleEnum } from "../enum/roleEnum.js";
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+const resend = process.env.EMAIL_API_KEY ? new Resend(process.env.EMAIL_API_KEY) : null;
+
+const TWO_FACTOR_CODE_LENGTH = 6;
+const TWO_FACTOR_CODE_TTL_MINUTES = 10;
+const TWO_FACTOR_CHALLENGE_TTL = "15m";
+const TRUSTED_DEVICE_TTL = "180d";
+
+export function requiresTwoFactor(user: UserEntity) {
+  if (process.env.NODE_ENV === "development" && user.rights.includes(RoleEnum.ADMIN)) {
+    return false;
+  }
+
+  const mandatoryRoles = [RoleEnum.ADMIN, RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER];
+  return user.isSecure || user.rights.some((right) => mandatoryRoles.includes(right as RoleEnum));
+}
+
+export function generateTwoFactorCode() {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+
+export async function createTwoFactorChallengeToken(user: UserEntity) {
+  return new SignJWT({
+    userId: user.id,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(TWO_FACTOR_CHALLENGE_TTL)
+    .sign(secret);
+}
+
+export async function resolveTwoFactorChallengeToken(challengeToken: string) {
+  const { payload } = await jwtVerify(challengeToken, secret);
+
+  if (typeof payload.userId !== "string") {
+    throw new AppError({
+      userMessage: "Jeton de double authentification invalide",
+      statusCode: 401,
+    });
+  }
+
+  return payload.userId;
+}
+
+export function generateTwoFactorExpiryDate() {
+  return new Date(Date.now() + TWO_FACTOR_CODE_TTL_MINUTES * 60 * 1000);
+}
+
+export async function sendTwoFactorCodeEmail(email: string, code: number) {
+  if (!resend) {
+    throw new AppError({
+      userMessage: "Le service d'envoi d'email n'est pas configuré",
+      statusCode: 503,
+    });
+  }
+
+  const from = process.env.EMAIL_DOMAIN
+    ? `Lootopia <noreply@${process.env.EMAIL_DOMAIN}>`
+    : "Lootopia <noreply@lootopia.com>";
+
+  await resend.emails.send({
+    from,
+    to: email,
+    subject: "Votre code de connexion Lootopia",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #1f2937;">
+        <h2>Votre code de connexion</h2>
+        <p>Voici votre code à usage unique pour finaliser la connexion :</p>
+        <p style="font-size: 28px; font-weight: 700; letter-spacing: 6px;">${String(code).padStart(TWO_FACTOR_CODE_LENGTH, "0")}</p>
+        <p>Ce code expire dans 10 minutes.</p>
+      </div>
+    `,
+  });
+}
+
+export async function createTrustedDeviceToken(userId: string) {
+  return new SignJWT({
+    userId,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(TRUSTED_DEVICE_TTL)
+    .sign(secret);
+}
+
+export async function resolveTrustedDeviceToken(trustedDeviceToken: string) {
+  const { payload } = await jwtVerify(trustedDeviceToken, secret);
+
+  if (typeof payload.userId !== "string") {
+    throw new AppError({
+      userMessage: "Jeton d'appareil de confiance invalide",
+      statusCode: 401,
+    });
+  }
+
+  return payload.userId;
+}

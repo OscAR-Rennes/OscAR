@@ -5,6 +5,7 @@ export class UserEntity {
   rights!: string[];
   id_cultural_center?: string | null;
   isActive!: boolean;
+  isSecure!: boolean;
   password!: string;
   created_at!: Date;
   updated_at!: Date;
