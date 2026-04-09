@@ -33,9 +33,6 @@ services:
       DATABASE_URL: "postgresql://oscAR:oscARpassword@postgres:5432/oscARdb"
       NODE_ENV: development
       FRONT_URL: "http://localhost:3000"
-      JWT_SECRET: "wFrXYt54q6AsVjHX6QspbegRHYEe0J1ezhOHmW37zZ2294BlIfh3Qt1Kk2Lfnlp58hKF2cTQkYc08amQhuVBxZ"
-      EMAIL_API_KEY: "re_CmsrRV3w_Kxi4et7NtkS5vJuD1oCuoCha"
-      EMAIL_DOMAIN: "resend.dev"
     dns:
       - 8.8.8.8
       - 1.1.1.1
