@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { theme, globalStyles } from '../constants/theme';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,7 +22,16 @@ export default function SocialFriendsScreen() {
         <SafeAreaView style={{backgroundColor: theme.COLORS.background, flex: 1}}>
             <HeaderNavbar/>
 
-            <View style={{flex: 1, paddingHorizontal: theme.SPACING.large, paddingVertical: theme.SPACING.medium}}>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{
+                    paddingHorizontal: theme.SPACING.large,
+                    paddingVertical: theme.SPACING.medium,
+                    paddingBottom: theme.SPACING.xLarge + 50,
+                }}
+                nestedScrollEnabled
+                keyboardShouldPersistTaps="handled"
+            >
 
                 {/* Back Button */}
                 <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/social')} activeOpacity={0.7}>
@@ -44,11 +53,9 @@ export default function SocialFriendsScreen() {
                     {/* Add friends button */}
                     <AddFriends />
                 </View>
-            </View>
+            </ScrollView>
 
-            <View style={{flex: 1, justifyContent: 'flex-end'}}>
-                <BottomNavbar/>
-            </View>
+            <BottomNavbar/>
         </SafeAreaView>
     );
 }

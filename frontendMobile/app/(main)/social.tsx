@@ -19,7 +19,15 @@ export default function SocialScreen() {
     const texts = STATIC_TEXTS[language];
 
     return (
-        <ScrollView contentContainerStyle={{ paddingTop: theme.SPACING.small, paddingHorizontal: theme.SPACING.medium, height: '100%' }}>
+        <ScrollView
+            contentContainerStyle={{
+                paddingTop: theme.SPACING.small,
+                paddingHorizontal: theme.SPACING.medium,
+                paddingBottom: theme.SPACING.xLarge + 50,
+            }}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+        >
             
             {/* Friend Requests - Display only if user is authenticated */}
             {isConnected && (
