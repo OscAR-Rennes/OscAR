@@ -95,7 +95,8 @@
     "unknown": "Unknown"
   },
   "culturalCenterModal": {
-    "viewCenter": "View center"
+    "viewCenter": "View center",
+    "description": "This cultural center has no description"
   },
   "currentStep": {
     "backToMenu": "Back to Menu",
@@ -138,7 +139,8 @@
     "signUpButton": "Sign Up",
     "alreadyHaveAccountText": "Already have an account ?",
     "signInLink": "Sign in !",
-    "backButton": "Back to menu"
+    "backButton": "Back to menu",
+    "confirmPasswordError": "Passwords do not match"
   },
   "bottomNavbar": {
     "maps": "Maps",

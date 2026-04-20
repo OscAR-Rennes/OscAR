@@ -95,7 +95,8 @@
     "unknown": "Inconnu"
   },
   "culturalCenterModal": {
-    "viewCenter": "Voir le centre"
+    "viewCenter": "Voir le centre",
+    "description": "Ce centre culturel n’a pas de description"
   },
   "currentStep": {
     "backToMenu": "Retour au Menu",
@@ -138,7 +139,8 @@
     "signUpButton": "S'inscrire",
     "alreadyHaveAccountText": "Vous avez déjà un compte ?",
     "signInLink": "Connectez-vous !",
-    "backButton": "Retour au menu"
+    "backButton": "Retour au menu",
+    "confirmPasswordError": "Les mots de passe ne correspondent pas"
   },
   "addFriends": {
     "addFriends": "Ajouter des amis",
