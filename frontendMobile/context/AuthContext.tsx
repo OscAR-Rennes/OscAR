@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = (id: string) => {
     setIsConnected(true);
     setUserId(id);
-    router.replace("/profil"); 
+    router.replace("/(main)"); 
   };
 
   const logout = async () => {

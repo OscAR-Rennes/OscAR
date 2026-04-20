@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { theme } from '../constants/theme';
 import { useLocalSearchParams } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
@@ -59,9 +59,13 @@ const CulturalCenterScreen: React.FC = () => {
     };
 
     // Interpolations for sliding animation
+    const [toggleContainerWidth, setToggleContainerWidth] = useState(0);
+    const sliderInset = 5;
+    const sliderWidth = Math.max(0, (toggleContainerWidth - sliderInset * 2) / 2);
+
     const translateX = slideAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 165],
+        outputRange: [0, sliderWidth],
     });
 
 
@@ -84,9 +88,13 @@ const CulturalCenterScreen: React.FC = () => {
                 </Text>
 
                 {/* Double Button */}
-                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.15, shadowRadius: 5,}}>
-                    <View style={{ flexDirection: 'row', backgroundColor: theme.COLORS.background, borderRadius: 18, padding: 5 }}>
-                        <Animated.View style={{ position: 'absolute', top: 5, left: 5, width: '50%', height: '100%', borderRadius: 15, transform: [{ translateX }], }} >
+                <View
+                    style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, borderRadius: 18, backgroundColor: theme.COLORS.background,
+                        ...(Platform.OS === 'ios'
+                            ? { shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.15, shadowRadius: 5, }
+                            : { elevation: 6, }), }} >
+                    <View onLayout={(event) => setToggleContainerWidth(event.nativeEvent.layout.width)} style={{ flexDirection: 'row', width: '100%', backgroundColor: theme.COLORS.background, borderRadius: 18, padding: sliderInset }} >
+                        <Animated.View style={{ position: 'absolute', top: sliderInset, left: sliderInset, bottom: sliderInset, width: sliderWidth, borderRadius: 15, transform: [{ translateX }], }} >
                             <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 15 }} />
                         </Animated.View>
 

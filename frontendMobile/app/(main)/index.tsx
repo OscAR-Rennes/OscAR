@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, useWindowDimensions } from 'react-native';
 import { Marker, Region } from 'react-native-maps';
 import MapView from 'react-native-map-clustering';
 import * as Location from 'expo-location';
@@ -33,6 +33,8 @@ const ENABLE_CLUSTERING = true; // Re-enabled clustering
 export default function MapsScreen() {
     const { language, setLanguage } = useLanguage();
     const texts = STATIC_TEXTS[language];
+    const { height: screenHeight } = useWindowDimensions();
+    const mapHeight = Math.min(520, Math.max(340, screenHeight * 0.50));
 
     const mapRef = useRef<any>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
@@ -390,7 +392,7 @@ export default function MapsScreen() {
                         </View>
                     </View>
 
-                    <View style={{ borderRadius: 12, overflow: 'hidden', borderWidth: 3, borderColor: '#000', height: 420, marginTop: theme.SPACING.medium }}>
+                    <View style={{ borderRadius: 12, overflow: 'hidden', borderWidth: 3, borderColor: '#000', height: mapHeight, marginTop: theme.SPACING.medium }}>
                         {/* Search Bar */}
                         <View style={{ position: 'absolute', top: 10, left: 10, right: 10, zIndex: 1 }}>
                             <TextInput style={{ height: 40, borderColor: theme.COLORS.border, borderWidth: 1, borderRadius: 8, paddingHorizontal: theme.SPACING.medium, backgroundColor: theme.COLORS.background, color: theme.COLORS.textPrimary, }} placeholder={texts.searchPlaceholder} placeholderTextColor={theme.COLORS.placeholder} value={searchQuery} onChangeText={handleSearch} onFocus={() => setFlatListVisible(true)} />

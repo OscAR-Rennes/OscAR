@@ -32,7 +32,7 @@ interface BottomNavbarProps {
 export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarProps) {
     const router = useRouter();
     const pathname = currentRoute || usePathname();
-    const { isAuthenticated } = useAuth();
+    const { isConnected } = useAuth();
     const { language } = useLanguage(); // Retrieve current language
 
     // Define tab labels based on the current language
@@ -40,8 +40,8 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
 
     const connectionTab = {
         key: 'connection',
-        label: isAuthenticated ? labels.profile : labels.connection,
-        route: isAuthenticated ? '/profil' : '/connection',
+        label: isConnected ? labels.profile : labels.connection,
+        route: isConnected ? '/profil' : '/connection',
         icon: ICON_PATHS.connexion,
     };
 
