@@ -74,7 +74,8 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
                     
                     {/* Cultural Center Informations */}
                     <Image source={{ uri: 'https://picsum.photos/800/1200' }} style={{ width: '100%', height: 150, borderRadius: 10, marginBottom: theme.SPACING.medium, }} />
-                    <Text style={{ ...globalStyles.title, marginBottom: theme.SPACING.small }}> {culturalCenterName} </Text>
+                    <Text style={{ ...globalStyles.subtitle, marginBottom: theme.SPACING.small }}> {culturalCenterName} </Text>
+                    <Text style={{ ...globalStyles.text}}> {culturalCenterDescription ?? 'This cultural center has no description'} </Text>
                     <Text style={{ ...globalStyles.text, color: theme.COLORS.textSecondary, marginBottom: theme.SPACING.medium }}> {culturalCenterDescription} </Text>
                     <View style={{ flexDirection: 'column', width: '100%', gap: theme.SPACING.small }}>
                         <TouchableOpacity style={[{ width: '100%' }]} onPress={navigateToCulturalCenter}>
