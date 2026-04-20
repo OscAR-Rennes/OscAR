@@ -91,7 +91,7 @@ export function useStepConsultData(stepId?: string, reloadKey?: string) {
 				const data = await getStepById(stepId);
 				setStep(data);
 				const indexes = await getAllIndexByHunt(data.hunt.id);
-				setIndexesForHunt(indexes ?? []);
+				setIndexesForHunt(indexes.data ?? []);
 			} catch {
 				setErrorMessage("Impossible de charger les informations de l'étape.");
 			} finally {

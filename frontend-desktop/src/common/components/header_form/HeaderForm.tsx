@@ -35,8 +35,8 @@ export default function HeaderForm({
 
   const creatorBlock = (
     <div className={`header-form-creator-group ${creatorPlacement === "left" ? "left" : "right"}`}>
-      <span className="header-form-creator-name">{creatorName || "-"}</span>
       <span className="header-form-creator-label">{creatorLabel}</span>
+      <span className="header-form-creator-name">{creatorName || "-"}</span>
     </div>
   );
 

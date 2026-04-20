@@ -13,16 +13,20 @@ export class StepsController  {
   }
 
   async createStep(req: Request, res: Response, next: any) {
-    try {
-      const stepData = req.body;
-      const newStep = await this.stepService.createStep(stepData);
-      logger.info("Step created successfully", { route: req.originalUrl, stepId: newStep.id , createdBy: req.user?.id });
-      res.status(201).json(newStep);
-    } catch (err) {
-      logger.error("Error creating step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
-      console.error(err);
-      next(err);
-    }
+      try {
+          const stepData = req.body;
+          const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+          const imageFile = files?.image_file?.[0];
+          const modelFile = files?.model_file?.[0];
+
+          const newStep = await this.stepService.createStep(stepData, imageFile, modelFile);
+          logger.info("Step created successfully", { route: req.originalUrl, stepId: newStep.id, createdBy: req.user?.id });
+          res.status(201).json(newStep);
+      } catch (err) {
+          logger.error("Error creating step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err });
+          next(err);
+      }
   }
 
   async getStepsByCulturalCenter(req: Request, res: Response, next: any) {

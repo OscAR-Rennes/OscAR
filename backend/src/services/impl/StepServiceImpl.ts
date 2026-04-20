@@ -18,34 +18,52 @@ import { UserRepository } from "../../common-lib/repositories/UsersRepository.js
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
 import { paginateArray } from "../../common-lib/utils/pagination.js";
+import { FileUploadUtil } from "../../common-lib/utils/fileUpload.js";
 
 const stepRepository = new StepRepository();
 
 export class StepServiceImpl implements StepService {
 
-    async createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO> {
+    async createStep(stepData: any , imageFile?: Express.Multer.File, modelFile?: Express.Multer.File): Promise<CreateStepResponseDTO> {
         try {
-            const indexRepository = new IndexRepository();
-            let stepToCreate = stepData;
-            if (!stepData.index_id) {
-                const index = await indexRepository.createIncrementEmpty(stepData.hunt_id);
-                logger.info(`Index created for new step with ID: ${index.id}`, { indexId: index.id, huntId: stepData.hunt_id });
-                stepData.index_id = index.id;
-                stepToCreate = {
-                    ...stepData,
-                    index_id: index.id,
-                };
 
+            const fileUploadUtil = new FileUploadUtil();
+
+            let targetPath: string | undefined;
+            let objectPaths: { obj: string, mtl: string, jpg: string } | undefined;
+
+            if (imageFile) {
+                targetPath = await fileUploadUtil.uploadTarget(imageFile);
             }
 
-            const step = await stepRepository.create(stepToCreate);
-            logger.info(`Step created successfully with ID: ${step.id}`, { stepId: step.id, indexId: step.index_id });
-            return stepMapper.toCreateResponseDto(step);
+            if (modelFile) {
+                objectPaths = await fileUploadUtil.uploadObjectZip(modelFile);
+            }
+
+            const indexRepository = new IndexRepository();
+            if (!stepData.index_id) {
+                const index = await indexRepository.createIncrementEmpty(stepData.hunt_id);
+                stepData.index_id = index.id;
+            }
+
+            const cleanData = {
+                ...stepData,
+                points: Number(stepData.points),
+                latitude: stepData.latitude ? Number(stepData.latitude) : 0,
+                longitude: stepData.longitude ? Number(stepData.longitude) : 0,
+            };
+
+                // file_path_target: targetPath,
+                // file_path_object: objectPaths?.obj,
+                // file_path_mtl: objectPaths?.mtl,
+                // file_path_jpg: objectPaths?.jpg,
+
+            return stepMapper.toCreateResponseDto(cleanData);
 
         } catch (error: any) {
             logger.error(`Error creating step: ${error.message}`, { error, stepData });
             throw new AppError({
-                userMessage: 'Erreur lors de la création de l\'étape',
+                userMessage: "Erreur lors de la création de l'étape",
                 statusCode: 500,
             });
         }

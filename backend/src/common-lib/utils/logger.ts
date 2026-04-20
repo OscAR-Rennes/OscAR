@@ -2,7 +2,9 @@ import { createLogger, format, transports } from 'winston';
 
 const consoleFormat = format.printf(({ timestamp, level, message, ...meta }) => {
   const metaString = Object.entries(meta)
-    .map(([key, value]) => `${key}=${value}`)
+    .map(([key, value]) =>
+      `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`
+    )
     .join(' ');
 
   return `${timestamp} [${level.toUpperCase()}] ${message}${metaString ? ' ' + metaString : ''}`;
