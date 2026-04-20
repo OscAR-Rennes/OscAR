@@ -72,7 +72,7 @@ const CulturalCenterScreen: React.FC = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
             <HeaderNavbar/>
-            <ScrollView style={{ flex: 1, padding: theme.SPACING.large }}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: theme.SPACING.large, paddingBottom: theme.SPACING.xLarge + 90, }} nestedScrollEnabled keyboardShouldPersistTaps="handled" >
                 {/* Back Button */}
                 <TouchableOpacity style={[{ flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start', marginBottom: theme.SPACING.large }]} onPress={() => router.push('/')} activeOpacity={0.7}>
                     <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
