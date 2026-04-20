@@ -47,7 +47,7 @@ export function useHomeData() {
   useEffect(() => {
     const fetchData = async () => {
       const diff = await getAllDifficulty();
-      setDifficulties(diff);
+      setDifficulties(diff.data);
     };
     fetchData();
   }, []);

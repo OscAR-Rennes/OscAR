@@ -97,7 +97,7 @@ export default function HuntConsultation() {
       />
 
       <section className="hunts-consult-content">
-        {isEditMode ? (
+        {isEditMode && difficulties ? (
           <Form
             id="edit-hunt-form"
             onSubmit={buildEditHuntSubmitHandler(() => {
@@ -136,7 +136,7 @@ export default function HuntConsultation() {
                   name="difficulty_id"
                   label="Difficulté"
                   required={true}
-                  options={difficulties.map((d: any) => ({
+                  options={(difficulties ?? []).map((d: any) => ({
                     value: d.id,
                     label: d.name,
                   }))}

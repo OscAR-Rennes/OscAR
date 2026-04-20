@@ -151,14 +151,14 @@ export default function StepsCreation() {
 
                 <FormFile
                   name="model_file"
-                  label="Modèle 3D (.zip)"
+                  label="Modèle 3D (.zip). Doit contenir un fichier .mtl, .jpg et .obj"
                   accept=".zip"
                   required={true}
                 />
 
                 <FormFile
                   name="image_file"
-                  label="Image (.png, .jpg)"
+                  label="Image cible (.png, .jpg)"
                   accept=".png,.jpg,.jpeg"
                   required={true}
                 />
