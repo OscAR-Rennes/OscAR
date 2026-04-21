@@ -72,7 +72,7 @@ export function useStepsData() {
   const deleteSelectedSteps = async () => {
     if (!selectedStepIds.length) return;
 
-    await Promise.all(selectedStepIds.map((stepId: string) => deleteStep(stepId)));
+    await deleteStep(selectedStepIds);
     setSelectedStepsRows([]);
     await fetchSteps();
   };

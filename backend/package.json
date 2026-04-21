@@ -7,13 +7,13 @@
     "build": "tsc",
     "start": "node dist/app/server.js",
     "lint": "eslint . --ext .js,.mjs",
-    "postinstall": "prisma generate",
     "dev": "nodemon -L --watch src --ext ts --exec tsx src/app/server.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1016.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "archiver": "^7.0.1",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@types/archiver": "^7.0.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",

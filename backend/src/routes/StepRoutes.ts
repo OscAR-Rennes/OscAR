@@ -79,4 +79,14 @@ stepsRoutes.get(
     (req, res, next) => stepsController.getStepByHunt(req, res, next)
 )
 
+stepsRoutes.get(
+    "/step/downloadAr/:id",
+    (req, res, next) => stepsController.downloadStepAr(req, res, next)
+)
+
+stepsRoutes.get(
+    "/step/downloadTarget/:id",
+    (req, res, next) => stepsController.downloadStepTarget(req, res, next)
+)
+
 export default stepsRoutes;

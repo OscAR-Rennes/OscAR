@@ -125,7 +125,8 @@ export class StepRepository {
             }
           }
         },
-        index: true
+        index: true,
+        step_ar: true
       }
     });
   }

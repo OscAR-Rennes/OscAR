@@ -76,7 +76,7 @@ export function useHuntsData() {
   const deleteSelectedHunts = async () => {
     if (!selectedHuntIds.length) return;
 
-    await Promise.all(selectedHuntIds.map((huntId: string) => deleteHunt(huntId)));
+    await deleteHunt(selectedHuntIds);
     setSelectedHuntsRows([]);
     await fetchHunts();
   };

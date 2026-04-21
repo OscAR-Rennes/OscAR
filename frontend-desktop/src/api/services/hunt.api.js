@@ -26,6 +26,6 @@ export function editHunt(huntId, huntData) {
   return apiClient(`/hunt/edit/${huntId}`, { method: 'PUT', body: huntData });
 }
 
-export function deleteHunt(huntId) {
-  return apiClient(`/hunt/${huntId}`, { method: 'DELETE' });
+export function deleteHunt(selectedHuntIds) {
+  return apiClient(`/hunt`, { method: 'DELETE', body: { ids : selectedHuntIds } });
 }

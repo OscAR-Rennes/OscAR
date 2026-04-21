@@ -139,4 +139,41 @@ export class StepsController  {
       next(err);
     }
   }
-};
+
+  async downloadStepAr(req: Request, res: Response, next: any) {
+    try {
+      const stepId = req.params.id;
+      const arFiles = await this.stepService.downloadStepAr(stepId);
+      if (!arFiles) {
+        res.status(404).json({ message: "AR files not found for this step" });
+        return;
+      }
+      
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename="${arFiles.fileName}"`);
+      res.send(arFiles.fileBuffer);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async downloadStepTarget(req: Request, res: Response, next: any) {
+    try {
+      const stepId = req.params.id;
+      const targetFile = await this.stepService.downloadStepTarget(stepId);
+      if (!targetFile) {
+        res.status(404).json({ message: "Target file not found for this step" });
+        return;
+      }
+      
+      const ext = targetFile.fileName.split(".").pop()?.toLowerCase();
+      const contentType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "png" ? "image/png" : "application/octet-stream";
+      
+      res.setHeader("Content-Type", contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="${targetFile.fileName}"`);
+      res.send(targetFile.fileBuffer);
+    } catch (err) {
+      next(err);
+    }
+  }
+}

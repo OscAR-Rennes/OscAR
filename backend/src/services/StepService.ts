@@ -15,4 +15,6 @@ export interface StepService {
   getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>>;
   getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>>;
   getStepById(id: string): Promise<FullStepDTO | null>;
+  downloadStepAr(stepId: string): Promise<{ fileBuffer: Buffer; fileName: string }>;
+  downloadStepTarget(stepId: string): Promise<{ fileBuffer: Buffer; fileName: string }>;
 }
