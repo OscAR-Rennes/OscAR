@@ -4,7 +4,13 @@ import { apiClient } from '../apiClient';
 function toPaginationQuery(params = {}) {
   const page = Number(params.page) > 0 ? Number(params.page) : 1;
   const limit = Number(params.limit) > 0 ? Number(params.limit) : 15;
-  return `?page=${page}&limit=${limit}`;
+  
+  const query = new URLSearchParams({ page, limit });
+  
+  if (params.search) query.append("search", params.search);
+  if (params.sort) query.append("sort", params.sort);
+  
+  return `?${query.toString()}`;
 }
 
 export function addStep(stepData, modelFile, imageFile) {

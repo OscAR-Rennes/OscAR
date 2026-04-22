@@ -3,6 +3,8 @@ import { deleteStep, getStepsByCulturalCenter } from "../../../api/services/step
 
 
 export function useStepsData() {
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("asc");
   const [steps, setSteps] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -23,10 +25,9 @@ export function useStepsData() {
     ]
 
   const fetchSteps = async () => {
-    const response = await getStepsByCulturalCenter({
-      page: pagination.page,
-      limit: pagination.limit,
-    });
+    const response = await getStepsByCulturalCenter(
+      { page: pagination.page, limit: pagination.limit, search, sort }
+    );
 
     setSteps(Array.isArray(response?.data) ? response.data : []);
 
@@ -77,6 +78,20 @@ export function useStepsData() {
     await fetchSteps();
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  const handleSortChange = (value: string) => {
+    setSort(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  useEffect(() => {
+    fetchSteps();
+  }, [pagination.page, pagination.limit, search, sort]);
+
   return {
     steps,
     pagination,
@@ -87,6 +102,8 @@ export function useStepsData() {
     hasSingleSelectedStep,
     selectedStepId,
     deleteSelectedSteps,
+    handleSearchChange,
+    handleSortChange,
   }
 
 }

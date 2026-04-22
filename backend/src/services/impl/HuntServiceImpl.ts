@@ -78,30 +78,36 @@ export class HuntServiceImpl implements HuntService {
         }
     }
 
-    async getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>> {
+    async getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightHuntDTO>> {
         try {
+            let items: LightHuntDTO[] = [];
+
             if (!user) {
-                return paginateArray((await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO), pagination);
-            }
-            if (user.rights.includes('ADMIN')) {
-                return paginateArray((await huntRepository.getAll()).map(huntMapper.toLightDTO), pagination);
-            }
-
-            if (user.rights.includes('HUNT_MANAGER')) {
-                return paginateArray((await huntRepository.getByCreator(user.id)).map(huntMapper.toLightDTO), pagination);
-            }
-
-            if (
-                user.rights.includes('CULTURAL_CENTER_MANAGER') &&
-                user.id_cultural_center
-            ) {
-                return paginateArray((await huntRepository.getByCulturalCenter(user.id_cultural_center)).map(huntMapper.toLightDTO), pagination);
+                items = (await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO);
+            } else if (user.rights.includes('ADMIN')) {
+                items = (await huntRepository.getAll()).map(huntMapper.toLightDTO);
+            } else if (user.rights.includes('HUNT_MANAGER')) {
+                items = (await huntRepository.getByCreator(user.id)).map(huntMapper.toLightDTO);
+            } else if (user.rights.includes('CULTURAL_CENTER_MANAGER') && user.id_cultural_center) {
+                items = (await huntRepository.getByCulturalCenter(user.id_cultural_center)).map(huntMapper.toLightDTO);
+            } else {
+                throw new AppError({
+                    userMessage: "Vous n'avez pas les droits pour accéder aux chasses",
+                    statusCode: 403,
+                });
             }
 
-            throw new AppError({
-                userMessage: "Vous n'avez pas les droits pour accéder aux chasses",
-                statusCode: 403,
-            });
+            if (search) {
+                items = items.filter(h => h.title.toLowerCase().includes(search.toLowerCase()));
+            }
+
+            items = items.sort((a, b) =>
+                sort === "desc"
+                    ? b.title.localeCompare(a.title)
+                    : a.title.localeCompare(b.title)
+            );
+
+            return paginateArray(items, pagination);
         } catch (error) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des chasses',
@@ -150,7 +156,7 @@ export class HuntServiceImpl implements HuntService {
 
                 await assertUserCanAccessHunt(user, hunt, userRepository);
 
-                await prisma.$transaction(async (tx) => {
+                await prisma.$transaction(async (tx: any) => {
                     const stepRepository = new StepRepository();
                     const indexRepository = new IndexRepository();
                     await stepRepository.deleteByHuntId(id, tx);

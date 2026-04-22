@@ -169,27 +169,45 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {
+    async getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightStepDTO>> {
         try {
+            let items: LightStepDTO[] = [];
+
             if (user.rights.includes('ADMIN')) {
-                return paginateArray((await stepRepository.getAll()).map(stepMapper.toLightDTO), pagination);
+                items = (await stepRepository.getAll()).map(stepMapper.toLightDTO);
             }
 
-            if (user.rights.includes('HUNT_MANAGER')) {
-                return paginateArray((await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO), pagination);
+            else if (user.rights.includes('HUNT_MANAGER')) {
+                items = (await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO);
             }
 
-            if (
+            else if (
                 user.rights.includes('CULTURAL_CENTER_MANAGER') &&
                 user.id_cultural_center
             ) {
-                return paginateArray((await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO), pagination);
+                items = (await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO);
             }
 
-            throw new AppError({
-                userMessage: "Vous n'avez pas les droits pour accéder aux étapes",
-                statusCode: 403,
-            });
+            else {
+                throw new AppError({
+                    userMessage: "Vous n'avez pas les droits pour accéder aux étapes",
+                    statusCode: 403,
+                });
+            }
+
+            if (search) {
+                items = items.filter(h => h.title.toLowerCase().includes(search.toLowerCase()));
+            }
+
+            items = items.sort((a, b) =>
+                sort === "desc"
+                    ? b.title.localeCompare(a.title)
+                    : a.title.localeCompare(b.title)
+            );
+
+            return paginateArray(items, pagination);
+
+            
         } catch (error) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des étapes',
