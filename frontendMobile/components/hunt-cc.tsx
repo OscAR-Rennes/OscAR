@@ -10,7 +10,7 @@ import { HuntListProps } from '../common/dto/IHuntListProps';
 import { getIconUri } from '../app/icon-mapping';
 import { LightHuntDto } from '@/common/dto/ILightHunt';
 
-const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
+const HuntList: React.FC<HuntListProps> = ({ hunts, culturalCenterId }) => {
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
     const router = useRouter();
@@ -45,6 +45,7 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
             pathname: '/hunt-details',
             params: {
                 id: hunt.id,
+                culturalCenterId,
             },
         });
     };

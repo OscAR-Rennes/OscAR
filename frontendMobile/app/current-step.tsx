@@ -17,22 +17,33 @@ import { LightStepDTO } from '../common/dto/ILightStep';
 import { getIconUri } from './icon-mapping';
 import { getStepByHunt, getStepById } from '@/api/services/step.api'
 import { FullStepDTO } from '@/common/dto/IStep'
-import { saveProgress } from '@/api/services/progression.api'
+import { getProgressionByHunt, saveProgress } from '@/api/services/progression.api'
 import { useAuth } from '@/context/AuthContext';
 
 const ARScreen = React.lazy(() => import('@/components/ARScreen'));
 
 const CurrentStepScreen: React.FC = () => {
     const router = useRouter();
-    const { huntId } = useLocalSearchParams();
+    const { huntId, stepId, culturalCenterId, from } = useLocalSearchParams();
     const { isConnected } = useAuth();
+
+    const requestedStepId = Array.isArray(stepId) ? stepId[0] : stepId;
+    const resolvedCenterId = Array.isArray(culturalCenterId) ? culturalCenterId[0] : culturalCenterId;
+    const fromScreen = Array.isArray(from) ? from[0] : from;
 
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [totalPoints, setTotalPoints] = useState(0);
 
     const { language } = useLanguage();
-    const texts = STATIC_TEXTS[language];
+    const texts = STATIC_TEXTS[language] as {
+        backToHunt?: string;
+        backToMenu?: string;
+        pointsEarned: string;
+        stepsRemaining: string;
+        scanButton: string;
+        informationText: string;
+    };
 
     const [steps, setSteps] = useState<LightStepDTO[]>([]);
     const [currentStep, setCurrentStep] = useState<FullStepDTO | null>(null);
@@ -75,9 +86,48 @@ const CurrentStepScreen: React.FC = () => {
     useEffect(() => {
         const fetchSteps = async () => {
         const data = await getStepByHunt(huntId as string);
-        setSteps(data);
-        if (data.length > 0) {
-            const full = await getStepById(data[0].id);
+        const normalizedSteps = Array.isArray(data) ? data : [];
+        setSteps(normalizedSteps);
+
+        const progression = isConnected && huntId
+            ? await getProgressionByHunt(huntId as string)
+            : null;
+
+        let completedStepIds = new Set<string>();
+        if (progression?.isComplete) {
+            completedStepIds = new Set(normalizedSteps.map((step: LightStepDTO) => step.id));
+        } else if (progression?.current_index) {
+            const remainingIds = new Set((progression.current_index.remaining_steps ?? []).map((step: { id: string }) => step.id));
+            completedStepIds = new Set(
+                normalizedSteps
+                    .filter((step: LightStepDTO) => {
+                        const stepIndex = step.index_number ?? 1;
+                        if (stepIndex < progression.current_index!.index) return true;
+                        if (stepIndex > progression.current_index!.index) return false;
+                        return !remainingIds.has(step.id);
+                    })
+                    .map((step: LightStepDTO) => step.id)
+            );
+        }
+
+        const initialEarnedPoints = normalizedSteps
+            .filter((step: LightStepDTO) => completedStepIds.has(step.id))
+            .reduce((sum: number, step: LightStepDTO) => sum + step.points, 0);
+        setTotalPoints(initialEarnedPoints);
+
+        if (normalizedSteps.length > 0) {
+            const requestedIndex = requestedStepId
+                ? normalizedSteps.findIndex((step: LightStepDTO) => step.id === requestedStepId)
+                : -1;
+
+            const firstPendingIndex = normalizedSteps.findIndex((step: LightStepDTO) => !completedStepIds.has(step.id));
+
+            const initialIndex = requestedIndex >= 0
+                ? requestedIndex
+                : (firstPendingIndex >= 0 ? firstPendingIndex : 0);
+            setCurrentStepIndex(initialIndex);
+
+            const full = await getStepById(normalizedSteps[initialIndex].id);
             setCurrentStep(full);
         }
         };
@@ -85,7 +135,7 @@ const CurrentStepScreen: React.FC = () => {
         if (huntId) {
         fetchSteps();
         }
-    }, [huntId]);
+    }, [huntId, requestedStepId, isConnected]);
 
     useEffect(() => {
         const fetchCurrentStep = async () => {
@@ -110,9 +160,21 @@ const CurrentStepScreen: React.FC = () => {
                 <ScrollView contentContainerStyle={{ padding: theme.SPACING.large }}>
                     {/* Back Button */}
                     <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.medium }}>
-                        <TouchableOpacity style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]} onPress={() => router.push('/')}>
+                        <TouchableOpacity
+                            style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]}
+                            onPress={() =>
+                                router.push({
+                                    pathname: '/hunt-details',
+                                    params: {
+                                        id: huntId as string,
+                                        culturalCenterId: resolvedCenterId,
+                                        from: fromScreen,
+                                    },
+                                })
+                            }
+                        >
                             <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
-                            <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>{texts.backToMenu}</Text>
+                            <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>{texts.backToHunt ?? texts.backToMenu}</Text>
                         </TouchableOpacity>
                     </View>
 

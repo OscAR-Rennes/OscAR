@@ -14,12 +14,15 @@ export const stepMapper = {
     };
   },
 
-  toLightDTO(entity: steps): LightStepDTO {
+  toLightDTO(entity: any): LightStepDTO {
       return {
         id: entity.id,
         title: entity.title,
         description: entity.description,
-        points: entity.points
+        points: entity.points,
+        index_id: entity.index_id,
+        index_number: entity.index?.index,
+        index_name: entity.index?.name,
       };
     },
 

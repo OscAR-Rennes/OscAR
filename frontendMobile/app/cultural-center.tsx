@@ -124,7 +124,7 @@ const CulturalCenterScreen: React.FC = () => {
                 {/* Section Content */}
                 {activeButton === 'chasses' ? (
                     hunts && hunts.length > 0 ? (
-                        <HuntList hunts={hunts} />
+                        <HuntList hunts={hunts} culturalCenterId={String(id)} />
                     ) : (
                         <Text style={{ color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.text, textAlign: 'center', marginTop: theme.SPACING.large }}>
                             {texts.noHunts}

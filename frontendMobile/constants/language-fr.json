@@ -15,18 +15,22 @@
   "hunt": {
     "pageTitle": "Mes Chasses",
     "currentHuntsTitle": "Chasses en cours (0)",
-    "currentHuntsPlaceholderMessage": "Connectez-vous pour pouvoir voir vos chasses en cours !",
+    "currentHuntsPlaceholderMessage": "Commencez une chasse pour la voir apparaitre ici",
     "completedHuntsTitle": "Chasses complétées (0)",
-    "completedHuntsPlaceholderMessage": "Connectez-vous pour pouvoir enregistrer votre progression !",
+    "completedHuntsPlaceholderMessage": "Terminez une chasse pour la voir apparaitre ici",
+    "disconnectedPlaceholderMessage": "Connectez vous pour sauvegarder votre progression",
     "connectButtonText": "Se connecter →",
     "currentHuntsAuthMessage": "Affichage des chasses en cours pour les utilisateurs connectés à venir",
     "completedHuntsAuthMessage": "Affichage des chasses complétées pour les utilisateurs connectés à venir"
   },
   "huntDetails": {
-    "backToMenu": "Retour au menu",
+    "backToCulturalCenter": "Retour",
     "stepsTitle": "Étapes de la Chasse",
     "noSteps": "Aucune étape trouvée pour cette chasse.",
-    "startHunt": "Démarrer la chasse"
+    "startHunt": "Démarrer la chasse",
+    "resumeHunt": "Reprendre la chasse",
+    "partLabel": "Partie",
+    "lockedPartMessage": "Terminez la partie précédente pour débloquer"
   },
   "index": {
     "languageSelection": "Sélection de la langue",
@@ -100,6 +104,7 @@
   },
   "currentStep": {
     "backToMenu": "Retour au Menu",
+    "backToHunt": "Retour à la chasse",
     "pointsEarned": "Points gagnés",
     "stepsRemaining": "Étapes restantes",
     "scanButton": "Scanner / Caméra RA",
