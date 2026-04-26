@@ -81,14 +81,15 @@ export class HuntServiceImpl implements HuntService {
     async getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightHuntDTO>> {
         try {
             let items: LightHuntDTO[] = [];
+            const rights = Array.isArray(user?.rights) ? user.rights : [];
 
-            if (!user) {
+            if (!user || rights.includes('USER')) {
                 items = (await huntRepository.getByCulturalCenter(id)).map(huntMapper.toLightDTO);
-            } else if (user.rights.includes('ADMIN')) {
+            } else if (rights.includes('ADMIN')) {
                 items = (await huntRepository.getAll()).map(huntMapper.toLightDTO);
-            } else if (user.rights.includes('HUNT_MANAGER')) {
+            } else if (rights.includes('HUNT_MANAGER')) {
                 items = (await huntRepository.getByCreator(user.id)).map(huntMapper.toLightDTO);
-            } else if (user.rights.includes('CULTURAL_CENTER_MANAGER') && user.id_cultural_center) {
+            } else if (rights.includes('CULTURAL_CENTER_MANAGER') && user.id_cultural_center) {
                 items = (await huntRepository.getByCulturalCenter(user.id_cultural_center)).map(huntMapper.toLightDTO);
             } else {
                 throw new AppError({

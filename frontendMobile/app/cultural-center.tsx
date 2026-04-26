@@ -24,6 +24,7 @@ import { LightHuntDto } from '@/common/dto/ILightHunt'
 const CulturalCenterScreen: React.FC = () => {
     const router = useRouter();
     const { id } = useLocalSearchParams();
+    const culturalCenterId = Array.isArray(id) ? id[0] : id;
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
@@ -33,15 +34,15 @@ const CulturalCenterScreen: React.FC = () => {
     // Fetch Cultural Center information
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getCulturalCenterById(id)
-            const huntsData = await getHuntsByCulturalCenter(id)
-            setHunts(huntsData)
+            const data = await getCulturalCenterById(culturalCenterId)
+            const huntsData = await getHuntsByCulturalCenter(culturalCenterId)
+            setHunts(Array.isArray(huntsData) ? huntsData : [])
             setCulturalCenter(data)
         }
-        if (id != null && id != "") {
+        if (culturalCenterId != null && culturalCenterId != "") {
             fetchData()
         }
-    }, [])
+    }, [culturalCenterId])
 
     // State for active button
     const [activeButton, setActiveButton] = useState<'chasses' | 'classement'>('chasses');

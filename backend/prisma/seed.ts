@@ -2,12 +2,28 @@ import bcrypt from "bcrypt";
 import { prisma } from "../src/common-lib/config/prismaClient.js";
 
 const SEED_CONFIG = {
-  culturalCenters: 500,
+  culturalCenters: 5,
   huntManagersPerCenter: 3,
   huntsPerCenter: 5,
   indexesPerHunt: 3,
   stepsPerIndex: 3,
+  lambdaPlayers: 12,
 } as const;
+
+type SeedHuntStep = {
+  hunt_id: string;
+  step_id: string;
+  index_id: string;
+  index_number: number;
+  step_number: number;
+};
+
+type SeedHunt = {
+  id: string;
+  title: string;
+  cultural_center_id: string;
+  steps: SeedHuntStep[];
+};
 
 const FRANCE_CITIES = [
   { name: "Paris", zipPrefix: "75", lat: 48.8566, lng: 2.3522 },
@@ -56,6 +72,30 @@ function randomInt(min: number, max: number): number {
 
 function pickRandomCity() {
   return FRANCE_CITIES[Math.floor(Math.random() * FRANCE_CITIES.length)];
+}
+
+function takeProgressionSteps(hunt: SeedHunt, completedSteps: number): SeedHuntStep[] {
+  return hunt.steps.slice(0, Math.max(0, Math.min(completedSteps, hunt.steps.length)));
+}
+
+function buildLambdaProgressionPlan(hunts: SeedHunt[]) {
+  const huntById = new Map(hunts.map((hunt) => [hunt.id, hunt]));
+  const huntList = Array.from(huntById.values());
+
+  return [
+    { suffix: "rookie", firstName: "Lina", lastName: "Débutant", right: "USER", plans: [{ hunt: huntList[0], completedSteps: 0 }] },
+    { suffix: "starter", firstName: "Noah", lastName: "Explorateur", right: "USER", plans: [{ hunt: huntList[0], completedSteps: 2 }] },
+    { suffix: "index1", firstName: "Mila", lastName: "Indice", right: "USER", plans: [{ hunt: huntList[1], completedSteps: 3 }] },
+    { suffix: "index2", firstName: "Hugo", lastName: "Progression", right: "USER", plans: [{ hunt: huntList[1], completedSteps: 5 }] },
+    { suffix: "complete-a", firstName: "Emma", lastName: "Finale", right: "USER", plans: [{ hunt: huntList[2], completedSteps: 9 }] },
+    { suffix: "multi-a", firstName: "Lucas", lastName: "Multi", right: "USER", plans: [{ hunt: huntList[3], completedSteps: 4 }, { hunt: huntList[4], completedSteps: 1 }] },
+    { suffix: "multi-b", firstName: "Jade", lastName: "Avance", right: "USER", plans: [{ hunt: huntList[5], completedSteps: 6 }] },
+    { suffix: "complete-b", firstName: "Louis", lastName: "Maître", right: "USER", plans: [{ hunt: huntList[6], completedSteps: 9 }, { hunt: huntList[7], completedSteps: 3 }] },
+    { suffix: "index3", firstName: "Sarah", lastName: "Trois", right: "USER", plans: [{ hunt: huntList[8], completedSteps: 7 }] },
+    { suffix: "steady", firstName: "Tom", lastName: "Régulier", right: "USER", plans: [{ hunt: huntList[9], completedSteps: 4 }] },
+    { suffix: "all-around", firstName: "Chloé", lastName: "Panorama", right: "USER", plans: [{ hunt: huntList[10], completedSteps: 1 }, { hunt: huntList[11], completedSteps: 8 }] },
+    { suffix: "late-game", firstName: "Nathan", lastName: "Avancé", right: "USER", plans: [{ hunt: huntList[12], completedSteps: 9 }, { hunt: huntList[13], completedSteps: 6 }] },
+  ].filter((player) => player.plans.length > 0 && player.plans.every((plan) => Boolean(plan.hunt)));
 }
 
 async function main() {
@@ -122,6 +162,8 @@ async function main() {
   // =====================
   // CULTURAL CENTERS LOOP
   // =====================
+  const seededHunts: SeedHunt[] = [];
+
   for (let c = 1; c <= SEED_CONFIG.culturalCenters; c++) {
     const city = pickRandomCity();
     const cityName = city.name;
@@ -241,6 +283,16 @@ async function main() {
         });
       }
 
+      const existingHunt = seededHunts.find((entry) => entry.id === hunt.id);
+      if (!existingHunt) {
+        seededHunts.push({
+          id: hunt.id,
+          title: hunt.title,
+          cultural_center_id: hunt.cultural_center_id,
+          steps: [],
+        });
+      }
+
       const huntLatBase = hunt.latitude;
       const huntLngBase = hunt.longitude;
 
@@ -269,7 +321,7 @@ async function main() {
             const stepLat = randomOffset(huntLatBase, 0.006);
             const stepLng = randomOffset(huntLngBase, 0.006);
 
-            await prisma.steps.create({
+            step = await prisma.steps.create({
               data: {
                 title: stepTitle,
                 description: `Step ${s} description for hunt ${h} center ${c} index ${i}`,
@@ -281,6 +333,86 @@ async function main() {
               },
             });
           }
+
+          const huntEntry = seededHunts.find((entry) => entry.id === hunt.id);
+          if (huntEntry && !huntEntry.steps.some((entry) => entry.step_id === step.id)) {
+            huntEntry.steps.push({
+              hunt_id: hunt.id,
+              step_id: step.id,
+              index_id: huntIndex.id,
+              index_number: i,
+              step_number: s,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  const orderedHunts = seededHunts
+    .map((hunt) => ({
+      ...hunt,
+      steps: hunt.steps.sort((left, right) => {
+        if (left.index_number !== right.index_number) {
+          return left.index_number - right.index_number;
+        }
+
+        return left.step_number - right.step_number;
+      }),
+    }))
+    .sort((left, right) => left.title.localeCompare(right.title));
+
+  // =====================
+  // LAMBDA PLAYERS
+  // =====================
+  const lambdaPlan = buildLambdaProgressionPlan(orderedHunts);
+
+  for (const [playerIndex, playerPlan] of lambdaPlan.entries()) {
+    const email = `${playerPlan.suffix}_${playerIndex + 1}@oscar.com`;
+    const username = `${playerPlan.suffix}_${playerIndex + 1}`;
+
+    let player = await prisma.users.findUnique({ where: { email } });
+    if (!player) {
+      player = await prisma.users.create({
+        data: {
+          username,
+          firstname: playerPlan.firstName,
+          lastname: playerPlan.lastName,
+          email,
+          password: hashedPassword,
+          isActive: true,
+          isSecure: false,
+        },
+      });
+    }
+
+    const userRight = await prisma.right_user.findUnique({
+      where: { user_id_right_id: { user_id: player.id, right_id: rights.USER.id } },
+    });
+    if (!userRight) {
+      await prisma.right_user.create({
+        data: { user_id: player.id, right_id: rights.USER.id },
+      });
+    }
+
+    for (const plan of playerPlan.plans) {
+      for (const progressionStep of takeProgressionSteps(plan.hunt, plan.completedSteps)) {
+        const existingProgression = await prisma.progression.findFirst({
+          where: {
+            user_id: player.id,
+            hunt_id: progressionStep.hunt_id,
+            step_id: progressionStep.step_id,
+          },
+        });
+
+        if (!existingProgression) {
+          await prisma.progression.create({
+            data: {
+              user_id: player.id,
+              hunt_id: progressionStep.hunt_id,
+              step_id: progressionStep.step_id,
+            },
+          });
         }
       }
     }
@@ -295,6 +427,8 @@ async function main() {
   console.log("Admin: admin@oscar.com / Admin1234!");
   console.log(`Managers centres: ${SEED_CONFIG.culturalCenters} comptes cc_manager_X@oscar.com`);
   console.log(`Hunt managers: ${SEED_CONFIG.culturalCenters * SEED_CONFIG.huntManagersPerCenter} comptes hunt_manager_X_Y@oscar.com`);
+  console.log(`Joueurs lambda: ${lambdaPlan.length} comptes lambda avec progressions variées`);
+  console.log(`Comptes joueurs: ${lambdaPlan.map((player, index) => `${player.suffix}_${index + 1}@oscar.com`).join(", ")}`);
 }
 
 main()
