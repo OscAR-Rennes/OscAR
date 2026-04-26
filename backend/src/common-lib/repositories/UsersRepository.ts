@@ -68,6 +68,30 @@ export class UserRepository  {
     return users;
   }
 
+  async findGlobalLeaderboard(limit: number): Promise<Pick<users, "id" | "username" | "points">[]> {
+    return prisma.users.findMany({
+      where: {
+        isActive: true,
+        right_user: {
+          some: {
+            rights: {
+              name: RoleEnum.USER,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        points: true,
+      },
+      orderBy: [
+        { points: "desc" },
+        { username: "asc" },
+      ],
+      take: limit,
+    });
+  }
 
   //TODO : Create User for mobile (without rights managements and cultural center affiliation)
 

@@ -74,6 +74,30 @@ function pickRandomCity() {
   return FRANCE_CITIES[Math.floor(Math.random() * FRANCE_CITIES.length)];
 }
 
+function buildHuntStructure(centerOrder: number, huntOrder: number): { indexCount: number; stepsByIndex: number[] } {
+  // First center contains deterministic scenarios used by mobile UI tests.
+  if (centerOrder === 1) {
+    switch (huntOrder) {
+      case 1:
+        return { indexCount: 1, stepsByIndex: [1] }; // 1 index, 1 step
+      case 2:
+        return { indexCount: 1, stepsByIndex: [3] }; // 1 index, multiple steps
+      case 3:
+        return { indexCount: 3, stepsByIndex: [1, 1, 1] }; // multiple indexes, 1 step each
+      case 4:
+        return { indexCount: 3, stepsByIndex: [3, 3, 3] }; // multiple indexes, multiple steps each
+      case 5:
+        return { indexCount: 4, stepsByIndex: [1, 3, 3, 3] }; // first index 1 step, others multiple
+      default:
+        break;
+    }
+  }
+
+  const indexCount = randomInt(1, 5);
+  const stepsByIndex = Array.from({ length: indexCount }, () => randomInt(1, 3));
+  return { indexCount, stepsByIndex };
+}
+
 function takeProgressionSteps(hunt: SeedHunt, completedSteps: number): SeedHuntStep[] {
   return hunt.steps.slice(0, Math.max(0, Math.min(completedSteps, hunt.steps.length)));
 }
@@ -82,19 +106,48 @@ function buildLambdaProgressionPlan(hunts: SeedHunt[]) {
   const huntById = new Map(hunts.map((hunt) => [hunt.id, hunt]));
   const huntList = Array.from(huntById.values());
 
+  if (huntList.length === 0) {
+    return [];
+  }
+
+  const getHunt = (index: number) => huntList[index % huntList.length];
+  const completeSteps = (hunt: SeedHunt) => hunt.steps.length;
+  const partialSteps = (hunt: SeedHunt, ratio: number) => {
+    if (hunt.steps.length <= 1) {
+      return 0;
+    }
+
+    const computed = Math.floor(hunt.steps.length * ratio);
+    return Math.max(1, Math.min(hunt.steps.length - 1, computed));
+  };
+
+  const heavyPlans = [
+    ...huntList.slice(0, 6).map((hunt) => ({ hunt, completedSteps: completeSteps(hunt) })),
+    ...huntList.slice(6, 12).map((hunt, idx) => ({
+      hunt,
+      completedSteps: partialSteps(hunt, 0.35 + ((idx % 3) * 0.2)),
+    })),
+  ];
+
   return [
-    { suffix: "rookie", firstName: "Lina", lastName: "Débutant", right: "USER", plans: [{ hunt: huntList[0], completedSteps: 0 }] },
-    { suffix: "starter", firstName: "Noah", lastName: "Explorateur", right: "USER", plans: [{ hunt: huntList[0], completedSteps: 2 }] },
-    { suffix: "index1", firstName: "Mila", lastName: "Indice", right: "USER", plans: [{ hunt: huntList[1], completedSteps: 3 }] },
-    { suffix: "index2", firstName: "Hugo", lastName: "Progression", right: "USER", plans: [{ hunt: huntList[1], completedSteps: 5 }] },
-    { suffix: "complete-a", firstName: "Emma", lastName: "Finale", right: "USER", plans: [{ hunt: huntList[2], completedSteps: 9 }] },
-    { suffix: "multi-a", firstName: "Lucas", lastName: "Multi", right: "USER", plans: [{ hunt: huntList[3], completedSteps: 4 }, { hunt: huntList[4], completedSteps: 1 }] },
-    { suffix: "multi-b", firstName: "Jade", lastName: "Avance", right: "USER", plans: [{ hunt: huntList[5], completedSteps: 6 }] },
-    { suffix: "complete-b", firstName: "Louis", lastName: "Maître", right: "USER", plans: [{ hunt: huntList[6], completedSteps: 9 }, { hunt: huntList[7], completedSteps: 3 }] },
-    { suffix: "index3", firstName: "Sarah", lastName: "Trois", right: "USER", plans: [{ hunt: huntList[8], completedSteps: 7 }] },
-    { suffix: "steady", firstName: "Tom", lastName: "Régulier", right: "USER", plans: [{ hunt: huntList[9], completedSteps: 4 }] },
-    { suffix: "all-around", firstName: "Chloé", lastName: "Panorama", right: "USER", plans: [{ hunt: huntList[10], completedSteps: 1 }, { hunt: huntList[11], completedSteps: 8 }] },
-    { suffix: "late-game", firstName: "Nathan", lastName: "Avancé", right: "USER", plans: [{ hunt: huntList[12], completedSteps: 9 }, { hunt: huntList[13], completedSteps: 6 }] },
+    {
+      suffix: "marathon",
+      firstName: "Alex",
+      lastName: "Marathon",
+      right: "USER",
+      plans: heavyPlans,
+    },
+    { suffix: "rookie", firstName: "Lina", lastName: "Débutant", right: "USER", plans: [{ hunt: getHunt(0), completedSteps: 0 }] },
+    { suffix: "starter", firstName: "Noah", lastName: "Explorateur", right: "USER", plans: [{ hunt: getHunt(0), completedSteps: partialSteps(getHunt(0), 0.3) }] },
+    { suffix: "index1", firstName: "Mila", lastName: "Indice", right: "USER", plans: [{ hunt: getHunt(1), completedSteps: partialSteps(getHunt(1), 0.45) }] },
+    { suffix: "index2", firstName: "Hugo", lastName: "Progression", right: "USER", plans: [{ hunt: getHunt(1), completedSteps: partialSteps(getHunt(1), 0.7) }] },
+    { suffix: "complete-a", firstName: "Emma", lastName: "Finale", right: "USER", plans: [{ hunt: getHunt(2), completedSteps: completeSteps(getHunt(2)) }] },
+    { suffix: "multi-a", firstName: "Lucas", lastName: "Multi", right: "USER", plans: [{ hunt: getHunt(3), completedSteps: partialSteps(getHunt(3), 0.5) }, { hunt: getHunt(4), completedSteps: partialSteps(getHunt(4), 0.25) }] },
+    { suffix: "multi-b", firstName: "Jade", lastName: "Avance", right: "USER", plans: [{ hunt: getHunt(5), completedSteps: partialSteps(getHunt(5), 0.8) }] },
+    { suffix: "complete-b", firstName: "Louis", lastName: "Maître", right: "USER", plans: [{ hunt: getHunt(6), completedSteps: completeSteps(getHunt(6)) }, { hunt: getHunt(7), completedSteps: partialSteps(getHunt(7), 0.4) }] },
+    { suffix: "index3", firstName: "Sarah", lastName: "Trois", right: "USER", plans: [{ hunt: getHunt(8), completedSteps: partialSteps(getHunt(8), 0.65) }] },
+    { suffix: "steady", firstName: "Tom", lastName: "Régulier", right: "USER", plans: [{ hunt: getHunt(9), completedSteps: partialSteps(getHunt(9), 0.5) }] },
+    { suffix: "all-around", firstName: "Chloé", lastName: "Panorama", right: "USER", plans: [{ hunt: getHunt(10), completedSteps: partialSteps(getHunt(10), 0.2) }, { hunt: getHunt(11), completedSteps: partialSteps(getHunt(11), 0.9) }] },
   ].filter((player) => player.plans.length > 0 && player.plans.every((plan) => Boolean(plan.hunt)));
 }
 
@@ -256,8 +309,13 @@ async function main() {
       huntManagers.push(manager);
     }
 
+    const centerHasNoHunts = c === SEED_CONFIG.culturalCenters;
+    const huntsToCreate = centerHasNoHunts ? 0 : SEED_CONFIG.huntsPerCenter;
+
     // HUNTS
-    for (let h = 1; h <= SEED_CONFIG.huntsPerCenter; h++) {
+    for (let h = 1; h <= huntsToCreate; h++) {
+      const { indexCount, stepsByIndex } = buildHuntStructure(c, h);
+
       let hunt = await prisma.hunts.findFirst({
         where: { title: `Chasse ${h} Centre ${c}`, cultural_center_id: center.id },
       });
@@ -297,7 +355,7 @@ async function main() {
       const huntLngBase = hunt.longitude;
 
       // INDEXES
-      for (let i = 1; i <= SEED_CONFIG.indexesPerHunt; i++) {
+      for (let i = 1; i <= indexCount; i++) {
         const indexName = `Index ${String(i).padStart(2, "0")}`;
 
         let huntIndex = await prisma.index.findFirst({
@@ -310,8 +368,10 @@ async function main() {
           });
         }
 
+        const stepsCount = stepsByIndex[i - 1] ?? 1;
+
         // STEPS
-        for (let s = 1; s <= SEED_CONFIG.stepsPerIndex; s++) {
+        for (let s = 1; s <= stepsCount; s++) {
           const stepTitle = `Step ${String(s).padStart(2, "0")}`;
           let step = await prisma.steps.findFirst({
             where: { title: stepTitle, index_id: huntIndex.id },
@@ -362,6 +422,8 @@ async function main() {
     }))
     .sort((left, right) => left.title.localeCompare(right.title));
 
+  const marathonAccountEmail = "marathon_1@oscar.com";
+
   // =====================
   // LAMBDA PLAYERS
   // =====================
@@ -370,6 +432,7 @@ async function main() {
   for (const [playerIndex, playerPlan] of lambdaPlan.entries()) {
     const email = `${playerPlan.suffix}_${playerIndex + 1}@oscar.com`;
     const username = `${playerPlan.suffix}_${playerIndex + 1}`;
+    let playerSeedPoints = 0;
 
     let player = await prisma.users.findUnique({ where: { email } });
     if (!player) {
@@ -397,6 +460,8 @@ async function main() {
 
     for (const plan of playerPlan.plans) {
       for (const progressionStep of takeProgressionSteps(plan.hunt, plan.completedSteps)) {
+        playerSeedPoints += 10 + progressionStep.step_number;
+
         const existingProgression = await prisma.progression.findFirst({
           where: {
             user_id: player.id,
@@ -416,11 +481,21 @@ async function main() {
         }
       }
     }
+
+    // Keep deterministic non-zero ranking spread for social leaderboard demos.
+    const leaderboardBonus = (lambdaPlan.length - playerIndex) * 15;
+    await prisma.users.update({
+      where: { id: player.id },
+      data: { points: playerSeedPoints + leaderboardBonus },
+    });
   }
 
-  const totalHunts = SEED_CONFIG.culturalCenters * SEED_CONFIG.huntsPerCenter;
-  const totalIndexes = totalHunts * SEED_CONFIG.indexesPerHunt;
-  const totalSteps = totalIndexes * SEED_CONFIG.stepsPerIndex;
+  const totalHunts = orderedHunts.length;
+  const totalIndexes = orderedHunts.reduce((sum, hunt) => {
+    const uniqueIndexIds = new Set(hunt.steps.map((step) => step.index_id));
+    return sum + uniqueIndexIds.size;
+  }, 0);
+  const totalSteps = orderedHunts.reduce((sum, hunt) => sum + hunt.steps.length, 0);
 
   console.log("Seed terminé !");
   console.log(`Volumes cibles: ${SEED_CONFIG.culturalCenters} centres, ${totalHunts} hunts, ${totalIndexes} index, ${totalSteps} steps`);
@@ -429,6 +504,7 @@ async function main() {
   console.log(`Hunt managers: ${SEED_CONFIG.culturalCenters * SEED_CONFIG.huntManagersPerCenter} comptes hunt_manager_X_Y@oscar.com`);
   console.log(`Joueurs lambda: ${lambdaPlan.length} comptes lambda avec progressions variées`);
   console.log(`Comptes joueurs: ${lambdaPlan.map((player, index) => `${player.suffix}_${index + 1}@oscar.com`).join(", ")}`);
+  console.log(`Compte progression avancée (>=5 chasses complétées): ${marathonAccountEmail}`);
 }
 
 main()

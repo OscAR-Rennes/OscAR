@@ -48,6 +48,7 @@ const HuntDetailsScreen: React.FC = () => {
         noSteps: string;
         startHunt: string;
         resumeHunt?: string;
+        completedHuntMessage?: string;
         partLabel: string;
         lockedPartMessage: string;
     };
@@ -159,6 +160,8 @@ const HuntDetailsScreen: React.FC = () => {
 
     const hasProgression = isConnected && completedStepsCount > 0;
     const targetStep = firstPendingStep ?? firstUnlockedStep;
+    const totalHuntPoints = steps.reduce((sum, step) => sum + (step.points ?? 0), 0);
+    const isHuntCompleted = isConnected && Boolean(progression?.isComplete || (steps.length > 0 && completedStepsCount >= steps.length));
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
@@ -305,30 +308,51 @@ const HuntDetailsScreen: React.FC = () => {
                     )}
                 </View>
 
-                {/* Start Hunt Button */}
-                <TouchableOpacity
-                    style={{ width: '100%', marginTop: theme.SPACING.medium }}
-                    onPress={() => {
-                        if (targetStep && huntId) {
-                            router.push({
-                                pathname: '/current-step',
-                                params: {
-                                    huntId,
-                                    stepId: targetStep.id,
-                                    culturalCenterId: centerId,
-                                    from: fromScreen,
-                                },
-                            });
-                        }
-                    }}
-                >
-                    <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
-                            <SvgUri uri={getIconUri("play-button.svg")} width={20} height={20} color={theme.COLORS.background} />
-                            <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{hasProgression ? (texts.resumeHunt ?? texts.startHunt) : texts.startHunt}</Text>
+                {isHuntCompleted ? (
+                    <View
+                        style={{
+                            width: '100%',
+                            marginTop: theme.SPACING.medium,
+                            borderRadius: theme.SPACING.medium,
+                            borderWidth: 1,
+                            borderColor: `${theme.COLORS.secondary}55`,
+                            backgroundColor: `${theme.COLORS.secondary}22`,
+                            padding: theme.SPACING.medium,
+                        }}
+                    >
+                        <Text style={[globalStyles.text, { fontWeight: '700', marginBottom: theme.SPACING.small }]}> 
+                            {texts.completedHuntMessage}
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
+                            <Text style={[globalStyles.subtitle, { fontSize: theme.FONT_SIZES.text }]}>{totalHuntPoints}</Text>
+                            <SvgUri uri={getIconUri('star.svg')} width={20} height={20} color={theme.COLORS.secondary} />
                         </View>
-                    </LinearGradient>
-                </TouchableOpacity>
+                    </View>
+                ) : (
+                    <TouchableOpacity
+                        style={{ width: '100%', marginTop: theme.SPACING.medium }}
+                        onPress={() => {
+                            if (targetStep && huntId) {
+                                router.push({
+                                    pathname: '/current-step',
+                                    params: {
+                                        huntId,
+                                        stepId: targetStep.id,
+                                        culturalCenterId: centerId,
+                                        from: fromScreen,
+                                    },
+                                });
+                            }
+                        }}
+                    >
+                        <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
+                                <SvgUri uri={getIconUri("play-button.svg")} width={20} height={20} color={theme.COLORS.background} />
+                                <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{hasProgression ? (texts.resumeHunt ?? texts.startHunt) : texts.startHunt}</Text>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                )}
             </ScrollView>
             <BottomNavbar />
         </SafeAreaView>

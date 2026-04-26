@@ -29,6 +29,7 @@
     "noSteps": "No steps found for this hunt.",
     "startHunt": "Start the hunt",
     "resumeHunt": "Resume the hunt",
+    "completedHuntMessage": "You already finished this hunt, and you earned:",
     "partLabel": "Part",
     "lockedPartMessage": "Complete previous part to unlock"
   },
@@ -73,7 +74,9 @@
     "friendRequestsPlaceholderMessage": "Log in to add friends and see their progress !",
     "friendsLeaderboardTitle": "Friends Leaderboard",
     "globalLeaderboardTitle": "Global Leaderboard",
-    "globalLeaderboardMessage": "List of top players coming soon",
+    "globalLeaderboardLoading": "Loading leaderboard...",
+    "globalLeaderboardEmpty": "No players to display yet",
+    "pointsSuffix": "points",
     "connectButtonText": "Log in →",
     "seeMoreButtonText": "See more",
     "friendRequestsListMessage": "Friend requests list coming soon",

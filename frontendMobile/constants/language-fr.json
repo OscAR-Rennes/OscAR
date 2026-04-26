@@ -29,6 +29,7 @@
     "noSteps": "Aucune étape trouvée pour cette chasse.",
     "startHunt": "Démarrer la chasse",
     "resumeHunt": "Reprendre la chasse",
+    "completedHuntMessage": "Vous avez déjà fini cette chasse, et vous avez remporté :",
     "partLabel": "Partie",
     "lockedPartMessage": "Terminez la partie précédente pour débloquer"
   },
@@ -73,7 +74,9 @@
     "friendRequestsPlaceholderMessage": "Connectez-vous pour pouvoir ajouter des amis et voir leur progression !",
     "friendsLeaderboardTitle": "Classement des Amis",
     "globalLeaderboardTitle": "Classement Global",
-    "globalLeaderboardMessage": "Liste des meilleurs joueurs à venir",
+    "globalLeaderboardLoading": "Chargement du classement...",
+    "globalLeaderboardEmpty": "Aucun joueur à afficher pour le moment",
+    "pointsSuffix": "points",
     "connectButtonText": "Se connecter →",
     "seeMoreButtonText": "Voir plus",
     "friendRequestsListMessage": "Liste des demandes d'amis à venir",
