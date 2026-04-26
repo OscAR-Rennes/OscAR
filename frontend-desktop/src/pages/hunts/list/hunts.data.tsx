@@ -11,6 +11,8 @@ export function useHuntsData() {
     total: 0,
     totalPages: 1,
   });
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("asc");
   const [selectedHuntsRows, setSelectedHuntsRows] = useState([]);
   const user = useAuthStore((state) => state.user);
   const hasSelectedHunts = selectedHuntsRows.length > 0;
@@ -18,18 +20,17 @@ export function useHuntsData() {
   const selectedHuntId = hasSingleSelectedHunt ? selectedHuntsRows[0].id : undefined;
   const selectedHuntIds = selectedHuntsRows.map((row: any) => row.id);
 
-  const huntsColumns = 
-    [
-        { key: "title", label: "Nom de la chasse" },
-        { key: "description", label: "Description"},
-    ]
+  const huntsColumns = [
+    { key: "title", label: "Nom de la chasse" },
+    { key: "description", label: "Description" },
+  ];
 
   const fetchHunts = async () => {
     if (!user) return;
 
     const response = await getHuntsByCulturalCenter(
       user.id_cultural_center ?? "no-cultural-center",
-      { page: pagination.page, limit: pagination.limit }
+      { page: pagination.page, limit: pagination.limit, search, sort }
     );
 
     setHunts(Array.isArray(response?.data) ? response.data : []);
@@ -57,26 +58,25 @@ export function useHuntsData() {
 
   useEffect(() => {
     fetchHunts();
-  }, [user, pagination.page, pagination.limit]);
+  }, [user, pagination.page, pagination.limit, search, sort]);
 
   const handlePaginationChange = ({ page, limit }: { page: number; limit: number }) => {
-    setPagination((prev) => {
-      if (prev.page === page && prev.limit === limit) {
-        return prev;
-      }
+    setPagination((prev) => ({ ...prev, page, limit }));
+  };
 
-      return {
-        ...prev,
-        page,
-        limit,
-      };
-    });
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  const handleSortChange = (value: string) => {
+    setSort(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const deleteSelectedHunts = async () => {
     if (!selectedHuntIds.length) return;
-
-    await Promise.all(selectedHuntIds.map((huntId: string) => deleteHunt(huntId)));
+    await deleteHunt(selectedHuntIds);
     setSelectedHuntsRows([]);
     await fetchHunts();
   };
@@ -91,6 +91,7 @@ export function useHuntsData() {
     hasSingleSelectedHunt,
     selectedHuntId,
     deleteSelectedHunts,
-  }
-
+    handleSearchChange,
+    handleSortChange,
+  };
 }

@@ -85,7 +85,7 @@ export function useStepsData() {
 
     const fetchIndexes = async () => {
       const idx = await getAllIndexByHunt(selectedHuntId);
-      setIndexesForHunt(idx);
+      setIndexesForHunt(idx.data ?? []);
     };
 
     fetchIndexes();

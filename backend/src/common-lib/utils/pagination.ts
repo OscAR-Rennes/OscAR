@@ -4,7 +4,7 @@ import { PaginatedResponseDTO } from "../dto/common/PaginatedResponseDTO.js";
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
 
-export function parsePaginationQuery(query: Record<string, unknown>): PaginationParamsDTO {
+export function parsePaginationQuery(query: Record<string, unknown>): PaginationParamsDTO & { search: string; sort: string } {
   const rawPage = Number(query.page);
   const rawLimit = Number(query.limit);
 
@@ -12,7 +12,10 @@ export function parsePaginationQuery(query: Record<string, unknown>): Pagination
   const normalizedLimit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.floor(rawLimit) : DEFAULT_LIMIT;
   const limit = Math.min(normalizedLimit, MAX_LIMIT);
 
-  return { page, limit };
+  const search = typeof query.search === "string" ? query.search.trim() : "";
+  const sort = query.sort === "desc" ? "desc" : "asc";
+
+  return { page, limit, search, sort };
 }
 
 export function paginateArray<T>(items: T[], pagination: PaginationParamsDTO): PaginatedResponseDTO<T> {

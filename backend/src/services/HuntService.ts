@@ -11,8 +11,7 @@ import { PaginatedResponseDTO } from "../common-lib/dto/common/PaginatedResponse
 export interface HuntService {
   createHunt(huntData: CreateHuntRequestDTO, userId: string, userCulturalCenterId: string): Promise<CreateHuntResponseDTO>;
   getAllHunt(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>>;
-  getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightHuntDTO>>;
-  editHunt(huntData: EditHuntRequestDTO, user: AuthResponseDTO): Promise<EditHuntResponseDTO>;
+  getHuntByCulturalCenter(id: string, user: AuthResponseDTO | undefined, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightHuntDTO>>;  editHunt(huntData: EditHuntRequestDTO, user: AuthResponseDTO): Promise<EditHuntResponseDTO>;
   getHuntById(id: string): Promise<FullHuntDTO | null>;
   deleteHunt(user: AuthResponseDTO, ids: string[]): Promise<void>;
 }

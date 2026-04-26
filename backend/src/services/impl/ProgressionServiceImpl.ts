@@ -46,11 +46,11 @@ export class ProgressionServiceImpl implements ProgressionService {
         try {
             const { progressions, hunts } = await progressionRepository.getTotalProgression(user.id);
 
-            const completedStepIds = new Set(progressions.map(p => p.step_id));
+            const completedStepIds = new Set(progressions.map((p: { step_id: any; }) => p.step_id));
 
-            const progression = hunts.map(hunt => {
+            const progression = hunts.map((hunt: { steps: any; id: any; }) => {
                 const allSteps = hunt.steps;
-                const isComplete = allSteps.every(s => completedStepIds.has(s.id));
+                const isComplete = allSteps.every((s: { id: unknown; }) => completedStepIds.has(s.id));
 
                 if (isComplete) {
                     return { hunt_id: hunt.id, isComplete: true };
@@ -67,7 +67,7 @@ export class ProgressionServiceImpl implements ProgressionService {
                 const sortedIndexes = [...indexMap.values()].sort((a, b) => a.indexObj.index - b.indexObj.index);
 
                 const currentIndex = sortedIndexes.find(({ steps }) =>
-                    steps.some(s => !completedStepIds.has(s.id))
+                    steps.some((s: { id: unknown; }) => !completedStepIds.has(s.id))
                 );
 
                 if (!currentIndex) {
@@ -75,8 +75,8 @@ export class ProgressionServiceImpl implements ProgressionService {
                 }
 
                 const remainingSteps = currentIndex.steps
-                    .filter(s => !completedStepIds.has(s.id))
-                    .map(s => ({ id: s.id, title: s.title }));
+                    .filter((s: { id: unknown; }) => !completedStepIds.has(s.id))
+                    .map((s: { id: any; title: any; }) => ({ id: s.id, title: s.title }));
 
                 return {
                     hunt_id: hunt.id,
@@ -108,9 +108,9 @@ export class ProgressionServiceImpl implements ProgressionService {
                 throw new AppError({ userMessage: "Chasse introuvable", statusCode: 404 });
             }
 
-            const completedStepIds = new Set(progressions.map(p => p.step_id));
+            const completedStepIds = new Set(progressions.map((p: { step_id: any; }) => p.step_id));
             const allSteps = hunt.steps;
-            const isComplete = allSteps.every(s => completedStepIds.has(s.id));
+            const isComplete = allSteps.every((s: { id: unknown; }) => completedStepIds.has(s.id));
 
             if (isComplete) {
                 return { hunt_id: hunt.id, isComplete: true };
@@ -127,7 +127,7 @@ export class ProgressionServiceImpl implements ProgressionService {
             const sortedIndexes = [...indexMap.values()].sort((a, b) => a.indexObj.index - b.indexObj.index);
 
             const currentIndex = sortedIndexes.find(({ steps }) =>
-                steps.some(s => !completedStepIds.has(s.id))
+                steps.some((s: { id: unknown; }) => !completedStepIds.has(s.id))
             );
 
             if (!currentIndex) {
@@ -135,8 +135,8 @@ export class ProgressionServiceImpl implements ProgressionService {
             }
 
             const remainingSteps = currentIndex.steps
-                .filter(s => !completedStepIds.has(s.id))
-                .map(s => ({ id: s.id, title: s.title }));
+                .filter((s: { id: unknown; }) => !completedStepIds.has(s.id))
+                .map((s: { id: any; title: any; }) => ({ id: s.id, title: s.title }));
 
             return {
                 hunt_id: hunt.id,

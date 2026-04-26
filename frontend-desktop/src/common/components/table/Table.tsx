@@ -11,7 +11,6 @@ const normalizeText = (value: string) =>
 
 const MIN_SEARCH_CHARS = 3;
 
-
 export type Column<T> = {
   key: keyof T;
   label: string;
@@ -43,10 +42,13 @@ type TableProps<T extends { id: string | number }> = {
   }) => void;
   getRowLink?: (row: T, currentPath: string) => string;
   displayMode?: "view" | "subgrid";
+  // Filtres externes (server-side)
+  externalSearch?: boolean;
+  onSearchChange?: (search: string) => void;
+  onSortChange?: (key: string, direction: SortDirection) => void;
 };
 
 type SortDirection = "asc" | "desc";
-
 
 export default function Table<T extends { id: string | number }>({
   data = [],
@@ -60,221 +62,130 @@ export default function Table<T extends { id: string | number }>({
   onServerPaginationChange,
   getRowLink,
   displayMode = "view",
+  externalSearch = false,
+  onSearchChange,
+  onSortChange,
 }: TableProps<T>) {
   const location = useLocation();
   const selectAllRef = useRef<HTMLInputElement>(null);
 
-
-  const [selectedIds, setSelectedIds] = useState<
-    Array<T["id"]>
-  >([]);
-
+  const [selectedIds, setSelectedIds] = useState<Array<T["id"]>>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortKey, setSortKey] = useState<keyof T | null>(
-    columns[0]?.key ?? null
-  );
-  const [sortDirection, setSortDirection] =
-    useState<SortDirection>("asc");
+  const [sortKey, setSortKey] = useState<keyof T | null>(columns[0]?.key ?? null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const isServerPaginationEnabled =
-    Boolean(serverPagination) &&
-    typeof onServerPaginationChange === "function";
+    Boolean(serverPagination) && typeof onServerPaginationChange === "function";
 
-  const effectiveCurrentPage =
-    isServerPaginationEnabled
-      ? Math.max(1, serverPagination?.page ?? 1)
-      : currentPage;
+  const effectiveCurrentPage = isServerPaginationEnabled
+    ? Math.max(1, serverPagination?.page ?? 1)
+    : currentPage;
 
-  const effectiveItemsPerPage =
-    isServerPaginationEnabled
-      ? Math.max(1, serverPagination?.limit ?? 15)
-      : itemsPerPage;
+  const effectiveItemsPerPage = isServerPaginationEnabled
+    ? Math.max(1, serverPagination?.limit ?? 15)
+    : itemsPerPage;
+
   const trimmedSearchQuery = searchQuery.trim();
-  const normalizedSearchQuery = normalizeText(
-    trimmedSearchQuery
-  );
+  const normalizedSearchQuery = normalizeText(trimmedSearchQuery);
   const isSearchTooShort =
-    trimmedSearchQuery.length > 0 &&
-    trimmedSearchQuery.length < MIN_SEARCH_CHARS;
+    trimmedSearchQuery.length > 0 && trimmedSearchQuery.length < MIN_SEARCH_CHARS;
 
+  // Filtre interne désactivé si externalSearch=true
   const filteredData = useMemo(() => {
     if (!Array.isArray(data)) return [];
+    if (externalSearch || !normalizedSearchQuery || isSearchTooShort) return data;
 
-    if (!normalizedSearchQuery || isSearchTooShort) {
-      return data;
-    }
-
-    const isStatusQuery = [
-      "actif",
-      "active",
-      "inactif",
-      "inactive",
-      "desactive",
-    ].includes(normalizedSearchQuery);
+    const isStatusQuery = ["actif", "active", "inactif", "inactive", "desactive"].includes(
+      normalizedSearchQuery
+    );
 
     return data.filter((row) =>
-      Object.values(row as Record<string, unknown>).some(
-        (value) => {
-          const searchableValues = [String(value ?? "")];
+      Object.values(row as Record<string, unknown>).some((value) => {
+        const searchableValues = [String(value ?? "")];
 
-          if (typeof value === "boolean") {
-            searchableValues.push(
-              ...(value
-                ? ["true", "active", "actif"]
-                : [
-                    "false",
-                    "inactive",
-                    "inactif",
-                    "desactive",
-                  ])
-            );
-          }
-
-          const normalizedValue = normalizeText(
-            String(value ?? "")
-          );
-
-          if (
-            normalizedValue === "active" ||
-            normalizedValue === "actif"
-          ) {
-            searchableValues.push("active", "actif");
-          }
-
-          if (
-            normalizedValue === "inactive" ||
-            normalizedValue === "inactif"
-          ) {
-            searchableValues.push(
-              "inactive",
-              "inactif",
-              "desactive"
-            );
-          }
-
-          const normalizedSearchableValues =
-            searchableValues.map((searchableValue) =>
-              normalizeText(searchableValue)
-            );
-
-          if (isStatusQuery) {
-            return normalizedSearchableValues.some(
-              (searchableValue) =>
-                searchableValue === normalizedSearchQuery
-            );
-          }
-
-          return normalizedSearchableValues.some(
-            (searchableValue) =>
-              searchableValue.includes(normalizedSearchQuery)
+        if (typeof value === "boolean") {
+          searchableValues.push(
+            ...(value
+              ? ["true", "active", "actif"]
+              : ["false", "inactive", "inactif", "desactive"])
           );
         }
-      )
-    );
-  }, [data, isSearchTooShort, normalizedSearchQuery]);
 
+        const normalizedValue = normalizeText(String(value ?? ""));
+        if (normalizedValue === "active" || normalizedValue === "actif") {
+          searchableValues.push("active", "actif");
+        }
+        if (normalizedValue === "inactive" || normalizedValue === "inactif") {
+          searchableValues.push("inactive", "inactif", "desactive");
+        }
+
+        const normalizedSearchableValues = searchableValues.map((v) => normalizeText(v));
+
+        if (isStatusQuery) {
+          return normalizedSearchableValues.some((v) => v === normalizedSearchQuery);
+        }
+        return normalizedSearchableValues.some((v) => v.includes(normalizedSearchQuery));
+      })
+    );
+  }, [data, externalSearch, isSearchTooShort, normalizedSearchQuery]);
+
+  // Tri interne désactivé si onSortChange fourni (server-side sort)
   const sortedData = useMemo(() => {
-    if (!sortKey) {
-      return filteredData;
-    }
+    if (onSortChange || !sortKey) return filteredData;
 
     const getSortableValue = (value: unknown) => {
-      if (typeof value === "number") {
-        return value;
-      }
-
-      if (typeof value === "boolean") {
-        return value ? "actif" : "inactif";
-      }
-
+      if (typeof value === "number") return value;
+      if (typeof value === "boolean") return value ? "actif" : "inactif";
       return normalizeText(String(value ?? ""));
     };
 
-    const sorted = [...filteredData].sort((a, b) => {
+    return [...filteredData].sort((a, b) => {
       const aValue = getSortableValue(a[sortKey]);
       const bValue = getSortableValue(b[sortKey]);
-
       let comparison = 0;
-
-      if (
-        typeof aValue === "number" &&
-        typeof bValue === "number"
-      ) {
+      if (typeof aValue === "number" && typeof bValue === "number") {
         comparison = aValue - bValue;
       } else {
-        comparison = String(aValue).localeCompare(
-          String(bValue),
-          "fr",
-          { sensitivity: "base" }
-        );
+        comparison = String(aValue).localeCompare(String(bValue), "fr", { sensitivity: "base" });
       }
-
-      return sortDirection === "asc"
-        ? comparison
-        : -comparison;
+      return sortDirection === "asc" ? comparison : -comparison;
     });
-
-    return sorted;
-  }, [filteredData, sortDirection, sortKey]);
+  }, [filteredData, onSortChange, sortDirection, sortKey]);
 
   const totalRows = isServerPaginationEnabled
     ? Math.max(0, serverPagination?.total ?? 0)
     : sortedData.length;
 
-
   const totalPages = Math.max(
     1,
     isServerPaginationEnabled
-      ? serverPagination?.totalPages ??
-          Math.ceil(totalRows / effectiveItemsPerPage)
+      ? serverPagination?.totalPages ?? Math.ceil(totalRows / effectiveItemsPerPage)
       : Math.ceil(sortedData.length / effectiveItemsPerPage)
   );
 
   const currentData = useMemo(() => {
-    if (isServerPaginationEnabled) {
-      return sortedData;
-    }
-
+    if (isServerPaginationEnabled) return sortedData;
     const start = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
     return sortedData.slice(start, start + effectiveItemsPerPage);
-  }, [
-    sortedData,
-    isServerPaginationEnabled,
-    effectiveCurrentPage,
-    effectiveItemsPerPage,
-  ]);
+  }, [sortedData, isServerPaginationEnabled, effectiveCurrentPage, effectiveItemsPerPage]);
 
-  const allRowIds = useMemo(
-    () => sortedData.map((row) => row.id),
-    [sortedData]
-  );
+  const allRowIds = useMemo(() => sortedData.map((row) => row.id), [sortedData]);
 
   const selectedAllRowsCount = useMemo(
-    () =>
-      allRowIds.filter((id) => selectedIds.includes(id))
-        .length,
+    () => allRowIds.filter((id) => selectedIds.includes(id)).length,
     [allRowIds, selectedIds]
   );
 
-  const isAllRowsSelected =
-    allRowIds.length > 0 &&
-    selectedAllRowsCount === allRowIds.length;
-
-  const isSomeRowsSelected =
-    selectedAllRowsCount > 0 && !isAllRowsSelected;
-
+  const isAllRowsSelected = allRowIds.length > 0 && selectedAllRowsCount === allRowIds.length;
+  const isSomeRowsSelected = selectedAllRowsCount > 0 && !isAllRowsSelected;
 
   const toggleSelect = (row: T) => {
     setSelectedIds((prev) => {
       const exists = prev.includes(row.id);
-      const next = exists
-        ? prev.filter((id) => id !== row.id)
-        : [...prev, row.id];
-
+      const next = exists ? prev.filter((id) => id !== row.id) : [...prev, row.id];
       onRowSelect?.(data.filter((r) => next.includes(r.id)));
-
       return next;
     });
   };
@@ -282,41 +193,41 @@ export default function Table<T extends { id: string | number }>({
   const toggleSelectAllRows = () => {
     setSelectedIds((prev) => {
       const next = isAllRowsSelected ? [] : allRowIds;
-
       onRowSelect?.(data.filter((r) => next.includes(r.id)));
-
       return next;
     });
   };
 
   const toggleSort = (columnKey: keyof T) => {
-    if (!isServerPaginationEnabled) {
-      setCurrentPage(1);
-    }
+    if (!isServerPaginationEnabled) setCurrentPage(1);
 
-    if (sortKey === columnKey) {
-      setSortDirection((prev) =>
-        prev === "asc" ? "desc" : "asc"
-      );
-      return;
-    }
+    const newDirection =
+      sortKey === columnKey ? (sortDirection === "asc" ? "desc" : "asc") : "asc";
+    const newKey = columnKey;
 
-    setSortKey(columnKey);
-    setSortDirection("asc");
+    setSortKey(newKey);
+    setSortDirection(newDirection);
+
+    // Notifie le parent si server-side sort
+    onSortChange?.(String(newKey), newDirection);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (externalSearch && value.length >= MIN_SEARCH_CHARS) {
+      onSearchChange?.(value);
+    } else if (externalSearch && value.length === 0) {
+      onSearchChange?.("");
+    }
   };
 
   useEffect(() => {
     setSelectedIds([]);
-
-    if (!isServerPaginationEnabled) {
-      setCurrentPage(1);
-    }
+    if (!isServerPaginationEnabled) setCurrentPage(1);
   }, [data, itemsPerPage, isServerPaginationEnabled]);
 
   useEffect(() => {
-    if (!isServerPaginationEnabled) {
-      setCurrentPage(1);
-    }
+    if (!isServerPaginationEnabled) setCurrentPage(1);
   }, [searchQuery, isServerPaginationEnabled]);
 
   useEffect(() => {
@@ -324,11 +235,9 @@ export default function Table<T extends { id: string | number }>({
       setSortKey(null);
       return;
     }
-
     const hasCurrentSortKey = sortKey
       ? columns.some((column) => column.key === sortKey)
       : false;
-
     if (!hasCurrentSortKey) {
       setSortKey(columns[0].key);
       setSortDirection("asc");
@@ -337,22 +246,14 @@ export default function Table<T extends { id: string | number }>({
 
   useEffect(() => {
     if (selectAllRef.current) {
-      selectAllRef.current.indeterminate =
-        isSomeRowsSelected;
+      selectAllRef.current.indeterminate = isSomeRowsSelected;
     }
   }, [isSomeRowsSelected]);
 
-
-  const renderCell = (
-    row: T,
-    column: Column<T>,
-    columnIndex: number
-  ) => {
+  const renderCell = (row: T, column: Column<T>, columnIndex: number) => {
     const rawValue = row[column.key];
     const isStatusColumn =
-      !column.render &&
-      String(column.key) === "isActive" &&
-      typeof rawValue === "boolean";
+      !column.render && String(column.key) === "isActive" && typeof rawValue === "boolean";
 
     const value = isStatusColumn ? (
       <span
@@ -370,12 +271,7 @@ export default function Table<T extends { id: string | number }>({
       const rowLink = getRowLink
         ? getRowLink(row, location.pathname)
         : `${location.pathname}/${row.id}`;
-
-      return (
-        <Link to={rowLink}>
-          {value}
-        </Link>
-      );
+      return <Link to={rowLink}>{value}</Link>;
     }
 
     return value;
@@ -383,28 +279,19 @@ export default function Table<T extends { id: string | number }>({
 
   const goToPage = (nextPage: number) => {
     if (isServerPaginationEnabled) {
-      onServerPaginationChange?.({
-        page: nextPage,
-        limit: effectiveItemsPerPage,
-      });
+      onServerPaginationChange?.({ page: nextPage, limit: effectiveItemsPerPage });
       return;
     }
-
     setCurrentPage(nextPage);
   };
 
   const handleItemsPerPageChange = (nextLimit: number) => {
     if (isServerPaginationEnabled) {
-      onServerPaginationChange?.({
-        page: 1,
-        limit: nextLimit,
-      });
+      onServerPaginationChange?.({ page: 1, limit: nextLimit });
       return;
     }
-
     setItemsPerPage(nextLimit);
   };
-
 
   return (
     <>
@@ -412,9 +299,7 @@ export default function Table<T extends { id: string | number }>({
         {/* Header */}
         <div className="table-row-count-wrapper">
           {allItemsLabel ? (
-            <span className="table-all-items-label">
-              {`${allItemsPrefix} ${allItemsLabel}`}
-            </span>
+            <span className="table-all-items-label">{`${allItemsPrefix} ${allItemsLabel}`}</span>
           ) : null}
 
           <div className="table-header-actions">
@@ -422,26 +307,17 @@ export default function Table<T extends { id: string | number }>({
 
             <div className="table-search-field">
               <label className="table-search-wrapper">
-                <img
-                  src={searchIcon}
-                  alt="Rechercher"
-                  className="table-search-icon"
-                />
+                <img src={searchIcon} alt="Rechercher" className="table-search-icon" />
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) =>
-                    setSearchQuery(e.target.value)
-                  }
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   placeholder="Rechercher"
                   className="table-search-input"
                 />
               </label>
               {isSearchTooShort ? (
-                <span
-                  className="table-search-error"
-                  aria-live="polite"
-                >
+                <span className="table-search-error" aria-live="polite">
                   Min. 3 caractères
                 </span>
               ) : null}
@@ -473,9 +349,7 @@ export default function Table<T extends { id: string | number }>({
                       <span>{col.label}</span>
                       {sortKey === col.key ? (
                         <span className="table-sort-arrow">
-                          {sortDirection === "asc"
-                            ? "↓"
-                            : "↑"}
+                          {sortDirection === "asc" ? "↓" : "↑"}
                         </span>
                       ) : null}
                     </button>
@@ -487,7 +361,6 @@ export default function Table<T extends { id: string | number }>({
             <tbody>
               {currentData.map((row) => (
                 <tr key={row.id}>
-                  {/* Checkbox */}
                   <td>
                     <input
                       type="checkbox"
@@ -495,12 +368,8 @@ export default function Table<T extends { id: string | number }>({
                       onChange={() => toggleSelect(row)}
                     />
                   </td>
-
-                  {/* Data columns */}
                   {columns.map((col, index) => (
-                    <td key={String(col.key)}>
-                      {renderCell(row, col, index)}
-                    </td>
+                    <td key={String(col.key)}>{renderCell(row, col, index)}</td>
                   ))}
                 </tr>
               ))}
@@ -518,9 +387,7 @@ export default function Table<T extends { id: string | number }>({
             <button
               className="table-pagination-btn"
               disabled={effectiveCurrentPage === 1}
-              onClick={() =>
-                goToPage(Math.max(1, effectiveCurrentPage - 1))
-              }
+              onClick={() => goToPage(Math.max(1, effectiveCurrentPage - 1))}
             >
               Précédent
             </button>
@@ -532,11 +399,7 @@ export default function Table<T extends { id: string | number }>({
             <button
               className="table-pagination-btn"
               disabled={effectiveCurrentPage === totalPages}
-              onClick={() =>
-                goToPage(
-                  Math.min(totalPages, effectiveCurrentPage + 1)
-                )
-              }
+              onClick={() => goToPage(Math.min(totalPages, effectiveCurrentPage + 1))}
             >
               Suivant
             </button>
@@ -545,9 +408,7 @@ export default function Table<T extends { id: string | number }>({
               Afficher&nbsp;
               <select
                 value={effectiveItemsPerPage}
-                onChange={(e) =>
-                  handleItemsPerPageChange(Number(e.target.value))
-                }
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               >
                 {[15, 30, 50].map((n) => (
                   <option key={n} value={n}>

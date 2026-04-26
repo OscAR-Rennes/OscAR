@@ -4,7 +4,13 @@ import { apiClient } from '../apiClient';
 function toPaginationQuery(params = {}) {
   const page = Number(params.page) > 0 ? Number(params.page) : 1;
   const limit = Number(params.limit) > 0 ? Number(params.limit) : 15;
-  return `?page=${page}&limit=${limit}`;
+  
+  const query = new URLSearchParams({ page, limit });
+  
+  if (params.search) query.append("search", params.search);
+  if (params.sort) query.append("sort", params.sort);
+  
+  return `?${query.toString()}`;
 }
 
 export function addStep(stepData, modelFile, imageFile) {
@@ -36,7 +42,40 @@ export function editStep(stepId, stepData) {
   return apiClient(`/step/edit/${stepId}`, { method: 'PUT', body: stepData });
 }
 
-export function deleteStep(stepId) {
-  return apiClient(`/step/${stepId}`, { method: 'DELETE' });
+export function deleteStep(selectedStepIds) {
+  return apiClient(`/step`, { method: 'DELETE', body: { ids : selectedStepIds } });
 }
 
+export async function dowloadStepAr(stepId) {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/step/downloadAr/${stepId}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) return;
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `step_ar_${stepId}.zip`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function dowloadStepTarget(stepId) {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/step/downloadTarget/${stepId}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) return;
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `step_target_${stepId}.jpg`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
