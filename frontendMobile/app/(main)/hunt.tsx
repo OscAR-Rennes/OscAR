@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, KeyboardAvoidingView } from 'react-native';
+import { ScrollView, KeyboardAvoidingView, View } from 'react-native';
 import { theme } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import PageTitle from '../../components/page-title';
@@ -141,47 +141,49 @@ export default function HuntScreen() {
     return (
         <KeyboardAvoidingView style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: theme.SPACING.large }}>
-                <PageTitle title={texts.pageTitle} />
-                
                 {/* Current Hunts Section */}
-                <HuntSection
-                    title={currentTitle}
-                    icon="target-larger.svg"
-                    iconColor={theme.COLORS.primary}
-                    placeholderIcon="target-larger.svg"
-                    placeholderMessage={isConnected ? texts.currentHuntsPlaceholderMessage : texts.disconnectedPlaceholderMessage}
-                    buttonText={texts.connectButtonText}
-                    isAuthenticated={isConnected}
-                    authMessage={isLoading ? texts.currentHuntsAuthMessage : texts.currentHuntsPlaceholderMessage}
-                    pointsLabel={huntListTexts.points}
-                    stepsLabel={huntListTexts.steps}
-                    partLabel={huntDetailsTexts.partLabel}
-                    hunts={currentHunts}
-                    isLoading={isLoading}
-                    onHuntPress={(hunt) =>
-                        router.push({
-                            pathname: '/hunt-details',
-                            params: { id: hunt.id, from: 'hunt' },
-                        })
-                    }
-                />
+                <View style={{ marginBottom: theme.SPACING.small, marginTop: theme.SPACING.large, borderWidth: 1, borderColor: '#e0e0e0', borderRadius: theme.SPACING.small, padding: theme.SPACING.medium }}>
+                    <HuntSection
+                        title={currentTitle}
+                        icon="target-larger.svg"
+                        iconColor={theme.COLORS.primary}
+                        placeholderIcon="target-larger.svg"
+                        placeholderMessage={isConnected ? texts.currentHuntsPlaceholderMessage : texts.disconnectedPlaceholderMessage}
+                        buttonText={texts.connectButtonText}
+                        isAuthenticated={isConnected}
+                        authMessage={isLoading ? texts.currentHuntsAuthMessage : texts.currentHuntsPlaceholderMessage}
+                        pointsLabel={huntListTexts.points}
+                        stepsLabel={huntListTexts.steps}
+                        partLabel={huntDetailsTexts.partLabel}
+                        hunts={currentHunts}
+                        isLoading={isLoading}
+                        onHuntPress={(hunt) =>
+                            router.push({
+                                pathname: '/hunt-details',
+                                params: { id: hunt.id, from: 'hunt' },
+                            })
+                        }
+                    />
+                </View>
 
                 {/* Completed Hunts Section */}
-                <HuntSection
-                    title={completedTitle}
-                    icon="check.svg"
-                    iconColor={theme.COLORS.success}
-                    placeholderIcon="target-larger.svg"
-                    placeholderMessage={isConnected ? texts.completedHuntsPlaceholderMessage : texts.disconnectedPlaceholderMessage}
-                    buttonText={texts.connectButtonText}
-                    isAuthenticated={isConnected}
-                    authMessage={isLoading ? texts.completedHuntsAuthMessage : texts.completedHuntsPlaceholderMessage}
-                    pointsLabel={huntListTexts.points}
-                    stepsLabel={huntListTexts.steps}
-                    partLabel={huntDetailsTexts.partLabel}
-                    hunts={completedHunts}
-                    isLoading={isLoading}
-                />
+                <View style={{ marginBottom: theme.SPACING.large, marginTop: theme.SPACING.small, borderWidth: 1, borderColor: '#e0e0e0', borderRadius: theme.SPACING.small, padding: theme.SPACING.medium }}>
+                    <HuntSection
+                        title={completedTitle}
+                        icon="check.svg"
+                        iconColor={theme.COLORS.success}
+                        placeholderIcon="target-larger.svg"
+                        placeholderMessage={isConnected ? texts.completedHuntsPlaceholderMessage : texts.disconnectedPlaceholderMessage}
+                        buttonText={texts.connectButtonText}
+                        isAuthenticated={isConnected}
+                        authMessage={isLoading ? texts.completedHuntsAuthMessage : texts.completedHuntsPlaceholderMessage}
+                        pointsLabel={huntListTexts.points}
+                        stepsLabel={huntListTexts.steps}
+                        partLabel={huntDetailsTexts.partLabel}
+                        hunts={completedHunts}
+                        isLoading={isLoading}
+                    />
+                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );

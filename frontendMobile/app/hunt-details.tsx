@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
@@ -12,9 +12,13 @@ import { useLanguage } from '../context/LanguageContext';
 import translations from '../constants/language-en.json';
 import translationsFr from '../constants/language-fr.json';
 import { LightStepDTO } from '../common/dto/ILightStep';
+import { FullStepDTO } from '../common/dto/IStep';
 import { getIconUri } from './icon-mapping';
 import { getStepByHunt } from '@/api/services/step.api'
 import { getProgressionByHunt } from '@/api/services/progression.api';
+import { getStepById } from '@/api/services/step.api'
+import { saveProgress } from '@/api/services/progression.api'
+import SuccessStepModal from '../components/success-step-modal';
 import { useAuth } from '@/context/AuthContext';
 
 type ProgressionByHunt = {
@@ -51,6 +55,8 @@ const HuntDetailsScreen: React.FC = () => {
         completedHuntMessage?: string;
         partLabel: string;
         lockedPartMessage: string;
+        pointsEarned: string;
+        stepsRemaining: string;
     };
     const { isConnected } = useAuth();
 
@@ -61,6 +67,10 @@ const HuntDetailsScreen: React.FC = () => {
 
     const [steps, setSteps] = useState<LightStepDTO[]>([]);
     const [progression, setProgression] = useState<ProgressionByHunt | null>(null);
+    const [showAR, setShowAR] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [scannedStep, setScannedStep] = useState<FullStepDTO | null>(null);
+    const [totalPoints, setTotalPoints] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -78,6 +88,37 @@ const HuntDetailsScreen: React.FC = () => {
             fetchData()
         }
     }, [huntId, isConnected])
+
+    // derive completed step ids and total points
+    const completedStepIds = useMemo(() => {
+        const set = new Set<string>();
+        if (!steps || steps.length === 0) return set;
+        if (progression?.isComplete) {
+            steps.forEach((s) => set.add(s.id));
+            return set;
+        }
+
+        if (progression?.current_index) {
+            const remainingIds = new Set((progression.current_index.remaining_steps ?? []).map((r) => r.id));
+            steps.forEach((step) => {
+                const stepIndex = step.index_number ?? 1;
+                if (stepIndex < (progression.current_index?.index ?? 1)) {
+                    set.add(step.id);
+                } else if (stepIndex === (progression.current_index?.index ?? 1) && !remainingIds.has(step.id)) {
+                    set.add(step.id);
+                }
+            });
+        }
+
+        return set;
+    }, [steps, progression]);
+
+    useEffect(() => {
+        const pts = steps.filter((s) => completedStepIds.has(s.id)).reduce((sum, s) => sum + (s.points ?? 0), 0);
+        setTotalPoints(pts);
+    }, [steps, completedStepIds]);
+
+    const ARScreen = React.lazy(() => import('@/components/ARScreen'));
 
     const groupedSteps = steps.reduce((acc: GroupedSteps[], step) => {
         const indexNumber = step.index_number ?? 1;
@@ -163,6 +204,31 @@ const HuntDetailsScreen: React.FC = () => {
     const totalHuntPoints = steps.reduce((sum, step) => sum + (step.points ?? 0), 0);
     const isHuntCompleted = isConnected && Boolean(progression?.isComplete || (steps.length > 0 && completedStepsCount >= steps.length));
 
+    const handleScanPress = async (step: LightStepDTO) => {
+        const full = await getStepById(step.id);
+        setScannedStep(full);
+        setShowAR(true);
+    };
+
+    const handleARValidated = () => {
+        setShowAR(false);
+        setShowSuccessModal(true);
+    };
+
+    const handleCloseModal = async () => {
+        setShowSuccessModal(false);
+        if (scannedStep) {
+            if (isConnected && huntId) {
+                await saveProgress({ hunt_id: huntId, step_id: scannedStep.id });
+                const progressionData = await getProgressionByHunt(huntId);
+                setProgression(progressionData ?? null);
+            }
+
+            setTotalPoints((prev) => prev + (scannedStep.points ?? 0));
+            setScannedStep(null);
+        }
+    };
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
             <HeaderNavbar />
@@ -191,6 +257,35 @@ const HuntDetailsScreen: React.FC = () => {
                         <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
                         <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>{texts.backToCulturalCenter ?? texts.backToMenu ?? texts.backToMenu}</Text>
                     </TouchableOpacity>
+                </View>
+
+                {/* Progression / Points Summary */}
+                <View style={{ backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, marginBottom: theme.SPACING.medium, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 5 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.SPACING.small }}>
+                        <Text style={[globalStyles.text, { fontWeight: '700' }]}>Progression</Text>
+                        <Text style={[globalStyles.text, { fontWeight: '700' }]}>{completedStepsCount} / {steps.length} étapes</Text>
+                    </View>
+                    <View style={{ height: 8, backgroundColor: '#d8d8d8', borderRadius: 4, width: '100%', marginBottom: theme.SPACING.medium }}>
+                        <View style={{ height: '100%', backgroundColor: theme.COLORS.secondary, borderRadius: 4, width: `${steps.length > 0 ? (completedStepsCount / steps.length) * 100 : 0}%` }} />
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between',}}>
+                        <View style={{ flex: 1, marginRight: theme.SPACING.small, backgroundColor: '#f9f9f9', padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', borderWidth: 1, borderColor: '#e0e0e0' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginBottom: theme.SPACING.small }}>
+                                <Text style={[globalStyles.title, { color: theme.COLORS.secondary }]}>{totalPoints}</Text>
+                                <SvgUri uri={getIconUri('star.svg')} width={28} height={28} color={theme.COLORS.secondary} />
+                            </View>
+                            <Text style={[globalStyles.text, { fontWeight: '400', color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.tinyText }]}>{texts.pointsEarned}</Text>
+                        </View>
+
+                        <View style={{ flex: 1, marginLeft: theme.SPACING.small, backgroundColor: '#f9f9f9', padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', borderWidth: 1, borderColor: '#e0e0e0' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginBottom: theme.SPACING.small }}>
+                                <Text style={[globalStyles.title, { color: theme.COLORS.tertiary }]}>{steps.length - completedStepsCount}</Text>
+                                <SvgUri uri={getIconUri('step.svg')} width={28} height={28} color={theme.COLORS.tertiary} />
+                            </View>
+                            <Text style={[{ fontWeight: '400', color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.tinyText }]}>{texts.stepsRemaining}</Text>
+                        </View>
+                    </View>
                 </View>
 
                 {/* Steps List */}
@@ -234,7 +329,7 @@ const HuntDetailsScreen: React.FC = () => {
                                             <View
                                                 key={step.id}
                                                 style={{
-                                                    flexDirection: 'row',
+                                                    flexDirection: 'column',
                                                     backgroundColor: unlocked ? theme.COLORS.background : '#f5f5f5',
                                                     padding: theme.SPACING.medium,
                                                     borderRadius: theme.SPACING.small,
@@ -246,31 +341,41 @@ const HuntDetailsScreen: React.FC = () => {
                                                     elevation: unlocked ? 2 : 0,
                                                 }}
                                             >
-                                                <View style={{ backgroundColor: unlocked ? theme.COLORS.primary : '#9f9f9f', borderRadius: 500, width: 40, height: 40, justifyContent: 'center', alignItems: 'center', marginRight: theme.SPACING.small }}>
-                                                    <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: theme.FONT_SIZES.text }}>{stepIndex + 1}</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: stepCompleted || !unlocked ? 0 : theme.SPACING.small }}>
+                                                    <View style={{ backgroundColor: unlocked ? theme.COLORS.primary : '#9f9f9f', borderRadius: 500, width: 40, height: 40, justifyContent: 'center', alignItems: 'center', marginRight: theme.SPACING.small }}>
+                                                        <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: theme.FONT_SIZES.text }}>{stepIndex + 1}</Text>
+                                                    </View>
+
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={[globalStyles.text, { fontWeight: 'bold', paddingRight: theme.SPACING.medium }]}>{step.title}</Text>
+                                                        <Text style={[{ color: theme.COLORS.textSecondary, paddingRight: theme.SPACING.medium, fontSize: theme.FONT_SIZES.tinyText }]}>
+                                                            {unlocked ? step.description : texts.lockedPartMessage}
+                                                        </Text>
+                                                    </View>
+
+                                                    <View style={{ flexDirection: 'row', gap: theme.SPACING.small, alignItems: 'center' }}>
+                                                        {stepCompleted ? (
+                                                            <View style={{ backgroundColor: '#2eb85c', borderRadius: 999, width: 22, height: 22, alignItems: 'center', justifyContent: 'center' }}>
+                                                                <SvgUri uri={getIconUri('check.svg')} width={11} height={11} color={theme.COLORS.background} />
+                                                            </View>
+                                                        ) : unlocked ? (
+                                                            <>
+                                                                <Text style={{ fontWeight: '700', fontSize: theme.FONT_SIZES.text }}>+ {step.points}</Text>
+                                                                <SvgUri uri={getIconUri("star.svg")} width={20} height={20} color={theme.COLORS.secondary} />
+                                                            </>
+                                                        ) : (
+                                                            <SvgUri uri={getIconUri('lock.svg')} width={16} height={16} color={theme.COLORS.textSecondary} />
+                                                        )}
+                                                    </View>
                                                 </View>
 
-                                                <View style={{ flex: 1 }}>
-                                                    <Text style={[globalStyles.text, { fontWeight: 'bold', paddingRight: theme.SPACING.medium }]}>{step.title}</Text>
-                                                    <Text style={[globalStyles.text, { color: theme.COLORS.textSecondary, paddingRight: theme.SPACING.medium }]}>
-                                                        {unlocked ? step.description : texts.lockedPartMessage}
-                                                    </Text>
-                                                </View>
-
-                                                <View style={{ flexDirection: 'row', gap: theme.SPACING.small, alignItems: 'center' }}>
-                                                    {stepCompleted ? (
-                                                        <View style={{ backgroundColor: '#2eb85c', borderRadius: 999, width: 22, height: 22, alignItems: 'center', justifyContent: 'center' }}>
-                                                            <SvgUri uri={getIconUri('check.svg')} width={11} height={11} color={theme.COLORS.background} />
-                                                        </View>
-                                                    ) : unlocked ? (
-                                                        <>
-                                                            <Text style={{ fontWeight: '700', fontSize: theme.FONT_SIZES.text }}>+ {step.points}</Text>
-                                                            <SvgUri uri={getIconUri("star.svg")} width={20} height={20} color={theme.COLORS.secondary} />
-                                                        </>
-                                                    ) : (
-                                                        <SvgUri uri={getIconUri('lock.svg')} width={16} height={16} color={theme.COLORS.textSecondary} />
-                                                    )}
-                                                </View>
+                                                {!stepCompleted && unlocked && (
+                                                    <TouchableOpacity onPress={() => handleScanPress(step)} style={{ width: '100%' }}>
+                                                        <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, paddingVertical: 10 }]}> 
+                                                            <Text style={{ color: theme.COLORS.background, fontWeight: '700' }}>Scanner</Text>
+                                                        </LinearGradient>
+                                                    </TouchableOpacity>
+                                                )}
                                             </View>
                                         );
                                     })}
@@ -308,7 +413,7 @@ const HuntDetailsScreen: React.FC = () => {
                     )}
                 </View>
 
-                {isHuntCompleted ? (
+                {isHuntCompleted && (
                     <View
                         style={{
                             width: '100%',
@@ -328,33 +433,20 @@ const HuntDetailsScreen: React.FC = () => {
                             <SvgUri uri={getIconUri('star.svg')} width={20} height={20} color={theme.COLORS.secondary} />
                         </View>
                     </View>
-                ) : (
-                    <TouchableOpacity
-                        style={{ width: '100%', marginTop: theme.SPACING.medium }}
-                        onPress={() => {
-                            if (targetStep && huntId) {
-                                router.push({
-                                    pathname: '/current-step',
-                                    params: {
-                                        huntId,
-                                        stepId: targetStep.id,
-                                        culturalCenterId: centerId,
-                                        from: fromScreen,
-                                    },
-                                });
-                            }
-                        }}
-                    >
-                        <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, height: 50 }]} >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
-                                <SvgUri uri={getIconUri("play-button.svg")} width={20} height={20} color={theme.COLORS.background} />
-                                <Text style={[{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }]}>{hasProgression ? (texts.resumeHunt ?? texts.startHunt) : texts.startHunt}</Text>
-                            </View>
-                        </LinearGradient>
-                    </TouchableOpacity>
                 )}
             </ScrollView>
+            {showSuccessModal && scannedStep && (
+                <SuccessStepModal onClose={handleCloseModal} points={scannedStep.points} isLastStep={false} totalPoints={totalPoints} />
+            )}
+
             <BottomNavbar />
+
+            {showAR && scannedStep && (
+                <ARScreen
+                    onClose={() => setShowAR(false)}
+                    onValidated={handleARValidated}
+                />
+            )}
         </SafeAreaView>
     );
 };

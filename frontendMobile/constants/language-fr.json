@@ -31,7 +31,9 @@
     "resumeHunt": "Reprendre la chasse",
     "completedHuntMessage": "Vous avez déjà fini cette chasse, et vous avez remporté :",
     "partLabel": "Partie",
-    "lockedPartMessage": "Terminez la partie précédente pour débloquer"
+    "lockedPartMessage": "Terminez la partie précédente pour débloquer",
+    "pointsEarned": "Points gagnés",
+    "stepsRemaining": "Étapes restantes"
   },
   "index": {
     "languageSelection": "Sélection de la langue",

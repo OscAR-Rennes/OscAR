@@ -31,7 +31,9 @@
     "resumeHunt": "Resume the hunt",
     "completedHuntMessage": "You already finished this hunt, and you earned:",
     "partLabel": "Part",
-    "lockedPartMessage": "Complete previous part to unlock"
+    "lockedPartMessage": "Complete previous part to unlock",
+    "pointsEarned": "Points Earned",
+    "stepsRemaining": "Steps Remaining"
   },
   "index": {
     "languageSelection": "Language Selection",

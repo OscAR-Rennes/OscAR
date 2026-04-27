@@ -6,16 +6,18 @@ import { useRouter } from 'expo-router';
 import { SvgUri } from 'react-native-svg';
 import { getIconUri } from '../app/icon-mapping';
 import { HuntSectionProps } from '../common/dto/IHuntSectionProps';
+import SectionTitle from './section-title';
 
 const HuntSection: React.FC<HuntSectionProps> = ({ title, icon, iconColor, placeholderIcon, placeholderMessage, buttonText, isAuthenticated, authMessage, pointsLabel = 'Points', stepsLabel = 'steps', partLabel = 'Partie', hunts = [], isLoading = false, onHuntPress }) => {
     const router = useRouter();
 
     return (
-        <View style={{ flexDirection: 'column', marginBottom: theme.SPACING.xLarge }}>
-            <View style={{ flexDirection: 'row', marginBottom: theme.SPACING.medium, alignItems: 'center' }}>
-                <SvgUri uri={getIconUri(icon)} width={25} height={25} color={iconColor} />
-                <Text style={{ ...globalStyles.subtitle, fontSize: theme.FONT_SIZES.text, marginLeft: theme.SPACING.small }}>{title}</Text>
-            </View>
+        <View style={{ flexDirection: 'column', }}>
+            <SectionTitle 
+                title={title} 
+                iconUri={getIconUri(icon)} 
+                iconColor={iconColor} 
+            />
             {isAuthenticated ? ( 
                 isLoading ? (
                     <Text style={{ color: theme.COLORS.textSecondary }}>{authMessage}</Text>

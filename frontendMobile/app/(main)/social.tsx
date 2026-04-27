@@ -108,10 +108,11 @@ export default function SocialScreen() {
 
             {/* Global Leaderboard */}
             <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
-                <View style={{ flexDirection: 'row', marginBottom: theme.SPACING.medium, width: '100%' }}>
-                    <SvgUri uri={getIconUri("trophy.svg")} width={30} height={30} color={theme.COLORS.secondary} />
-                    <Text style={{ marginLeft: theme.SPACING.small, fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700', color: theme.COLORS.textPrimary }}>{texts.globalLeaderboardTitle}</Text>
-                </View>
+                <SectionTitle 
+                    title={texts.globalLeaderboardTitle} 
+                    iconUri={getIconUri("trophy.svg")} 
+                    iconColor={theme.COLORS.secondary} 
+                />
 
                 {isLeaderboardLoading ? (
                     <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.globalLeaderboardLoading}</Text>
