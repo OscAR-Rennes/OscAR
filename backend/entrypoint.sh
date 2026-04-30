@@ -6,6 +6,9 @@ until pg_isready -h postgres -p 5432 -U oscAR; do
 done
 echo "Postgres is ready!"
 
+echo "Refreshing Node dependencies..."
+npm install
+
 echo "Running migrations..."
 npx prisma migrate deploy || echo "MIGRATION FAILED"
 

@@ -109,4 +109,16 @@ export class UsersController  {
       next(err);
     }
   }
+
+  async getGlobalLeaderboard(req: Request, res: Response, next: any) {
+    try {
+      const limit = Number(req.query.limit ?? 5);
+      const users = await this.usersService.getGlobalLeaderboard(limit);
+      logger.info("Global leaderboard retrieved successfully", { route: req.originalUrl, count: users.length, limit });
+      res.status(200).json(users);
+    } catch (err) {
+      logger.error("Error getting global leaderboard", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
 };

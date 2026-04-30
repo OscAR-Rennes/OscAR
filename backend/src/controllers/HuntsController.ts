@@ -71,10 +71,6 @@ export class HuntsController  {
         const id = req.params.id;
         const user = req.user;
         const { page, limit, search, sort } = parsePaginationQuery(req.query as Record<string, unknown>);
-        if (!user) {
-          logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
-          throw new Error("User not found in request");
-        }
         const hunts = await this.huntsService.getHuntByCulturalCenter(id, user, { page, limit }, search, sort);
         logger.info(`Hunts retrieved succesfully`, { route: req.originalUrl })
         res.status(200).json(hunts);

@@ -7,3 +7,7 @@ export function addUser(userData) {
 export function getUserById(id) {
     return apiClient(`/users/getById/${id}`)
 }
+
+export function getGlobalLeaderboard(limit = 5) {
+  return apiClient(`/users/leaderboard/global?limit=${limit}`);
+}

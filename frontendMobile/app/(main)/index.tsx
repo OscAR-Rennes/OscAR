@@ -9,6 +9,7 @@ import { SvgUri } from 'react-native-svg';
 import '../../utils/ignoreWarnings';
 import CulturalCenterModal from '../../components/cultural-center-modal';
 import LanguageButton from '../../components/language-button';
+import SectionTitle from '../../components/section-title';
 import mapInitialValues from '../../constants/map-initial-values.json';
 import { CulturalCenterLight } from '../../common/dto/ICulturalCenterLight'
 import { getIconUri } from '../icon-mapping';
@@ -382,9 +383,12 @@ export default function MapsScreen() {
                     
                     {/* Language Buttons */}
                     <View style={{ flexDirection: 'column', marginTop: 20, backgroundColor: '#ffffff', padding: 10, borderRadius: 12, borderWidth: 1, borderColor: '#cccccc' }}>
-                        <View style={{ marginBottom: theme.SPACING.medium, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-                            <SvgUri uri={getIconUri("globe.svg")} width={30} height={30} color={"#62B5DE"} />
-                            <Text style={{ fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700' }}>{texts.languageSelection}</Text>
+                        <View style={{ marginBottom: -10 }}>
+                            <SectionTitle 
+                                title={texts.languageSelection} 
+                                iconUri={getIconUri("globe.svg")} 
+                                iconColor={"#62B5DE"} 
+                            />
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <LanguageButton languageCode="fr" currentLanguage={language} onPress={() => handleDeepLTranslation('fr')} label="Français" countryCode="FR" />

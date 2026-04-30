@@ -132,6 +132,11 @@ usersRoutes.post(
 )
 
 usersRoutes.get(
+    "/users/leaderboard/global",
+    (req, res, next) => usersController.getGlobalLeaderboard(req, res, next)
+)
+
+usersRoutes.get(
     "/users/getById/:id",
     requireRole([RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.HUNT_MANAGER]),
     (req, res, next) => usersController.getById(req,res,next)

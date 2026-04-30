@@ -24,6 +24,7 @@ import { LightHuntDto } from '@/common/dto/ILightHunt'
 const CulturalCenterScreen: React.FC = () => {
     const router = useRouter();
     const { id } = useLocalSearchParams();
+    const culturalCenterId = Array.isArray(id) ? id[0] : id;
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
@@ -33,15 +34,15 @@ const CulturalCenterScreen: React.FC = () => {
     // Fetch Cultural Center information
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getCulturalCenterById(id)
-            const huntsData = await getHuntsByCulturalCenter(id)
-            setHunts(huntsData)
+            const data = await getCulturalCenterById(culturalCenterId)
+            const huntsData = await getHuntsByCulturalCenter(culturalCenterId)
+            setHunts(Array.isArray(huntsData) ? huntsData : [])
             setCulturalCenter(data)
         }
-        if (id != null && id != "") {
+        if (culturalCenterId != null && culturalCenterId != "") {
             fetchData()
         }
-    }, [])
+    }, [culturalCenterId])
 
     // State for active button
     const [activeButton, setActiveButton] = useState<'chasses' | 'classement'>('chasses');
@@ -89,18 +90,18 @@ const CulturalCenterScreen: React.FC = () => {
 
                 {/* Double Button */}
                 <View
-                    style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, borderRadius: 18, backgroundColor: theme.COLORS.background,
+                    style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, borderRadius: theme.SPACING.medium, backgroundColor: theme.COLORS.background,
                         ...(Platform.OS === 'ios'
-                            ? { shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.15, shadowRadius: 5, }
+                            ? { shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 5, }
                             : { elevation: 6, }), }} >
                     <View onLayout={(event) => setToggleContainerWidth(event.nativeEvent.layout.width)} style={{ flexDirection: 'row', width: '100%', backgroundColor: theme.COLORS.background, borderRadius: 18, padding: sliderInset }} >
-                        <Animated.View style={{ position: 'absolute', top: sliderInset, left: sliderInset, bottom: sliderInset, width: sliderWidth, borderRadius: 15, transform: [{ translateX }], }} >
-                            <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 15 }} />
+                        <Animated.View style={{ position: 'absolute', top: sliderInset, left: sliderInset, bottom: sliderInset, width: sliderWidth, borderRadius: theme.SPACING.small, transform: [{ translateX }], }} >
+                            <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 12 }} />
                         </Animated.View>
 
                         {/* All Hunts */}
                         <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }} onPress={() => handleButtonPress('chasses')} activeOpacity={1} >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.medium }}>
                                 <SvgUri uri={getIconUri("target-larger.svg")} width={25} height={25} color={activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary} />
                                 <Animated.Text style={{ color: activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary, fontWeight: 'bold', fontSize: 17, }} >
                                     {texts.hunts}
@@ -110,7 +111,7 @@ const CulturalCenterScreen: React.FC = () => {
 
                         {/* Leaderboard for cultural center */}
                         <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }} onPress={() => handleButtonPress('classement')} activeOpacity={1} >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.medium }}>
                                 <SvgUri uri={getIconUri("loyalty-points.svg")} width={28} height={28} color={activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary} />
                                 <Animated.Text style={{ color: activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary, fontWeight: 'bold', fontSize: 17, }} >
                                     {texts.leaderboard}
@@ -123,14 +124,16 @@ const CulturalCenterScreen: React.FC = () => {
                 {/* Section Content */}
                 {activeButton === 'chasses' ? (
                     hunts && hunts.length > 0 ? (
-                        <HuntList hunts={hunts} />
+                        <HuntList hunts={hunts} culturalCenterId={String(id)} />
                     ) : (
                         <Text style={{ color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.text, textAlign: 'center', marginTop: theme.SPACING.large }}>
                             {texts.noHunts}
                         </Text>
                     )
                 ) : (
-                    <Text style={{ color: theme.COLORS.textPrimary, fontSize: theme.FONT_SIZES.text }}>{texts.centerLeaderboard}</Text>
+                    <Text style={{ color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.text, textAlign: 'center', marginTop: theme.SPACING.large }}>
+                        {texts.centerLeaderboard}
+                        </Text>
                 )}
             </ScrollView>
             <BottomNavbar/>

@@ -15,18 +15,25 @@
   "hunt": {
     "pageTitle": "My Hunts",
     "currentHuntsTitle": "Current Hunts (0)",
-    "currentHuntsPlaceholderMessage": "Log in to see your current hunts !",
+    "currentHuntsPlaceholderMessage": "Start a hunt to see it appear here",
     "completedHuntsTitle": "Completed Hunts (0)",
-    "completedHuntsPlaceholderMessage": "Log in to save your progress !",
+    "completedHuntsPlaceholderMessage": "Finish a hunt to see it appear here",
+    "disconnectedPlaceholderMessage": "Sign in to save your progress",
     "connectButtonText": "Log in →",
     "currentHuntsAuthMessage": "Displaying current hunts for authenticated users coming soon",
     "completedHuntsAuthMessage": "Displaying completed hunts for authenticated users coming soon"
   },
   "huntDetails": {
-    "backToMenu": "Back to menu",
+    "backToCulturalCenter": "Back",
     "stepsTitle": "Hunt Steps",
     "noSteps": "No steps found for this hunt.",
-    "startHunt": "Start the hunt"
+    "startHunt": "Start the hunt",
+    "resumeHunt": "Resume the hunt",
+    "completedHuntMessage": "You already finished this hunt, and you earned:",
+    "partLabel": "Part",
+    "lockedPartMessage": "Complete previous part to unlock",
+    "pointsEarned": "Points Earned",
+    "stepsRemaining": "Steps Remaining"
   },
   "index": {
     "languageSelection": "Language Selection",
@@ -69,7 +76,9 @@
     "friendRequestsPlaceholderMessage": "Log in to add friends and see their progress !",
     "friendsLeaderboardTitle": "Friends Leaderboard",
     "globalLeaderboardTitle": "Global Leaderboard",
-    "globalLeaderboardMessage": "List of top players coming soon",
+    "globalLeaderboardLoading": "Loading leaderboard...",
+    "globalLeaderboardEmpty": "No players to display yet",
+    "pointsSuffix": "points",
     "connectButtonText": "Log in →",
     "seeMoreButtonText": "See more",
     "friendRequestsListMessage": "Friend requests list coming soon",
@@ -100,6 +109,7 @@
   },
   "currentStep": {
     "backToMenu": "Back to Menu",
+    "backToHunt": "Back to hunt",
     "pointsEarned": "Points Earned",
     "stepsRemaining": "Steps Remaining",
     "scanButton": "Scan / AR Camera",

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../constants/theme';
@@ -12,11 +12,45 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../constants/language-en.json';
 import translationsFr from '../../constants/language-fr.json';
 import { getIconUri } from '../icon-mapping';
+import { getGlobalLeaderboard } from '../../api/services/users.api';
+
+type LeaderboardUser = {
+    id: string;
+    username: string;
+    points: number;
+};
 
 export default function SocialScreen() {
     const { isConnected } = useAuth();
     const { language } = useLanguage();
-    const texts = STATIC_TEXTS[language];
+    const texts = STATIC_TEXTS[language] as {
+        friendRequestsTitle: string;
+        friendRequestsPlaceholderMessage: string;
+        friendsLeaderboardTitle: string;
+        globalLeaderboardTitle: string;
+        globalLeaderboardMessage: string;
+        globalLeaderboardLoading: string;
+        globalLeaderboardEmpty: string;
+        pointsSuffix: string;
+        connectButtonText: string;
+        seeMoreButtonText: string;
+        friendRequestsListMessage: string;
+        friendsListMessage: string;
+    };
+
+    const [globalLeaderboard, setGlobalLeaderboard] = useState<LeaderboardUser[]>([]);
+    const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchGlobalLeaderboard = async () => {
+            setIsLeaderboardLoading(true);
+            const data = await getGlobalLeaderboard(5);
+            setGlobalLeaderboard(Array.isArray(data) ? data : []);
+            setIsLeaderboardLoading(false);
+        };
+
+        fetchGlobalLeaderboard();
+    }, []);
 
     return (
         <ScrollView
@@ -74,11 +108,66 @@ export default function SocialScreen() {
 
             {/* Global Leaderboard */}
             <View style={{ borderWidth: 1, borderColor: theme.COLORS.border, borderRadius: 8, backgroundColor: theme.COLORS.background, paddingVertical: theme.SPACING.large, paddingHorizontal: theme.SPACING.medium, marginTop: theme.SPACING.medium }}>
-                <View style={{ flexDirection: 'row', marginBottom: theme.SPACING.large, width: '100%' }}>
-                    <SvgUri uri={getIconUri("trophy.svg")} width={30} height={30} color={theme.COLORS.secondary} />
-                    <Text style={{ marginLeft: theme.SPACING.small, fontSize: theme.FONT_SIZES.subtitle, fontWeight: '700', color: theme.COLORS.textPrimary }}>{texts.globalLeaderboardTitle}</Text>
-                </View>
-                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.globalLeaderboardMessage}</Text>
+                <SectionTitle 
+                    title={texts.globalLeaderboardTitle} 
+                    iconUri={getIconUri("trophy.svg")} 
+                    iconColor={theme.COLORS.secondary} 
+                />
+
+                {isLeaderboardLoading ? (
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.globalLeaderboardLoading}</Text>
+                ) : globalLeaderboard.length > 0 ? (
+                    <View style={{ gap: theme.SPACING.small }}>
+                        {globalLeaderboard.map((player, index) => (
+                            <View
+                                key={player.id}
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: theme.COLORS.border,
+                                    borderRadius: theme.SPACING.small,
+                                    paddingHorizontal: theme.SPACING.medium,
+                                    paddingVertical: theme.SPACING.medium,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
+                                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                    <View
+                                        style={{
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: 20,
+                                            backgroundColor: theme.COLORS.primary,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.background, fontWeight: '700' }}>
+                                            {index + 1}
+                                        </Text>
+                                    </View>
+                                    <Text
+                                        style={{
+                                            fontSize: theme.FONT_SIZES.text,
+                                            color: theme.COLORS.textPrimary,
+                                            fontWeight: '700',
+                                            marginLeft: theme.SPACING.medium,
+                                        }}
+                                        numberOfLines={1}
+                                    >
+                                        {player.username}
+                                    </Text>
+                                </View>
+                                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary, fontWeight: '700' }}>
+                                    {player.points} {texts.pointsSuffix}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                ) : (
+                    <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.globalLeaderboardEmpty}</Text>
+                )}
 
                 {/* All leaderboard informations */}
                 <TouchableOpacity style={[{ width: '100%', marginTop: theme.SPACING.medium }]} onPress={() => router.push('/social-leaderboard')}>
