@@ -60,9 +60,9 @@ const ARScene = ({ onHoldStart, onHoldEnd, targetUri, objUri, mtlUri, jpgUri }: 
                 >
                     <Viro3DObject
                         source={{ uri: objUri }}
-                        resources={[{ uri: mtlUri }, { uri: jpgUri }]}
+                        resources={[{ uri: mtlUri }]}
                         position={[0, 0, 0]}
-                        rotation={[0, 0, 0]}
+                        rotation={[180, 0, 0]}
                         scale={[0.01, 0.01, 0.01]}
                         type="OBJ"
                         onClickState={(stateValue) => {

@@ -30,9 +30,15 @@ export async function downloadStepTarget(stepId){
 }
 
 export async function downloadStepArFiles(stepId){
+    
     const token = await SecureStore.getItemAsync("token");
     const zipPath = `${FileSystem.cacheDirectory}ar_${stepId}.zip`;
     const extractPath = `${FileSystem.cacheDirectory}ar_${stepId}/`;
+
+    try {
+        await FileSystem.deleteAsync(zipPath, { idempotent: true });
+        await FileSystem.deleteAsync(extractPath, { idempotent: true });
+    } catch {}
 
     await FileSystem.downloadAsync(
         `http://192.168.1.11:5000/api/step/downloadAr/${stepId}`,
@@ -61,6 +67,17 @@ export async function downloadStepArFiles(stepId){
     const obj = files.find(f => f.endsWith('.obj'));
     const mtl = files.find(f => f.endsWith('.mtl'));
     const jpg = files.find(f => f.endsWith('.jpg') || f.endsWith('.jpeg'));
+
+    const mtlContent = await FileSystem.readAsStringAsync(extractPath + 'model.mtl');
+
+    const absoluteJpgPath = extractPath + jpg;
+    const patchedMtl = mtlContent
+        .replace(/map_\w+\s+.+/gi, (match) => {
+            const mapType = match.split(/\s+/)[0];
+            return `${mapType} ${absoluteJpgPath}`;
+        });
+
+    await FileSystem.writeAsStringAsync(extractPath + mtl, patchedMtl);
 
     return {
         obj: extractPath + obj,

@@ -275,6 +275,21 @@ export class StepServiceImpl implements StepService {
         const mtlBuffer = stepAr.file_path_mtl ? await downloadFromMinio(stepAr.file_path_mtl) : null;
         const jpgBuffer = stepAr.file_path_jpg ? await downloadFromMinio(stepAr.file_path_jpg) : null;
 
+        let patchedMtlBuffer = mtlBuffer;
+        if (mtlBuffer) {
+            const mtlContent = mtlBuffer.toString('utf-8');
+            const patched = mtlContent
+                .replace(/map_\w+\s+.+/gi, (match) => {
+                    const mapType = match.split(/\s+/)[0];
+                    return `${mapType} texture.jpg`;
+                })
+                .replace(/^(bump|disp|decal)\s+.+/gim, (match) => {
+                    const mapType = match.split(/\s+/)[0];
+                    return `${mapType} texture.jpg`;
+                });
+            patchedMtlBuffer = Buffer.from(patched, 'utf-8');
+        }
+
         const archive = archiver("zip");
 
         const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
@@ -284,7 +299,7 @@ export class StepServiceImpl implements StepService {
             archive.on("error", reject);
 
             archive.append(objBuffer, { name: "model.obj" });
-            if (mtlBuffer) archive.append(mtlBuffer, { name: "model.mtl" });
+            if (patchedMtlBuffer) archive.append(patchedMtlBuffer, { name: "model.mtl" });
             if (jpgBuffer) archive.append(jpgBuffer, { name: "texture.jpg" });
 
             archive.finalize();
