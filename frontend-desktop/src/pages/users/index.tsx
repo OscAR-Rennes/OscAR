@@ -4,6 +4,7 @@ import ConfirmModal from "../../common/components/confirmmodal/ConfirmModal";
 import { useUsersnData } from "./users.data";
 import { ReactComponent as PowerIcon } from "../../common/assets/icon/power-button.svg";
 import { ReactComponent as DeleteIcon } from "../../common/assets/icon/close.svg";
+import "./index.style.css";
 
 export default function Users() {
   const {
@@ -22,7 +23,7 @@ export default function Users() {
 
   return (
     <>
-      {isAdmin && (
+      {isAdmin ? (
         <>
           <Table
             data={users}
@@ -69,6 +70,10 @@ export default function Users() {
             showWarning={true}
           />
         </>
+      ) : (
+        <div className="users-empty-state">
+          Cette page est réservée aux administrateurs.
+        </div>
       )}
     </>
   );

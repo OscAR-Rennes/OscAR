@@ -371,6 +371,9 @@ async function main() {
 
         // Create a start date for this hunt
         const huntStartDate = getRandomProgressionDate(60);
+        const progressionWindowMinutes = randomInt(Math.max(stepsToComplete * 2, 5), Math.max(stepsToComplete * 30, 10));
+        const minutesPerStep = Math.max(1, Math.floor(progressionWindowMinutes / Math.max(1, stepsToComplete - 1)));
+        let currentProgressionStart = new Date(huntStartDate);
 
         // For each step the player completes
         for (let stepIndex = 0; stepIndex < stepsToComplete; stepIndex++) {
@@ -386,20 +389,26 @@ async function main() {
           });
 
           if (!existingProgression) {
-            // Add progressively more time between steps (5-60 minutes per step)
-            const minutesPerStep = randomInt(5, 60);
-            const stepDate = new Date(huntStartDate);
-            stepDate.setMinutes(stepDate.getMinutes() + stepIndex * minutesPerStep);
+            const stepCreatedAt = new Date(currentProgressionStart);
+            const stepUpdatedAt = new Date(stepCreatedAt);
+
+            if (isComplete || stepIndex < stepsToComplete - 1) {
+              stepUpdatedAt.setMinutes(stepUpdatedAt.getMinutes() + minutesPerStep);
+              stepUpdatedAt.setSeconds(stepUpdatedAt.getSeconds() + randomInt(10, 55));
+            }
 
             await prisma.progression.create({
               data: {
                 user_id: player.id,
                 hunt_id: hunt.id,
                 step_id: step.id,
-                created_at: huntStartDate,
-                updated_at: stepDate,
+                created_at: stepCreatedAt,
+                updated_at: stepUpdatedAt,
               },
             });
+
+            currentProgressionStart = new Date(stepUpdatedAt);
+            currentProgressionStart.setMinutes(currentProgressionStart.getMinutes() + randomInt(1, 8));
           }
         }
       }

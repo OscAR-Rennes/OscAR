@@ -85,13 +85,18 @@ export function useStepsData() {
 
     const fetchIndexes = async () => {
       const idx = await getAllIndexByHunt(selectedHuntId);
-      setIndexesForHunt(idx);
+      setIndexesForHunt(Array.isArray(idx?.data) ? idx.data : []);
     };
 
     fetchIndexes();
   }, [selectedHuntId]);
 
   const refreshHunts = async () => {
+    if (!user?.id_cultural_center) {
+      setHunts([]);
+      return;
+    }
+
     const response = await getHuntsByCulturalCenter(user.id_cultural_center, { page: 1, limit: 200 });
     setHunts(Array.isArray(response?.data) ? response.data : []);
   };
@@ -116,8 +121,8 @@ export function useStepsData() {
       label: "Index",
       type: "select",
       required: false,
-      options: indexesForHunt
-        .filter(i => i.name)
+      options: (Array.isArray(indexesForHunt) ? indexesForHunt : [])
+        .filter((i: any) => i && i.name)
         .map(i => ({ label: i.name, value: i.id }))
     }
   ], [hunts, indexesForHunt]);

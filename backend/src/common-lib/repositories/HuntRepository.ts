@@ -123,4 +123,80 @@ export class HuntRepository {
     return hunts;
   }
 
+  async getStatsHunts(where: Prisma.huntsWhereInput): Promise<Array<{
+    id: string;
+    title: string;
+    creator_id: string;
+    cultural_center_id: string;
+    difficulty_id: string;
+    steps: Array<{
+      id: string;
+      title: string;
+      index_id: string;
+      index: {
+        id: string;
+        index: number;
+        name: string | null;
+      };
+    }>;
+    users: {
+      id: string;
+      username: string;
+    };
+    cultural_centers: {
+      id: string;
+      name: string;
+    };
+    difficulty: {
+      id: string;
+      name: string;
+    };
+    _count: {
+      steps: number;
+    };
+  }>> {
+    return prisma.hunts.findMany({
+      where,
+      include: {
+        users: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        cultural_centers: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        difficulty: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        steps: {
+          select: {
+            id: true,
+            title: true,
+            index_id: true,
+            index: {
+              select: {
+                id: true,
+                index: true,
+                name: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            steps: true,
+          },
+        },
+      },
+    });
+  }
+
 }

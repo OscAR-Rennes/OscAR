@@ -78,6 +78,7 @@ export class UsersServiceImpl implements UsersService {
       const newUser = await this.userRepository.create(userToCreate, tx);
       const code = generateTwoFactorCode();
       const twoFactorExpiresAt = generateTwoFactorExpiryDate();
+      emailCode = code;
       const challengeToken = await createTwoFactorChallengeToken(newUser as any);
 
       await tx.security_code.create({

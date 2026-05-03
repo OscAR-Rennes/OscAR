@@ -1,12 +1,27 @@
 import { SignJWT, jwtVerify } from "jose";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import AppError from "../errors/AppError.js";
 import { UserEntity } from "../entity/UsersEntity.js";
 import { RoleEnum } from "../enum/roleEnum.js";
 import logger from "./logger.js";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-const resend = process.env.EMAIL_API_KEY ? new Resend(process.env.EMAIL_API_KEY) : null;
+const emailTransport = process.env.EMAIL_URL
+  ? nodemailer.createTransport(process.env.EMAIL_URL)
+  : process.env.EMAIL_HOST && process.env.EMAIL_PORT
+    ? nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: Number(process.env.EMAIL_PORT),
+        secure: process.env.EMAIL_SECURE === "true",
+        auth:
+          process.env.EMAIL_USER && process.env.EMAIL_PASSWORD
+            ? {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+              }
+            : undefined,
+      })
+    : null;
 
 const TWO_FACTOR_CODE_LENGTH = 6;
 const TWO_FACTOR_CODE_TTL_MINUTES = 10;
@@ -53,21 +68,21 @@ export function generateTwoFactorExpiryDate() {
 }
 
 export async function sendTwoFactorCodeEmail(email: string, code: number) {
-  if (!resend) {
+  if (!emailTransport) {
     throw new AppError({
       userMessage: "Le service d'envoi d'email n'est pas configuré",
       statusCode: 503,
     });
   }
 
-  const from = `Lootopia <no-reply@${process.env.EMAIL_DOMAIN}>`;
+  const from = process.env.EMAIL_FROM ?? (process.env.EMAIL_DOMAIN ? `Lootopia <no-reply@${process.env.EMAIL_DOMAIN}>` : "Lootopia <no-reply@localhost>");
 
   logger.info("Sending two-factor code email", {
     email,
     code
   });
 
-  await resend.emails.send({
+  await emailTransport.sendMail({
     from,
     to: email,
     subject: "Votre code de connexion Lootopia",

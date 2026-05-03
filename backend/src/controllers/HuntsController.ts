@@ -100,6 +100,24 @@ export class HuntsController  {
     }
   }
 
+  async getDashboardStats(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+
+      if (!user) {
+        logger.warn("User missing in request for hunt stats", { route: req.originalUrl });
+        throw new Error("User information missing");
+      }
+
+      const stats = await this.huntsService.getDashboardStats(user);
+      logger.info("Hunt dashboard statistics retrieved successfully", { route: req.originalUrl, userId: user.id, huntsCount: stats.hunts.length });
+      res.status(200).json(stats);
+    } catch (err) {
+      logger.error("Error getting hunt dashboard statistics", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
   async deleteHunt(req: Request, res: Response, next: any) {
     try {
       const user = req.user;

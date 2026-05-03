@@ -73,4 +73,40 @@ export class ProgressionRepository {
         return { progressions, hunt };
     }
 
+    async getProgressionsByHuntIds(huntIds: string[]) {
+        if (huntIds.length === 0) {
+            return [];
+        }
+
+        return prisma.progression.findMany({
+            where: {
+                hunt_id: { in: huntIds },
+            },
+            select: {
+                hunt_id: true,
+                user_id: true,
+                step_id: true,
+                created_at: true,
+                updated_at: true,
+                steps: {
+                    select: {
+                        id: true,
+                        title: true,
+                        index_id: true,
+                        index: {
+                            select: {
+                                id: true,
+                                index: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: {
+                created_at: "asc",
+            },
+        });
+    }
+
 }
