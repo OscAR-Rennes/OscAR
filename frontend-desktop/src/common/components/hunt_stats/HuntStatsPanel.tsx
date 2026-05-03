@@ -3,6 +3,7 @@ import { formatDuration } from "../../utils/formatDuration";
 import { translateDifficultyName } from "../../utils/translateDifficulty";
 import type { HuntStatsDto } from "../../../api/models/hunts/HuntStatsDto";
 import "./HuntStatsPanel.css";
+import { useLocation } from "react-router-dom";
 
 type HuntStatsPanelProps = {
   stats: HuntStatsDto | null;
@@ -53,6 +54,7 @@ export default function HuntStatsPanel({
   title,
   subtitle,
 }: HuntStatsPanelProps) {
+  const location = useLocation();
   if (!stats) {
     return <div className="hunt-stats-empty">{emptyMessage}</div>;
   }
@@ -106,6 +108,7 @@ export default function HuntStatsPanel({
           <Table
             data={stepRows}
             columns={stepColumns}
+            getRowLink={() => location.pathname}
             displayMode="subgrid"
             allItemsLabel="étapes"
             allItemsPrefix="Toutes les"

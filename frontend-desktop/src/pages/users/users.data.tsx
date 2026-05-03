@@ -18,6 +18,7 @@ export function useUsersnData() {
     const checkRights = useCheckRights();
 
     const isAdmin = checkRights(RoleEnum.ADMIN)
+    const isCulturalCenterManager = checkRights(RoleEnum.CULTURAL_CENTER_MANAGER)
 
     const user = useAuthStore((state) => state.user);
     
@@ -32,7 +33,12 @@ export function useUsersnData() {
                 : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit })
             );
 
-            setUsers(Array.isArray(response?.data) ? response.data : []);
+            const rawUsers = Array.isArray(response?.data) ? response.data : [];
+            const filtered = isCulturalCenterManager
+                ? rawUsers.filter((u: any) => Array.isArray(u.rights) && u.rights.includes(RoleEnum.HUNT_MANAGER))
+                : rawUsers;
+
+            setUsers(filtered);
 
             setPagination((prev) => {
                 const next = {
@@ -65,7 +71,11 @@ export function useUsersnData() {
             ? getAllUsers({ page: pagination.page, limit: pagination.limit })
             : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit })
         );
-        setUsers(Array.isArray(response?.data) ? response.data : [])
+        const rawUsers = Array.isArray(response?.data) ? response.data : [];
+        const filtered = isCulturalCenterManager
+            ? rawUsers.filter((u: any) => Array.isArray(u.rights) && u.rights.includes(RoleEnum.HUNT_MANAGER))
+            : rawUsers;
+        setUsers(filtered)
     };
 
     const handlePaginationChange = ({ page, limit }: { page: number; limit: number }) => {
@@ -106,6 +116,7 @@ export function useUsersnData() {
 
     return {
         isAdmin,
+        isCulturalCenterManager,
 
         users,
         pagination,

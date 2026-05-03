@@ -84,6 +84,11 @@ export class UserRepository  {
       where: {
         id_cultural_center: culturalcenter_id,
       },
+      include: {
+        right_user: {
+          include: { rights: true },
+        },
+      },
     });
     return users;
   }
