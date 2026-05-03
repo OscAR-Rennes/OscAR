@@ -216,25 +216,31 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepById(
-    id: string
-    ): Promise<FullStepDTO | null> {
-    try {
-        const step = await stepRepository.getById(id);
+    async getStepById(id: string): Promise<FullStepDTO | null> {
+        try {
+            const step = await stepRepository.getById(id);
 
-        if (!step) {
-            return null;
+            if (!step) {
+                return null;
+            }
+
+            const stepAr = step.step_ar[0] ?? {
+                file_path_object: "AR/obj/Default.obj",
+                file_path_target: "AR/target/Default.jpg",
+                file_path_mtl:    "AR/mtl/Default.mtl",
+                file_path_jpg:    "AR/jpg/Default.jpg",
+            };
+
+            return stepMapper.toFullResponseDto({ ...step, step_ar: [stepAr] });
+
+        } catch (error) {
+            console.log("ERREUR RÉELLE SERVICE:", error);
+            if (error instanceof AppError) throw error;
+            throw new AppError({
+                userMessage: "Erreur lors de la récupération de l'étape",
+                statusCode: 500,
+            });
         }
-        return stepMapper.toFullResponseDto(step);
-
-    } catch (error) {
-        if (error instanceof AppError) throw error;
-
-        throw new AppError({
-            userMessage: "Erreur lors de la récupération de l'étape",
-            statusCode: 500,
-        });
-    }
     }
 
     async getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {

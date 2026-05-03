@@ -6,7 +6,7 @@ import authRoutes from '../routes/AuthRoutes.js';
 import adminRoutes from '../routes/AdminRoutes.js';
 import { requireRole } from '../common-lib/middlewares/AuthMiddleware.js';
 import cookieParser from 'cookie-parser';
-import { errorHandler, errorHandlerBackend } from '../common-lib/errors/ErrorHandler.js';
+import { errorHandler } from '../common-lib/errors/ErrorHandler.js';
 import AppError from '../common-lib/errors/AppError.js';
 import huntsRoutes from '../routes/HuntRoutes.js';
 import stepsRoutes from '../routes/StepRoutes.js';
@@ -19,6 +19,7 @@ import { swaggerSpec } from "../swagger/swagger.js";
 import { requestLogger } from '../common-lib/middlewares/LoggerMiddleware.js';
 import logger from '../common-lib/utils/logger.js';
 import progressionRoutes from '../routes/ProgressionRoutes.js';
+import friendRoutes from '../routes/FriendRoutes.js';
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -39,6 +40,7 @@ app.use('/api', indexRoutes);
 app.use('/api', difficultyRoutes)
 app.use('/api', culturalCenterRoutes)
 app.use('/api', progressionRoutes)
+app.use('/api', friendRoutes)
 
 // Routes admin protégées par le middleware requireRole
 app.use('/api/admin', requireRole(RoleEnum.ADMIN), adminRoutes);

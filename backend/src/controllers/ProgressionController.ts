@@ -23,7 +23,7 @@ export class ProgressionController  {
 
       await this.progressionService.saveProgression(data, user);
       logger.info("Progression saved successfully", { route: req.originalUrl });
-      res.status(201);
+      res.status(201).end();
     } catch (err) {
       logger.error("Error saving progression", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
       next(err);

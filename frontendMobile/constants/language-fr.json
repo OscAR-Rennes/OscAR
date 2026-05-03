@@ -72,7 +72,7 @@
     "placeholder": "********"
   },
   "social": {
-    "friendRequestsTitle": "Demandes d'amis (0)",
+    "friendRequestsTitle": "Demandes d'amis",
     "friendRequestsPlaceholderMessage": "Connectez-vous pour pouvoir ajouter des amis et voir leur progression !",
     "friendsLeaderboardTitle": "Classement des Amis",
     "globalLeaderboardTitle": "Classement Global",
@@ -81,10 +81,11 @@
     "pointsSuffix": "points",
     "connectButtonText": "Se connecter →",
     "seeMoreButtonText": "Voir plus",
-    "friendRequestsListMessage": "Liste des demandes d'amis à venir",
-    "friendsListMessage": "Liste des amis à venir"
+    "friendRequestsListMessage": "Pas de demande d'amis pour le moment",
+    "friendsListMessage": "Ajoutez des amis pour voir le classement des amis et la liste d'amis ici"
   },
   "socialFriends": {
+    "pointsSuffix": "points",
     "backButton": "Retour au Social",
     "leaderboardTitle": "Classement des Amis",
     "leaderboardPlaceholder": "Liste détaillée des amis à venir"

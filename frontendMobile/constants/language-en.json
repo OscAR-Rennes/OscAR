@@ -72,7 +72,7 @@
     "placeholder": "********"
   },
   "social": {
-    "friendRequestsTitle": "Friend Requests (0)",
+    "friendRequestsTitle": "Friend Requests",
     "friendRequestsPlaceholderMessage": "Log in to add friends and see their progress !",
     "friendsLeaderboardTitle": "Friends Leaderboard",
     "globalLeaderboardTitle": "Global Leaderboard",
@@ -81,10 +81,11 @@
     "pointsSuffix": "points",
     "connectButtonText": "Log in →",
     "seeMoreButtonText": "See more",
-    "friendRequestsListMessage": "Friend requests list coming soon",
-    "friendsListMessage": "Friends list coming soon"
+    "friendRequestsListMessage": "No friend requests to display yet",
+    "friendsListMessage": "Add friend to see friend leaderboard and friend list here"
   },
   "socialFriends": {
+    "pointsSuffix": "points",
     "backButton": "Back to Social",
     "leaderboardTitle": "Friends Leaderboard",
     "leaderboardPlaceholder": "Detailed list of friends coming soon"
