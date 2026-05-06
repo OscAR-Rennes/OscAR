@@ -216,25 +216,31 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepById(
-    id: string
-    ): Promise<FullStepDTO | null> {
-    try {
-        const step = await stepRepository.getById(id);
+    async getStepById(id: string): Promise<FullStepDTO | null> {
+        try {
+            const step = await stepRepository.getById(id);
 
-        if (!step) {
-            return null;
+            if (!step) {
+                return null;
+            }
+
+            const stepAr = step.step_ar[0] ?? {
+                file_path_object: "AR/obj/Default.obj",
+                file_path_target: "AR/target/Default.jpg",
+                file_path_mtl:    "AR/mtl/Default.mtl",
+                file_path_jpg:    "AR/jpg/Default.jpg",
+            };
+
+            return stepMapper.toFullResponseDto({ ...step, step_ar: [stepAr] });
+
+        } catch (error) {
+            console.log("ERREUR RÉELLE SERVICE:", error);
+            if (error instanceof AppError) throw error;
+            throw new AppError({
+                userMessage: "Erreur lors de la récupération de l'étape",
+                statusCode: 500,
+            });
         }
-        return stepMapper.toFullResponseDto(step);
-
-    } catch (error) {
-        if (error instanceof AppError) throw error;
-
-        throw new AppError({
-            userMessage: "Erreur lors de la récupération de l'étape",
-            statusCode: 500,
-        });
-    }
     }
 
     async getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {
@@ -269,6 +275,21 @@ export class StepServiceImpl implements StepService {
         const mtlBuffer = stepAr.file_path_mtl ? await downloadFromMinio(stepAr.file_path_mtl) : null;
         const jpgBuffer = stepAr.file_path_jpg ? await downloadFromMinio(stepAr.file_path_jpg) : null;
 
+        let patchedMtlBuffer = mtlBuffer;
+        if (mtlBuffer) {
+            const mtlContent = mtlBuffer.toString('utf-8');
+            const patched = mtlContent
+                .replace(/map_\w+\s+.+/gi, (match) => {
+                    const mapType = match.split(/\s+/)[0];
+                    return `${mapType} texture.jpg`;
+                })
+                .replace(/^(bump|disp|decal)\s+.+/gim, (match) => {
+                    const mapType = match.split(/\s+/)[0];
+                    return `${mapType} texture.jpg`;
+                });
+            patchedMtlBuffer = Buffer.from(patched, 'utf-8');
+        }
+
         const archive = archiver("zip");
 
         const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
@@ -278,7 +299,7 @@ export class StepServiceImpl implements StepService {
             archive.on("error", reject);
 
             archive.append(objBuffer, { name: "model.obj" });
-            if (mtlBuffer) archive.append(mtlBuffer, { name: "model.mtl" });
+            if (patchedMtlBuffer) archive.append(patchedMtlBuffer, { name: "model.mtl" });
             if (jpgBuffer) archive.append(jpgBuffer, { name: "texture.jpg" });
 
             archive.finalize();

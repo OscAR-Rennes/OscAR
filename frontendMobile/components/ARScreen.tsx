@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import {
@@ -31,7 +31,24 @@ ViroAnimations.registerAnimations({
 
 const REQUIRED_MS = 2000;
 
-const ARScene = ({ onHoldStart, onHoldEnd }: { onHoldStart: () => void, onHoldEnd: () => void }) => {
+const ARScene = ({ onHoldStart, onHoldEnd, targetUri, objUri, mtlUri, jpgUri }: { 
+    onHoldStart: () => void, 
+    onHoldEnd: () => void,
+    targetUri: string,
+    objUri: string,
+    mtlUri: string,
+    jpgUri: string,
+}) => {
+    useEffect(() => {
+        ViroARTrackingTargets.createTargets({
+            paintingTarget: {
+                source: { uri: targetUri },
+                orientation: 'Up',
+                physicalWidth: 0.3,
+            },
+        });
+    }, [targetUri]);
+
     return (
         <ViroARScene>
             <ViroAmbientLight color="#ffffff" intensity={300} />
@@ -39,17 +56,13 @@ const ARScene = ({ onHoldStart, onHoldEnd }: { onHoldStart: () => void, onHoldEn
                 <ViroNode
                     position={[0, 0, 0]}
                     dragType="FixedToWorld"
-                    animation={{
-                        name: 'rotate',
-                        run: true,
-                        loop: true,
-                        interruptible: true,
-                    }}
+                    animation={{ name: 'rotate', run: true, loop: true, interruptible: true }}
                 >
                     <Viro3DObject
-                        source={require('../assets/ar/12190_Heart_v1_L3.obj')}
+                        source={{ uri: objUri }}
+                        resources={[{ uri: mtlUri }]}
                         position={[0, 0, 0]}
-                        rotation={[0, 0, 0]}
+                        rotation={[180, 0, 0]}
                         scale={[0.01, 0.01, 0.01]}
                         type="OBJ"
                         onClickState={(stateValue) => {
@@ -66,9 +79,13 @@ const ARScene = ({ onHoldStart, onHoldEnd }: { onHoldStart: () => void, onHoldEn
 interface ARScreenProps {
     onClose: () => void;
     onValidated: () => void;
+    targetUri: string;
+    objUri: string;
+    mtlUri: string;
+    jpgUri: string;
 }
 
-export default function ARScreen({ onClose, onValidated }: ARScreenProps) {
+export default function ARScreen({ onClose, onValidated, targetUri, objUri, mtlUri, jpgUri }: ARScreenProps) {
     const [isHolding, setIsHolding] = useState(false);
     const [progress, setProgress] = useState(0);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -116,6 +133,10 @@ export default function ARScreen({ onClose, onValidated }: ARScreenProps) {
                         <ARScene
                             onHoldStart={handleHoldStart}
                             onHoldEnd={handleHoldEnd}
+                            targetUri={targetUri}
+                            objUri={objUri}
+                            mtlUri={mtlUri}
+                            jpgUri={jpgUri}
                         />
                     )
                 }}
@@ -148,7 +169,7 @@ export default function ARScreen({ onClose, onValidated }: ARScreenProps) {
                 <Text style={styles.hintText}>
                     {isHolding
                         ? 'Maintenez votre doigt sur l\'objet...'
-                        : 'Appuyez sur l\'objet 3D et maintenez 5 secondes'}
+                        : 'Appuyez sur l\'objet 3D et maintenez 3 secondes'}
                 </Text>
             </View>
 

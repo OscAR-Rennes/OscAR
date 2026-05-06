@@ -71,7 +71,6 @@ export class UserRepository  {
   async findGlobalLeaderboard(limit: number): Promise<Pick<users, "id" | "username" | "points">[]> {
     return prisma.users.findMany({
       where: {
-        isActive: true,
         right_user: {
           some: {
             rights: {
@@ -92,8 +91,6 @@ export class UserRepository  {
       take: limit,
     });
   }
-
-  //TODO : Create User for mobile (without rights managements and cultural center affiliation)
 
   async findByCredentials(email: string): Promise<UserEntity | null> {
     const user = await prisma.users.findUnique({
@@ -173,6 +170,12 @@ export class UserRepository  {
     await prisma.users.update({
         where: { id: user_id },
         data: { points: { increment: points } }
+    });
+  }
+
+  async findByUsername(username: string) {
+    return prisma.users.findFirst({
+        where: { username }
     });
   }
 }

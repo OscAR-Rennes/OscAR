@@ -69,10 +69,10 @@ export const stepMapper = {
         },
 
         step_ar: {
-          file_path_object: entity.step_ar[0].file_path_object,
-          file_path_target: entity.step_ar[0].file_path_target,
-          file_path_mtl: entity.step_ar[0].file_path_mtl,
-          file_path_jpg: entity.step_ar[0].file_path_jpg
+            file_path_object: entity.step_ar[0]?.file_path_object,
+            file_path_target: entity.step_ar[0]?.file_path_target,
+            file_path_mtl:    entity.step_ar[0]?.file_path_mtl,
+            file_path_jpg:    entity.step_ar[0]?.file_path_jpg,
         }
       };
     }

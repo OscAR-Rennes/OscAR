@@ -198,4 +198,21 @@ model users {
   right_user         right_user[]
   security_code      security_code[]
   cultural_centers   cultural_centers? @relation(fields: [id_cultural_center], references: [id], onUpdate: NoAction, map: "fk_users_cultural_center")
+  friends_applicant  friends[] @relation("applicant")
+  friends_recipient  friends[] @relation("recipient")
+}
+
+model friends {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  isRefused    Boolean  @default(false)
+  isPending    Boolean  @default(true)
+  applicant_id String   @db.Uuid
+  recipient_id String   @db.Uuid
+  created_at   DateTime @default(now()) @db.Timestamp(6)
+  updated_at   DateTime @default(now()) @db.Timestamp(6)
+
+  applicant    users    @relation("applicant", fields: [applicant_id], references: [id], onDelete: Cascade)
+  recipient    users    @relation("recipient", fields: [recipient_id], references: [id], onDelete: Cascade)
+
+  @@unique([applicant_id, recipient_id])
 }

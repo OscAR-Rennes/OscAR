@@ -55,14 +55,14 @@ export default function ProfilScreen() {
                 {/* Stats Section */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: theme.SPACING.large, gap: theme.SPACING.medium }}>
                     <StatsCard icon="target-larger.svg" value={0} label={texts.statsHuntLabel} backgroundColor="#fce4ec" iconColor={theme.COLORS.primary} width={30} height={30} />
-                    <StatsCard icon="pin.svg" value={0} label={texts.statsCulturalCenterLabel} backgroundColor="#fff9c4" iconColor={theme.COLORS.secondary} width={30} height={30} />
+                    {/* <StatsCard icon="pin.svg" value={0} label={texts.statsCulturalCenterLabel} backgroundColor="#fff9c4" iconColor={theme.COLORS.secondary} width={30} height={30} /> */}
                     <StatsCard icon="group.svg" value={0} label={texts.statsFriendsLabel} backgroundColor="#e3f2fd" iconColor={theme.COLORS.tertiary} width={35} height={35} />
                 </View>
 
                 {/* Buttons */}
-                <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: theme.COLORS.background, borderWidth: 1, borderColor: theme.COLORS.border, marginBottom: theme.SPACING.medium }} onPress={() => router.push('/profil-modify')} >
+                {/* <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: theme.COLORS.background, borderWidth: 1, borderColor: theme.COLORS.border, marginBottom: theme.SPACING.medium }} onPress={() => router.push('/profil-modify')} >
                     <Text style={{ fontSize: theme.FONT_SIZES.text, fontWeight: '700', color: theme.COLORS.textPrimary, textAlign: 'center' }}>{texts.modifyProfileButton}</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity style={{ width: '100%', paddingVertical: theme.SPACING.medium, borderRadius: 12, backgroundColor: '#ffebee', borderWidth: 1, borderColor: theme.COLORS.error }} onPress={logout}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.SPACING.small }}>
                         <SvgUri uri={getIconUri("logout.svg")} width={25} height={25} color={theme.COLORS.error} />

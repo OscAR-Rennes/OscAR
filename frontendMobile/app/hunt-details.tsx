@@ -14,7 +14,7 @@ import translationsFr from '../constants/language-fr.json';
 import { LightStepDTO } from '../common/dto/ILightStep';
 import { FullStepDTO } from '../common/dto/IStep';
 import { getIconUri } from './icon-mapping';
-import { getStepByHunt } from '@/api/services/step.api'
+import { downloadStepArFiles, downloadStepTarget, getStepByHunt } from '@/api/services/step.api'
 import { getProgressionByHunt } from '@/api/services/progression.api';
 import { getStepById } from '@/api/services/step.api'
 import { saveProgress } from '@/api/services/progression.api'
@@ -40,6 +40,8 @@ type GroupedSteps = {
 };
 
 type PartStatus = 'locked' | 'available' | 'completed';
+
+const ARScreen = React.lazy(() => import('@/components/ARScreen'));
 
 const HuntDetailsScreen: React.FC = () => {
     const router = useRouter();
@@ -89,7 +91,6 @@ const HuntDetailsScreen: React.FC = () => {
         }
     }, [huntId, isConnected])
 
-    // derive completed step ids and total points
     const completedStepIds = useMemo(() => {
         const set = new Set<string>();
         if (!steps || steps.length === 0) return set;
@@ -118,7 +119,12 @@ const HuntDetailsScreen: React.FC = () => {
         setTotalPoints(pts);
     }, [steps, completedStepIds]);
 
-    const ARScreen = React.lazy(() => import('@/components/ARScreen'));
+    const [arFiles, setArFiles] = useState<{
+        targetUri: string;
+        objUri: string;
+        mtlUri: string;
+        jpgUri: string;
+    } | null>(null);
 
     const groupedSteps = steps.reduce((acc: GroupedSteps[], step) => {
         const indexNumber = step.index_number ?? 1;
@@ -207,6 +213,17 @@ const HuntDetailsScreen: React.FC = () => {
     const handleScanPress = async (step: LightStepDTO) => {
         const full = await getStepById(step.id);
         setScannedStep(full);
+        const [targetUri, arFiles] = await Promise.all([
+            downloadStepTarget(step.id),
+            downloadStepArFiles(step.id),
+        ]);
+
+        setArFiles({
+            targetUri,
+            objUri: arFiles.obj,
+            mtlUri: arFiles.mtl,
+            jpgUri: arFiles.jpg,
+        });
         setShowAR(true);
     };
 
@@ -219,8 +236,11 @@ const HuntDetailsScreen: React.FC = () => {
         setShowSuccessModal(false);
         if (scannedStep) {
             if (isConnected && huntId) {
+                console.log("Saving progression for step", scannedStep.id);
                 await saveProgress({ hunt_id: huntId, step_id: scannedStep.id });
+                console.log("Progression saved, fetching updated progression");
                 const progressionData = await getProgressionByHunt(huntId);
+                console.log("Updated progression data:", progressionData);
                 setProgression(progressionData ?? null);
             }
 
@@ -441,11 +461,17 @@ const HuntDetailsScreen: React.FC = () => {
 
             <BottomNavbar />
 
-            {showAR && scannedStep && (
-                <ARScreen
-                    onClose={() => setShowAR(false)}
-                    onValidated={handleARValidated}
-                />
+            {showAR && scannedStep && arFiles && (
+                <React.Suspense fallback={<View><Text>Chargement AR...</Text></View>}>
+                    <ARScreen
+                        onClose={() => setShowAR(false)}
+                        onValidated={handleARValidated}
+                        targetUri={arFiles.targetUri}
+                        objUri={arFiles.objUri}
+                        mtlUri={arFiles.mtlUri}
+                        jpgUri={arFiles.jpgUri}
+                    />
+                </React.Suspense>
             )}
         </SafeAreaView>
     );

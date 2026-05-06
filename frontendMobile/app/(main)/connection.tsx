@@ -73,11 +73,11 @@ export default function ConnexionScreen() {
                         </View>
 
                         {/* Link "Forgot Password?" */}
-                        <TouchableOpacity onPress={() => router.push('/forgot-password')} activeOpacity={0.7}>
+                        {/* <TouchableOpacity onPress={() => router.push('/forgot-password')} activeOpacity={0.7}>
                             <Text style={[globalStyles.tinyText, { color: theme.COLORS.secondary, marginBottom: theme.SPACING.large, fontWeight: '600' }]}>
                                 {texts.forgotPassword}
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
 
                     {/* Button "Sign In" */}
