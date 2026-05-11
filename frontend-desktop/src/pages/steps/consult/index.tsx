@@ -17,6 +17,7 @@ import {
 } from "./steps.data";
 import "../../../common/components/map/map.style.css";
 import "./index.style.css";
+import { dowloadStepAr, dowloadStepTarget } from "../../../api/services/step.api";
 
 const STEP_TAB_BY_FIELD: Record<string, string> = {
   title: "Général",
@@ -223,20 +224,46 @@ export default function StepConsultation() {
 
                 <FormFile
                   name="model_file_readonly"
-                  label="Modèle 3D (.obj)"
-                  accept=".obj"
+                  label="Modèle 3D (.zip)"
+                  accept=".zip"
                   readOnly={true}
-                  readOnlyValue="Aucun fichier chargé"
+                  readOnlyValue= {step.step_ar.file_path_object && step.step_ar.file_path_mtl && step.step_ar.file_path_jpg ? "Fichier chargé" : "Fichier introuvable"}
                 />
+
+                {
+                  step.step_ar.file_path_object && step.step_ar.file_path_mtl && step.step_ar.file_path_jpg && (
+                    <button
+                      onClick={async () => {
+                        await dowloadStepAr(step.id);
+                      }}
+                    >
+                      Télécharger
+                    </button>
+                  )
+                }
 
                 <FormFile
                   name="image_file_readonly"
                   label="Image (.png, .jpg)"
                   accept=".png,.jpg,.jpeg"
                   readOnly={true}
-                  readOnlyValue="Aucun fichier chargé"
+                  readOnlyValue= {step.step_ar.file_path_target ? "Fichier chargé" : "Fichier introuvable"}
                 />
+
+                {
+                  step.step_ar.file_path_target && (
+                    <button
+                    onClick={async () => {
+                      await dowloadStepTarget(step.id)
+                    }}
+                    >
+                      Télécharger
+                    </button>
+                  )
+                }
               </div>
+
+              
             </div>
             )}
           </>

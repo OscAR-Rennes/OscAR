@@ -20,7 +20,7 @@ export default function MainLayout() {
     // Redirect logic for the "connection" / "profil" page
     useEffect(() => {
         if (normalizeRoute(pathname) === '/connection' && isConnected) {
-            router.replace('/profil'); // Redirect to profil if already logged in
+            router.replace('/'); // Redirect to home if already logged in
         }
     }, [pathname, isConnected]);
 

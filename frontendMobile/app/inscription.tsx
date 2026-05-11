@@ -19,8 +19,18 @@ export default function InscriptionScreen() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
+
+    const passwordMismatch = confirmPasswordTouched && confirmPassword.length > 0 && password !== confirmPassword;
 
     const handleRegister = async() => {
+        setConfirmPasswordTouched(true);
+
+        if (password !== confirmPassword) {
+            return;
+        }
+
         const user = {
             email,
             username,
@@ -94,8 +104,26 @@ export default function InscriptionScreen() {
                         <Text style={[globalStyles.label, { paddingBottom: theme.SPACING.small }]}>{texts.confirmPasswordLabel}</Text>
                         <View style={theme.INPUT_STYLES.container}>
                             <SvgUri uri={getIconUri("lock.svg")} width={20} height={20} style={{ marginRight: theme.SPACING.small }} color={theme.COLORS.placeholder} />
-                            <TextInput style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]} placeholder={texts.confirmPasswordPlaceholder} placeholderTextColor={theme.COLORS.placeholder} secureTextEntry />
+                            <TextInput
+                                style={[theme.INPUT_STYLES.text, { paddingVertical: theme.SPACING.medium }]}
+                                placeholder={texts.confirmPasswordPlaceholder}
+                                placeholderTextColor={theme.COLORS.placeholder}
+                                secureTextEntry
+                                value={confirmPassword}
+                                onChangeText={(value) => {
+                                    setConfirmPassword(value);
+                                    if (!confirmPasswordTouched) {
+                                        setConfirmPasswordTouched(true);
+                                    }
+                                }}
+                                onBlur={() => setConfirmPasswordTouched(true)}
+                            />
                         </View>
+                        {passwordMismatch && (
+                            <Text style={[globalStyles.tinyText, { color: theme.COLORS.error, marginTop: theme.SPACING.xsmall, textAlign: 'left', }]}>
+                                {texts.confirmPasswordError}
+                            </Text>
+                        )}
                     </View>
 
                     {/* Registration Button */}

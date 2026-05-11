@@ -13,27 +13,31 @@ export class StepsController  {
   }
 
   async createStep(req: Request, res: Response, next: any) {
-    try {
-      const stepData = req.body;
-      const newStep = await this.stepService.createStep(stepData);
-      logger.info("Step created successfully", { route: req.originalUrl, stepId: newStep.id , createdBy: req.user?.id });
-      res.status(201).json(newStep);
-    } catch (err) {
-      logger.error("Error creating step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
-      console.error(err);
-      next(err);
-    }
+      try {
+          const stepData = req.body;
+          const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+          const imageFile = files?.image_file?.[0];
+          const modelFile = files?.model_file?.[0];
+
+          const newStep = await this.stepService.createStep(stepData, imageFile, modelFile);
+          logger.info("Step created successfully", { route: req.originalUrl, stepId: newStep.id, createdBy: req.user?.id });
+          res.status(201).json(newStep);
+      } catch (err) {
+          logger.error("Error creating step", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err });
+          next(err);
+      }
   }
 
   async getStepsByCulturalCenter(req: Request, res: Response, next: any) {
     try {
       const user = req.user;
-      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      const { page, limit, search, sort } = parsePaginationQuery(req.query as Record<string, unknown>);
       if (!user) {
         logger.warn("User missing in request for getStepsByCulturalCenter", { route: req.originalUrl });
         throw new Error("User not found in request");
       }
-      const steps = await this.stepService.getStepsByCulturalCenter(user, pagination);
+      const steps = await this.stepService.getStepsByCulturalCenter(user, { page, limit }, search, sort);
       res.status(200).json(steps);
     } catch (err) {
       logger.error("Error getting steps by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
@@ -135,4 +139,41 @@ export class StepsController  {
       next(err);
     }
   }
-};
+
+  async downloadStepAr(req: Request, res: Response, next: any) {
+    try {
+      const stepId = req.params.id;
+      const arFiles = await this.stepService.downloadStepAr(stepId);
+      if (!arFiles) {
+        res.status(404).json({ message: "AR files not found for this step" });
+        return;
+      }
+      
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename="${arFiles.fileName}"`);
+      res.send(arFiles.fileBuffer);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async downloadStepTarget(req: Request, res: Response, next: any) {
+    try {
+      const stepId = req.params.id;
+      const targetFile = await this.stepService.downloadStepTarget(stepId);
+      if (!targetFile) {
+        res.status(404).json({ message: "Target file not found for this step" });
+        return;
+      }
+      
+      const ext = targetFile.fileName.split(".").pop()?.toLowerCase();
+      const contentType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "png" ? "image/png" : "application/octet-stream";
+      
+      res.setHeader("Content-Type", contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="${targetFile.fileName}"`);
+      res.send(targetFile.fileBuffer);
+    } catch (err) {
+      next(err);
+    }
+  }
+}

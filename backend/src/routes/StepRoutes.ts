@@ -2,6 +2,7 @@ import { Router } from "express";
 import { StepsController } from "../controllers/StepsController.js";
 import { authMiddleware, requireRole } from "../common-lib/middlewares/AuthMiddleware.js";
 import { RoleEnum } from "../common-lib/enum/roleEnum.js";
+import { uploadStepFiles } from "../common-lib/middlewares/UploadMiddleware.js";
 
 const stepsRoutes = Router();
 
@@ -35,6 +36,7 @@ const stepsController = new StepsController();
 stepsRoutes.post(
     "/step", 
     authMiddleware, 
+    uploadStepFiles,
     requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
     (req, res, next) => stepsController.createStep(req, res, next)
 );
@@ -75,6 +77,16 @@ stepsRoutes.delete(
 stepsRoutes.get(
     "/step/getByHunt/:id",
     (req, res, next) => stepsController.getStepByHunt(req, res, next)
+)
+
+stepsRoutes.get(
+    "/step/downloadAr/:id",
+    (req, res, next) => stepsController.downloadStepAr(req, res, next)
+)
+
+stepsRoutes.get(
+    "/step/downloadTarget/:id",
+    (req, res, next) => stepsController.downloadStepTarget(req, res, next)
 )
 
 export default stepsRoutes;

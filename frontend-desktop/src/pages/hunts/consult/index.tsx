@@ -108,7 +108,7 @@ export default function HuntConsultation() {
             subtitle="Tu es ici dans la vue détaillée de cette chasse précise."
             emptyMessage={statsError ?? "Aucune statistique disponible pour cette chasse."}
           />
-        ) : isEditMode ? (
+        ) : isEditMode && difficulties ? (
           <Form
             id="edit-hunt-form"
             onSubmit={buildEditHuntSubmitHandler(() => {
@@ -147,7 +147,7 @@ export default function HuntConsultation() {
                   name="difficulty_id"
                   label="Difficulté"
                   required={true}
-                  options={difficulties.map((d: any) => ({
+                  options={(difficulties ?? []).map((d: any) => ({
                     value: d.id,
                     label: d.name,
                   }))}

@@ -66,23 +66,19 @@ export class HuntsController  {
     }
   }
 
-  async getHuntByCulturalCenter(req: Request, res: Response, next: any) {
-    try {
-      const id = req.params.id;
-      const user = req.user;
-      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
-      if (!user) {
-        logger.warn("User missing in request for getting hunts", { route: req.originalUrl });
-        throw new Error("User not found in request");
+    async getHuntByCulturalCenter(req: Request, res: Response, next: any) {
+      try {
+        const id = req.params.id;
+        const user = req.user;
+        const { page, limit, search, sort } = parsePaginationQuery(req.query as Record<string, unknown>);
+        const hunts = await this.huntsService.getHuntByCulturalCenter(id, user, { page, limit }, search, sort);
+        logger.info(`Hunts retrieved succesfully`, { route: req.originalUrl })
+        res.status(200).json(hunts);
+      } catch (err) {
+        logger.error("Error getting hunts by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+        next(err);
       }
-      const hunts = await this.huntsService.getHuntByCulturalCenter(id,user, pagination);
-      logger.info(`Hunts retrieved succesfully`, { route: req.originalUrl })
-      res.status(200).json(hunts);
-    } catch (err) {
-      logger.error("Error getting hunts by cultural center", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
-      next(err);
     }
-  }
 
   async getHuntById(req: Request, res: Response, next: any) {
     try {

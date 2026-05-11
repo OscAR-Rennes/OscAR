@@ -10,7 +10,7 @@ import { HuntListProps } from '../common/dto/IHuntListProps';
 import { getIconUri } from '../app/icon-mapping';
 import { LightHuntDto } from '@/common/dto/ILightHunt';
 
-const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
+const HuntList: React.FC<HuntListProps> = ({ hunts, culturalCenterId }) => {
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
     const router = useRouter();
@@ -45,6 +45,7 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
             pathname: '/hunt-details',
             params: {
                 id: hunt.id,
+                culturalCenterId,
             },
         });
     };
@@ -52,7 +53,7 @@ const HuntList: React.FC<HuntListProps> = ({ hunts }) => {
     return (
         <View>
             {hunts.map((hunt: LightHuntDto, index: number) => (
-                <TouchableOpacity  key={index}  style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, marginBottom: theme.SPACING.medium, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 5 }} onPress={() => handleHuntPress(hunt)} >
+                <TouchableOpacity  key={index}  style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.COLORS.background, padding: theme.SPACING.medium, marginBottom: theme.SPACING.medium, borderRadius: theme.SPACING.medium, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 5 }} onPress={() => handleHuntPress(hunt)} >
                     {/* Hunt Informations */}
                     <View style={{ flex: 1 }}>
                         <Text style={[{ marginBottom: theme.SPACING.small, fontSize: 20, fontWeight: 'bold' }]}>{hunt.title}</Text>

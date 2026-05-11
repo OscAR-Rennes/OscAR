@@ -70,9 +70,22 @@ export class StepRepository {
     return stepRecords;
   }
 
-  async getStepsByHuntId(id: string): Promise<steps[]> {
+  async getStepsByHuntId(id: string): Promise<any[]> {
     const stepRecords = await prisma.steps.findMany({
       where: { hunt_id: id },
+      include: {
+        index: {
+          select: {
+            id: true,
+            name: true,
+            index: true,
+          },
+        },
+      },
+      orderBy: [
+        { index: { index: "asc" } },
+        { title: "asc" },
+      ],
     });
     return stepRecords;
   }
@@ -125,7 +138,8 @@ export class StepRepository {
             }
           }
         },
-        index: true
+        index: true,
+        step_ar: true
       }
     });
   }

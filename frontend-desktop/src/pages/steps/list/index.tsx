@@ -20,6 +20,8 @@ export default function StepsList() {
     hasSingleSelectedStep,
     selectedStepId,
     deleteSelectedSteps,
+    handleSearchChange,
+    handleSortChange,
   } = useStepsData();
 
   const navigate = useNavigate();
@@ -34,6 +36,9 @@ export default function StepsList() {
           serverPagination={pagination}
           onServerPaginationChange={handlePaginationChange}
           onRowSelect={(rows) => setSelectedStepsRows(rows)}
+          externalSearch={true}
+          onSearchChange={handleSearchChange}
+          onSortChange={(key, direction) => handleSortChange(direction)}
           allItemsPrefix="Toutes les"
           allItemsLabel="étapes"
           renderActionButton={() => (

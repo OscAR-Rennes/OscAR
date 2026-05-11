@@ -15,18 +15,25 @@
   "hunt": {
     "pageTitle": "My Hunts",
     "currentHuntsTitle": "Current Hunts (0)",
-    "currentHuntsPlaceholderMessage": "Log in to see your current hunts !",
+    "currentHuntsPlaceholderMessage": "Start a hunt to see it appear here",
     "completedHuntsTitle": "Completed Hunts (0)",
-    "completedHuntsPlaceholderMessage": "Log in to save your progress !",
+    "completedHuntsPlaceholderMessage": "Finish a hunt to see it appear here",
+    "disconnectedPlaceholderMessage": "Sign in to save your progress",
     "connectButtonText": "Log in →",
     "currentHuntsAuthMessage": "Displaying current hunts for authenticated users coming soon",
     "completedHuntsAuthMessage": "Displaying completed hunts for authenticated users coming soon"
   },
   "huntDetails": {
-    "backToMenu": "Back to menu",
+    "backToCulturalCenter": "Back",
     "stepsTitle": "Hunt Steps",
     "noSteps": "No steps found for this hunt.",
-    "startHunt": "Start the hunt"
+    "startHunt": "Start the hunt",
+    "resumeHunt": "Resume the hunt",
+    "completedHuntMessage": "You already finished this hunt, and you earned:",
+    "partLabel": "Part",
+    "lockedPartMessage": "Complete previous part to unlock",
+    "pointsEarned": "Points Earned",
+    "stepsRemaining": "Steps Remaining"
   },
   "index": {
     "languageSelection": "Language Selection",
@@ -65,17 +72,20 @@
     "placeholder": "********"
   },
   "social": {
-    "friendRequestsTitle": "Friend Requests (0)",
+    "friendRequestsTitle": "Friend Requests",
     "friendRequestsPlaceholderMessage": "Log in to add friends and see their progress !",
     "friendsLeaderboardTitle": "Friends Leaderboard",
     "globalLeaderboardTitle": "Global Leaderboard",
-    "globalLeaderboardMessage": "List of top players coming soon",
+    "globalLeaderboardLoading": "Loading leaderboard...",
+    "globalLeaderboardEmpty": "No players to display yet",
+    "pointsSuffix": "points",
     "connectButtonText": "Log in →",
     "seeMoreButtonText": "See more",
-    "friendRequestsListMessage": "Friend requests list coming soon",
-    "friendsListMessage": "Friends list coming soon"
+    "friendRequestsListMessage": "No friend requests to display yet",
+    "friendsListMessage": "Add friend to see friend leaderboard and friend list here"
   },
   "socialFriends": {
+    "pointsSuffix": "points",
     "backButton": "Back to Social",
     "leaderboardTitle": "Friends Leaderboard",
     "leaderboardPlaceholder": "Detailed list of friends coming soon"
@@ -95,10 +105,12 @@
     "unknown": "Unknown"
   },
   "culturalCenterModal": {
-    "viewCenter": "View center"
+    "viewCenter": "View center",
+    "description": "This cultural center has no description"
   },
   "currentStep": {
     "backToMenu": "Back to Menu",
+    "backToHunt": "Back to hunt",
     "pointsEarned": "Points Earned",
     "stepsRemaining": "Steps Remaining",
     "scanButton": "Scan / AR Camera",
@@ -138,7 +150,8 @@
     "signUpButton": "Sign Up",
     "alreadyHaveAccountText": "Already have an account ?",
     "signInLink": "Sign in !",
-    "backButton": "Back to menu"
+    "backButton": "Back to menu",
+    "confirmPasswordError": "Passwords do not match"
   },
   "bottomNavbar": {
     "maps": "Maps",

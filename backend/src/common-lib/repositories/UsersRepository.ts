@@ -93,8 +93,29 @@ export class UserRepository  {
     return users;
   }
 
-
-  //TODO : Create User for mobile (without rights managements and cultural center affiliation)
+  async findGlobalLeaderboard(limit: number): Promise<Pick<users, "id" | "username" | "points">[]> {
+    return prisma.users.findMany({
+      where: {
+        right_user: {
+          some: {
+            rights: {
+              name: RoleEnum.USER,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        points: true,
+      },
+      orderBy: [
+        { points: "desc" },
+        { username: "asc" },
+      ],
+      take: limit,
+    });
+  }
 
   async findByCredentials(email: string): Promise<UserEntity | null> {
     const user = await prisma.users.findUnique({
@@ -174,6 +195,12 @@ export class UserRepository  {
     await prisma.users.update({
         where: { id: user_id },
         data: { points: { increment: points } }
+    });
+  }
+
+  async findByUsername(username: string) {
+    return prisma.users.findFirst({
+        where: { username }
     });
   }
 }

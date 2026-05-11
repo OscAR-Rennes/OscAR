@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { theme } from '../constants/theme';
 import { useLocalSearchParams } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
@@ -24,6 +24,7 @@ import { LightHuntDto } from '@/common/dto/ILightHunt'
 const CulturalCenterScreen: React.FC = () => {
     const router = useRouter();
     const { id } = useLocalSearchParams();
+    const culturalCenterId = Array.isArray(id) ? id[0] : id;
     const { language } = useLanguage();
     const texts = STATIC_TEXTS[language];
 
@@ -33,15 +34,15 @@ const CulturalCenterScreen: React.FC = () => {
     // Fetch Cultural Center information
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getCulturalCenterById(id)
-            const huntsData = await getHuntsByCulturalCenter(id)
-            setHunts(huntsData)
+            const data = await getCulturalCenterById(culturalCenterId)
+            const huntsData = await getHuntsByCulturalCenter(culturalCenterId)
+            setHunts(Array.isArray(huntsData) ? huntsData : [])
             setCulturalCenter(data)
         }
-        if (id != null && id != "") {
+        if (culturalCenterId != null && culturalCenterId != "") {
             fetchData()
         }
-    }, [])
+    }, [culturalCenterId])
 
     // State for active button
     const [activeButton, setActiveButton] = useState<'chasses' | 'classement'>('chasses');
@@ -59,16 +60,20 @@ const CulturalCenterScreen: React.FC = () => {
     };
 
     // Interpolations for sliding animation
+    const [toggleContainerWidth, setToggleContainerWidth] = useState(0);
+    const sliderInset = 5;
+    const sliderWidth = Math.max(0, (toggleContainerWidth - sliderInset * 2) / 2);
+
     const translateX = slideAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 165],
+        outputRange: [0, sliderWidth],
     });
 
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
             <HeaderNavbar/>
-            <ScrollView style={{ flex: 1, padding: theme.SPACING.large }}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: theme.SPACING.large, paddingBottom: theme.SPACING.xLarge + 90, }} nestedScrollEnabled keyboardShouldPersistTaps="handled" >
                 {/* Back Button */}
                 <TouchableOpacity style={[{ flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start', marginBottom: theme.SPACING.large }]} onPress={() => router.push('/')} activeOpacity={0.7}>
                     <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
@@ -84,15 +89,19 @@ const CulturalCenterScreen: React.FC = () => {
                 </Text>
 
                 {/* Double Button */}
-                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.15, shadowRadius: 5,}}>
-                    <View style={{ flexDirection: 'row', backgroundColor: theme.COLORS.background, borderRadius: 18, padding: 5 }}>
-                        <Animated.View style={{ position: 'absolute', top: 5, left: 5, width: '50%', height: '100%', borderRadius: 15, transform: [{ translateX }], }} >
-                            <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 15 }} />
+                <View
+                    style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: theme.SPACING.medium, borderRadius: theme.SPACING.medium, backgroundColor: theme.COLORS.background,
+                        ...(Platform.OS === 'ios'
+                            ? { shadowColor: theme.COLORS.icon, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.15, shadowRadius: 5, }
+                            : { elevation: 6, }), }} >
+                    <View onLayout={(event) => setToggleContainerWidth(event.nativeEvent.layout.width)} style={{ flexDirection: 'row', width: '100%', backgroundColor: theme.COLORS.background, borderRadius: 18, padding: sliderInset }} >
+                        <Animated.View style={{ position: 'absolute', top: sliderInset, left: sliderInset, bottom: sliderInset, width: sliderWidth, borderRadius: theme.SPACING.small, transform: [{ translateX }], }} >
+                            <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 12 }} />
                         </Animated.View>
 
                         {/* All Hunts */}
                         <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }} onPress={() => handleButtonPress('chasses')} activeOpacity={1} >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.medium }}>
                                 <SvgUri uri={getIconUri("target-larger.svg")} width={25} height={25} color={activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary} />
                                 <Animated.Text style={{ color: activeButton === 'chasses' ? theme.COLORS.background : theme.COLORS.textPrimary, fontWeight: 'bold', fontSize: 17, }} >
                                     {texts.hunts}
@@ -102,7 +111,7 @@ const CulturalCenterScreen: React.FC = () => {
 
                         {/* Leaderboard for cultural center */}
                         <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }} onPress={() => handleButtonPress('classement')} activeOpacity={1} >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.medium }}>
                                 <SvgUri uri={getIconUri("loyalty-points.svg")} width={28} height={28} color={activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary} />
                                 <Animated.Text style={{ color: activeButton === 'classement' ? theme.COLORS.background : theme.COLORS.textPrimary, fontWeight: 'bold', fontSize: 17, }} >
                                     {texts.leaderboard}
@@ -115,14 +124,16 @@ const CulturalCenterScreen: React.FC = () => {
                 {/* Section Content */}
                 {activeButton === 'chasses' ? (
                     hunts && hunts.length > 0 ? (
-                        <HuntList hunts={hunts} />
+                        <HuntList hunts={hunts} culturalCenterId={String(id)} />
                     ) : (
                         <Text style={{ color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.text, textAlign: 'center', marginTop: theme.SPACING.large }}>
                             {texts.noHunts}
                         </Text>
                     )
                 ) : (
-                    <Text style={{ color: theme.COLORS.textPrimary, fontSize: theme.FONT_SIZES.text }}>{texts.centerLeaderboard}</Text>
+                    <Text style={{ color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.text, textAlign: 'center', marginTop: theme.SPACING.large }}>
+                        {texts.centerLeaderboard}
+                        </Text>
                 )}
             </ScrollView>
             <BottomNavbar/>

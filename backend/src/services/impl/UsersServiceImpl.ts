@@ -16,6 +16,7 @@ import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { FullUserDTO } from "../../common-lib/dto/users/FullUserDTO.js";
 import { createTwoFactorChallengeToken, generateTwoFactorCode, generateTwoFactorExpiryDate, sendTwoFactorCodeEmail } from "../../common-lib/utils/twoFactor.js";
 import { NewUserResponseDTO } from "../../common-lib/dto/users/NewUserResponseDTO.js";
+import { LeaderboardUserDTO } from "../../common-lib/dto/users/LeaderboardUserDTO.js";
 
 export class UsersServiceImpl implements UsersService {
 
@@ -265,6 +266,27 @@ export class UsersServiceImpl implements UsersService {
       }
       throw new AppError({
         userMessage: "Erreur lors du chargement de l'utilisateur",
+        statusCode: 500,
+      });
+    }
+  }
+
+  async getGlobalLeaderboard(limit: number): Promise<LeaderboardUserDTO[]> {
+    try {
+      const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(1000, Math.floor(limit))) : 5;
+      const users = await this.userRepository.findGlobalLeaderboard(safeLimit);
+
+      return users.map((user) => ({
+        id: user.id,
+        username: user.username,
+        points: user.points,
+      }));
+    } catch (error: any) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError({
+        userMessage: "Erreur lors de la récupération du classement global",
         statusCode: 500,
       });
     }

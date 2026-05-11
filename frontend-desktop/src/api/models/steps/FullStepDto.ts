@@ -22,4 +22,10 @@ export interface FullStepDTO {
     name: string | null;
     index: number;
   };
+  step_ar: {
+    file_path_object: string;
+    file_path_target: string;
+    file_path_mtl: string;
+    file_path_jpg: string;
+  }
 }

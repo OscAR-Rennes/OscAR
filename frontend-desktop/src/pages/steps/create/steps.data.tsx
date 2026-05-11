@@ -85,7 +85,7 @@ export function useStepsData() {
 
     const fetchIndexes = async () => {
       const idx = await getAllIndexByHunt(selectedHuntId);
-      setIndexesForHunt(Array.isArray(idx?.data) ? idx.data : []);
+      setIndexesForHunt(idx.data ?? []);
     };
 
     fetchIndexes();
@@ -140,11 +140,21 @@ export function useStepsData() {
 
   // Handlers
 
-  const handleAddStep = async (data: CreateStepDto) => {
-    const step = await addStep(data);
-    console.log("Étape créée:", step);
-  };
+  const handleAddStep = async (data: any) => {
+      const payload: CreateStepDto = {
+          title: data.title,
+          description: data.description,
+          hunt_id: data.hunt_id,
+          points: Number(data.points),
+          latitude: data.latitude === "" ? 0 : Number(data.latitude),
+          longitude: data.longitude === "" ? 0 : Number(data.longitude),
+          index_id: data.index_id || undefined,
+      };
 
+      const step = await addStep(payload, data.model_file, data.image_file);
+      console.log("Étape créée:", step);
+  };
+  
   const handleAddIndex = async (data: CreateIndexDto) => {
     const index = await addIndex(data);
     console.log("Index créé:", index);
@@ -155,9 +165,6 @@ export function useStepsData() {
     indexesForHunt,
     selectedHuntId,
     setSelectedHuntId,
-
-    addStepFields,
-    addIndexFields,
 
     handleAddStep,
     handleAddIndex

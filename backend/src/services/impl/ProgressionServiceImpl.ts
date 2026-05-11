@@ -46,14 +46,29 @@ export class ProgressionServiceImpl implements ProgressionService {
         try {
             const { progressions, hunts } = await progressionRepository.getTotalProgression(user.id);
 
-            const completedStepIds = new Set(progressions.map(p => p.step_id));
+            const completedStepIds = new Set(progressions.map((p: { step_id: any; }) => p.step_id));
 
-            const progression = hunts.map(hunt => {
+            const progression = hunts.map((hunt: { steps: any; id: any; }) => {
                 const allSteps = hunt.steps;
-                const isComplete = allSteps.every(s => completedStepIds.has(s.id));
+                const isComplete = allSteps.every((s: { id: unknown; }) => completedStepIds.has(s.id));
+                const completedStepsCount = allSteps.filter((s: { id: unknown; }) => completedStepIds.has(s.id)).length;
+                const totalStepsCount = allSteps.length;
+                const completedPoints = allSteps
+                    .filter((s: { id: unknown; }) => completedStepIds.has(s.id))
+                    .reduce((sum: number, s: { points?: number; }) => sum + (s.points ?? 0), 0);
+                const totalPoints = allSteps.reduce((sum: number, s: { points?: number; }) => sum + (s.points ?? 0), 0);
+                const totalIndexes = new Set(allSteps.map((s: { index_id: string; }) => s.index_id)).size;
 
                 if (isComplete) {
-                    return { hunt_id: hunt.id, isComplete: true };
+                    return {
+                        hunt_id: hunt.id,
+                        isComplete: true,
+                        completed_steps: completedStepsCount,
+                        total_steps: totalStepsCount,
+                        completed_points: completedPoints,
+                        total_points: totalPoints,
+                        total_indexes: totalIndexes,
+                    };
                 }
 
                 const indexMap = new Map<string, { indexObj: typeof allSteps[0]['index'], steps: typeof allSteps }>();
@@ -67,20 +82,33 @@ export class ProgressionServiceImpl implements ProgressionService {
                 const sortedIndexes = [...indexMap.values()].sort((a, b) => a.indexObj.index - b.indexObj.index);
 
                 const currentIndex = sortedIndexes.find(({ steps }) =>
-                    steps.some(s => !completedStepIds.has(s.id))
+                    steps.some((s: { id: unknown; }) => !completedStepIds.has(s.id))
                 );
 
                 if (!currentIndex) {
-                    return { hunt_id: hunt.id, isComplete: false };
+                    return {
+                        hunt_id: hunt.id,
+                        isComplete: false,
+                        completed_steps: completedStepsCount,
+                        total_steps: totalStepsCount,
+                        completed_points: completedPoints,
+                        total_points: totalPoints,
+                        total_indexes: totalIndexes,
+                    };
                 }
 
                 const remainingSteps = currentIndex.steps
-                    .filter(s => !completedStepIds.has(s.id))
-                    .map(s => ({ id: s.id, title: s.title }));
+                    .filter((s: { id: unknown; }) => !completedStepIds.has(s.id))
+                    .map((s: { id: any; title: any; }) => ({ id: s.id, title: s.title }));
 
                 return {
                     hunt_id: hunt.id,
                     isComplete: false,
+                    completed_steps: completedStepsCount,
+                    total_steps: totalStepsCount,
+                    completed_points: completedPoints,
+                    total_points: totalPoints,
+                    total_indexes: totalIndexes,
                     current_index: {
                         id: currentIndex.indexObj.id,
                         index: currentIndex.indexObj.index,
@@ -108,12 +136,27 @@ export class ProgressionServiceImpl implements ProgressionService {
                 throw new AppError({ userMessage: "Chasse introuvable", statusCode: 404 });
             }
 
-            const completedStepIds = new Set(progressions.map(p => p.step_id));
+            const completedStepIds = new Set(progressions.map((p: { step_id: any; }) => p.step_id));
             const allSteps = hunt.steps;
-            const isComplete = allSteps.every(s => completedStepIds.has(s.id));
+            const isComplete = allSteps.every((s: { id: unknown; }) => completedStepIds.has(s.id));
+            const completedStepsCount = allSteps.filter((s: { id: unknown; }) => completedStepIds.has(s.id)).length;
+            const totalStepsCount = allSteps.length;
+            const completedPoints = allSteps
+                .filter((s: { id: unknown; }) => completedStepIds.has(s.id))
+                .reduce((sum: number, s: { points?: number; }) => sum + (s.points ?? 0), 0);
+            const totalPoints = allSteps.reduce((sum: number, s: { points?: number; }) => sum + (s.points ?? 0), 0);
+            const totalIndexes = new Set(allSteps.map((s: { index_id: string; }) => s.index_id)).size;
 
             if (isComplete) {
-                return { hunt_id: hunt.id, isComplete: true };
+                return {
+                    hunt_id: hunt.id,
+                    isComplete: true,
+                    completed_steps: completedStepsCount,
+                    total_steps: totalStepsCount,
+                    completed_points: completedPoints,
+                    total_points: totalPoints,
+                    total_indexes: totalIndexes,
+                };
             }
 
             const indexMap = new Map<string, { indexObj: typeof allSteps[0]['index'], steps: typeof allSteps }>();
@@ -127,20 +170,33 @@ export class ProgressionServiceImpl implements ProgressionService {
             const sortedIndexes = [...indexMap.values()].sort((a, b) => a.indexObj.index - b.indexObj.index);
 
             const currentIndex = sortedIndexes.find(({ steps }) =>
-                steps.some(s => !completedStepIds.has(s.id))
+                steps.some((s: { id: unknown; }) => !completedStepIds.has(s.id))
             );
 
             if (!currentIndex) {
-                return { hunt_id: hunt.id, isComplete: false };
+                return {
+                    hunt_id: hunt.id,
+                    isComplete: false,
+                    completed_steps: completedStepsCount,
+                    total_steps: totalStepsCount,
+                    completed_points: completedPoints,
+                    total_points: totalPoints,
+                    total_indexes: totalIndexes,
+                };
             }
 
             const remainingSteps = currentIndex.steps
-                .filter(s => !completedStepIds.has(s.id))
-                .map(s => ({ id: s.id, title: s.title }));
+                .filter((s: { id: unknown; }) => !completedStepIds.has(s.id))
+                .map((s: { id: any; title: any; }) => ({ id: s.id, title: s.title }));
 
             return {
                 hunt_id: hunt.id,
                 isComplete: false,
+                completed_steps: completedStepsCount,
+                total_steps: totalStepsCount,
+                completed_points: completedPoints,
+                total_points: totalPoints,
+                total_indexes: totalIndexes,
                 current_index: {
                     id: currentIndex.indexObj.id,
                     index: currentIndex.indexObj.index,

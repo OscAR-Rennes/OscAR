@@ -40,8 +40,8 @@ export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 				getHuntById(huntId),
 				getAllDifficulty(),
 			]);
+			setDifficulties(diff.data ?? []);
 			setHunt(data);
-			setDifficulties(diff ?? []);
 			setSteps(
 				data.steps.map((step: any) => ({
 					id: step.id,

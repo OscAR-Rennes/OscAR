@@ -18,34 +18,63 @@ import { UserRepository } from "../../common-lib/repositories/UsersRepository.js
 import { assertUserCanAccessHunt } from "../../common-lib/utils/assertCanAccessHunt.js";
 import { HuntRepository } from "../../common-lib/repositories/HuntRepository.js";
 import { paginateArray } from "../../common-lib/utils/pagination.js";
+import { FileUploadUtil } from "../../common-lib/utils/fileUpload.js";
+import { StepArRepository } from "../../common-lib/repositories/StepArRepository.js";
+import { downloadFromMinio } from "../../common-lib/utils/getMinioUrl.js";
+import archiver from "archiver";
 
 const stepRepository = new StepRepository();
+const stepArRepository = new StepArRepository();
 
 export class StepServiceImpl implements StepService {
 
-    async createStep(stepData: CreateStepRequestDTO): Promise<CreateStepResponseDTO> {
+    async createStep(stepData: any , imageFile?: Express.Multer.File, modelFile?: Express.Multer.File): Promise<CreateStepResponseDTO> {
         try {
-            const indexRepository = new IndexRepository();
-            let stepToCreate = stepData;
-            if (!stepData.index_id) {
-                const index = await indexRepository.createIncrementEmpty(stepData.hunt_id);
-                logger.info(`Index created for new step with ID: ${index.id}`, { indexId: index.id, huntId: stepData.hunt_id });
-                stepData.index_id = index.id;
-                stepToCreate = {
-                    ...stepData,
-                    index_id: index.id,
-                };
 
+            const fileUploadUtil = new FileUploadUtil();
+
+            let targetPath: string | undefined;
+            let objectPaths: { obj: string, mtl: string, jpg: string } | undefined;
+
+            if (imageFile) {
+                targetPath = await fileUploadUtil.uploadTarget(imageFile);
             }
 
-            const step = await stepRepository.create(stepToCreate);
-            logger.info(`Step created successfully with ID: ${step.id}`, { stepId: step.id, indexId: step.index_id });
-            return stepMapper.toCreateResponseDto(step);
+            if (modelFile) {
+                objectPaths = await fileUploadUtil.uploadObjectZip(modelFile);
+            }
+
+            const indexRepository = new IndexRepository();
+            if (!stepData.index_id) {
+                const index = await indexRepository.createIncrementEmpty(stepData.hunt_id);
+                stepData.index_id = index.id;
+            }
+
+            const cleanData = {
+                ...stepData,
+                points: Number(stepData.points),
+                latitude: stepData.latitude ? Number(stepData.latitude) : 0,
+                longitude: stepData.longitude ? Number(stepData.longitude) : 0,
+            };
+
+            const createdStep = await stepRepository.create(cleanData);
+
+            const stepArData = {
+                step_id: createdStep.id,
+                file_path_target: targetPath,
+                file_path_object: objectPaths?.obj,
+                file_path_mtl: objectPaths?.mtl,
+                file_path_jpg: objectPaths?.jpg,
+            }
+
+            await stepArRepository.create(stepArData);
+
+            return stepMapper.toCreateResponseDto(createdStep);
 
         } catch (error: any) {
             logger.error(`Error creating step: ${error.message}`, { error, stepData });
             throw new AppError({
-                userMessage: 'Erreur lors de la création de l\'étape',
+                userMessage: "Erreur lors de la création de l'étape",
                 statusCode: 500,
             });
         }
@@ -106,7 +135,7 @@ export class StepServiceImpl implements StepService {
 
                 await assertUserCanAccessHunt(user, step.hunts, userRepository);
 
-                await prisma.$transaction(async (tx) => {
+                await prisma.$transaction(async (tx: any) => {
                     const indexRepository = new IndexRepository();
                     const huntRepository = new HuntRepository();
                     await stepRepository.delete(stepId, tx);
@@ -140,27 +169,45 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {
+    async getStepsByCulturalCenter(user: AuthResponseDTO, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightStepDTO>> {
         try {
+            let items: LightStepDTO[] = [];
+
             if (user.rights.includes('ADMIN')) {
-                return paginateArray((await stepRepository.getAll()).map(stepMapper.toLightDTO), pagination);
+                items = (await stepRepository.getAll()).map(stepMapper.toLightDTO);
             }
 
-            if (user.rights.includes('HUNT_MANAGER')) {
-                return paginateArray((await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO), pagination);
+            else if (user.rights.includes('HUNT_MANAGER')) {
+                items = (await stepRepository.getByHuntCreator(user.id)).map(stepMapper.toLightDTO);
             }
 
-            if (
+            else if (
                 user.rights.includes('CULTURAL_CENTER_MANAGER') &&
                 user.id_cultural_center
             ) {
-                return paginateArray((await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO), pagination);
+                items = (await stepRepository.getByCulturalCenter(user.id_cultural_center)).map(stepMapper.toLightDTO);
             }
 
-            throw new AppError({
-                userMessage: "Vous n'avez pas les droits pour accéder aux étapes",
-                statusCode: 403,
-            });
+            else {
+                throw new AppError({
+                    userMessage: "Vous n'avez pas les droits pour accéder aux étapes",
+                    statusCode: 403,
+                });
+            }
+
+            if (search) {
+                items = items.filter(h => h.title.toLowerCase().includes(search.toLowerCase()));
+            }
+
+            items = items.sort((a, b) =>
+                sort === "desc"
+                    ? b.title.localeCompare(a.title)
+                    : a.title.localeCompare(b.title)
+            );
+
+            return paginateArray(items, pagination);
+
+            
         } catch (error) {
             throw new AppError({
                 userMessage: 'Erreur lors de la récupération des étapes',
@@ -169,26 +216,31 @@ export class StepServiceImpl implements StepService {
         }
     }
 
-    async getStepById(
-    id: string
-    ): Promise<FullStepDTO | null> {
-    try {
-        const step = await stepRepository.getById(id);
+    async getStepById(id: string): Promise<FullStepDTO | null> {
+        try {
+            const step = await stepRepository.getById(id);
 
-        if (!step) {
-            return null;
+            if (!step) {
+                return null;
+            }
+
+            const stepAr = step.step_ar[0] ?? {
+                file_path_object: "AR/obj/Default.obj",
+                file_path_target: "AR/target/Default.jpg",
+                file_path_mtl:    "AR/mtl/Default.mtl",
+                file_path_jpg:    "AR/jpg/Default.jpg",
+            };
+
+            return stepMapper.toFullResponseDto({ ...step, step_ar: [stepAr] });
+
+        } catch (error) {
+            console.log("ERREUR RÉELLE SERVICE:", error);
+            if (error instanceof AppError) throw error;
+            throw new AppError({
+                userMessage: "Erreur lors de la récupération de l'étape",
+                statusCode: 500,
+            });
         }
-
-        return stepMapper.toFullResponseDto(step);
-
-    } catch (error) {
-        if (error instanceof AppError) throw error;
-
-        throw new AppError({
-            userMessage: "Erreur lors de la récupération de l'étape",
-            statusCode: 500,
-        });
-    }
     }
 
     async getStepsByIndex(indexId: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightStepDTO>> {
@@ -213,6 +265,65 @@ export class StepServiceImpl implements StepService {
                 statusCode: 500,
             });
         }
+    }
+
+    async downloadStepAr(stepId: string): Promise<{ fileBuffer: Buffer; fileName: string }> {
+        const stepAr = await stepArRepository.findFirst(stepId);
+        if (!stepAr) throw new Error("StepAR not found");
+
+        const objBuffer = await downloadFromMinio(stepAr.file_path_object);
+        const mtlBuffer = stepAr.file_path_mtl ? await downloadFromMinio(stepAr.file_path_mtl) : null;
+        const jpgBuffer = stepAr.file_path_jpg ? await downloadFromMinio(stepAr.file_path_jpg) : null;
+
+        let patchedMtlBuffer = mtlBuffer;
+        if (mtlBuffer) {
+            const mtlContent = mtlBuffer.toString('utf-8');
+            const patched = mtlContent
+                .replace(/map_\w+\s+.+/gi, (match) => {
+                    const mapType = match.split(/\s+/)[0];
+                    return `${mapType} texture.jpg`;
+                })
+                .replace(/^(bump|disp|decal)\s+.+/gim, (match) => {
+                    const mapType = match.split(/\s+/)[0];
+                    return `${mapType} texture.jpg`;
+                });
+            patchedMtlBuffer = Buffer.from(patched, 'utf-8');
+        }
+
+        const archive = archiver("zip");
+
+        const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
+            const chunks: Buffer[] = [];
+            archive.on("data", (chunk) => chunks.push(chunk));
+            archive.on("end", () => resolve(Buffer.concat(chunks)));
+            archive.on("error", reject);
+
+            archive.append(objBuffer, { name: "model.obj" });
+            if (patchedMtlBuffer) archive.append(patchedMtlBuffer, { name: "model.mtl" });
+            if (jpgBuffer) archive.append(jpgBuffer, { name: "texture.jpg" });
+
+            archive.finalize();
+        });
+
+        return {
+            fileBuffer,
+            fileName: `step_ar_${stepId}.zip`,
+        };
+    }
+
+    async downloadStepTarget(stepId: string): Promise<{ fileBuffer: Buffer; fileName: string }> {
+        
+        const stepAr = await stepArRepository.findFirst(stepId);
+
+        if (!stepAr) throw new Error("StepAR not found");
+
+        const fileBuffer = await downloadFromMinio(stepAr.file_path_target);
+        const ext = stepAr.file_path_target.split(".").pop() ?? "bin";
+
+        return {
+            fileBuffer,
+            fileName: `step_target_${stepId}.${ext}`,
+        };
     }
     
 }

@@ -23,6 +23,8 @@ export default function HuntsList() {
     hasSingleSelectedHunt,
     selectedHuntId,
     deleteSelectedHunts,
+    handleSearchChange,
+    handleSortChange,
   } = useHuntsData();
 
   return (
@@ -33,6 +35,9 @@ export default function HuntsList() {
         serverPagination={pagination}
         onServerPaginationChange={handlePaginationChange}
         onRowSelect={(rows) => setSelectedHuntsRows(rows)}
+        externalSearch={true}
+        onSearchChange={handleSearchChange}
+        onSortChange={(key, direction) => handleSortChange(direction)}
         allItemsPrefix="Toutes les"
         allItemsLabel="chasses"
         renderActionButton={() => (

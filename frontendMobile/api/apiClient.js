@@ -15,10 +15,11 @@ function resolveApiUrl() {
     return Constants.expoConfig.extra.apiUrl;
   }
 
-  return "http://localhost:5000/api";
+  return "http://localhost:5000/api"; 
 }
 
-const API_URL = resolveApiUrl();
+const API_URL = "http://192.168.1.11:5000/api" //resolveApiUrl();
+console.log("API URL:", API_URL);
 
 export async function apiClient(
   path,
