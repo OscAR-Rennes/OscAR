@@ -34,6 +34,10 @@ export class UserRepository  {
     const client = prismaClient || prisma;
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const requiresTwoFactor = userData.isSecure
+      || userData.rights.includes(RoleEnum.ADMIN)
+      || userData.rights.includes(RoleEnum.HUNT_MANAGER)
+      || userData.rights.includes(RoleEnum.CULTURAL_CENTER_MANAGER);
 
     const userRecord = await client.users.create({
       data: {
@@ -41,6 +45,7 @@ export class UserRepository  {
         username: userData.username,
         password: hashedPassword,
         id_cultural_center: userData.id_cultural_center ?? null,
+        isSecure: requiresTwoFactor,
       },
     });
 
@@ -59,10 +64,30 @@ export class UserRepository  {
     return userRecord;
   }
 
+  async deleteById(userId: string, prismaClient?: PrismaClient) {
+    const client = prismaClient || prisma;
+    await client.users.delete({
+      where: { id: userId },
+    });
+  }
+
+  async setActive(userId: string, isActive: boolean, prismaClient?: PrismaClient) {
+    const client = prismaClient || prisma;
+    await client.users.update({
+      where: { id: userId },
+      data: { isActive },
+    });
+  }
+
   async findAllByCulturalCenter(culturalcenter_id: string): Promise<users[]> {
     const users = await prisma.users.findMany({
       where: {
         id_cultural_center: culturalcenter_id,
+      },
+      include: {
+        right_user: {
+          include: { rights: true },
+        },
       },
     });
     return users;

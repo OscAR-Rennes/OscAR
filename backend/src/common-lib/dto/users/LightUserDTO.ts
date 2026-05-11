@@ -3,4 +3,5 @@ export interface LightUserDTO {
   username: string;
   email: string;
   isActive: boolean;
+  rights?: string[];
 }

@@ -7,6 +7,8 @@ import { type Column } from "../../../common/components/table/Table";
 import MapPicker from "../../../common/components/map/map";
 import { useFormContext } from "react-hook-form";
 import { editHunt } from "../../../api/services/hunt.api";
+import { getDashboardStats } from "../../../api/services/huntStats.api";
+import type { HuntDashboardStatsDto } from "../../../api/models/hunts/HuntDashboardStatsDto";
 
 type StepRow = {
 	id: string;
@@ -14,12 +16,17 @@ type StepRow = {
 	description: string;
 };
 
-export const HUNTS_CONSULT_TABS = [{ id: "general", label: "Général" }];
+export const HUNTS_CONSULT_TABS = [
+	{ id: "general", label: "Général" },
+	{ id: "statistics", label: "Statistiques" },
+];
 
 export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 	const [hunt, setHunt] = useState<FullHuntDTO | null>(null);
 	const [steps, setSteps] = useState<StepRow[]>([]);
 	const [difficulties, setDifficulties] = useState<any[]>([]);
+	const [dashboardStats, setDashboardStats] = useState<HuntDashboardStatsDto | null>(null);
+	const [statsError, setStatsError] = useState<string | null>(null);
 
 	const stepsColumns: Column<StepRow>[] = [
 		{ key: "title", label: "Étape" },
@@ -42,10 +49,21 @@ export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 					description: step.description ?? "-",
 				}))
 			);
+
+			try {
+				const stats = await getDashboardStats();
+				setDashboardStats(stats ?? null);
+				setStatsError(null);
+			} catch {
+				setDashboardStats(null);
+				setStatsError("Statistiques indisponibles pour cette chasse.");
+			}
 		};
 
 		fetchHunt();
 	}, [huntId, reloadKey]);
+
+	const selectedStats = dashboardStats?.hunts.find((huntStats) => huntStats.id === huntId) ?? null;
 
 	const buildEditHuntSubmitHandler = (onSuccess: () => void) => {
 		return async (data: EditHuntFormDto) => {
@@ -80,6 +98,8 @@ export function useHuntConsultData(huntId?: string, reloadKey?: string) {
 		steps,
 		stepsColumns,
 		buildEditHuntSubmitHandler,
+		selectedStats,
+		statsError,
 	};
 }
 

@@ -3,13 +3,20 @@ import { LightUserDTO } from "../common-lib/dto/users/LightUserDTO.js";
 import { NewUserResponseDTO } from "../common-lib/dto/users/NewUserResponseDTO.js";
 import { users } from "@prisma/client";
 
+type UserWithRights = users & {
+  right_user?: Array<{ rights?: { name?: string } }>;
+};
+
 export const userMapper = {
-  toLightDTO(entity: users): LightUserDTO {
+  toLightDTO(entity: UserWithRights): LightUserDTO {
     return {
       id: entity.id,
       email: entity.email,
       isActive: entity.isActive,
-      username: entity.username
+      username: entity.username,
+      rights: Array.isArray(entity.right_user)
+        ? entity.right_user.map((ru: any) => ru.rights?.name).filter(Boolean)
+        : [],
     };
   },
 

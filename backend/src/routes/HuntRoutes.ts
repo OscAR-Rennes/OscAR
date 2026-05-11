@@ -77,6 +77,13 @@ huntsRoutes.put(
 );
 
 huntsRoutes.get(
+    "/hunt/stats",
+    authMiddleware,
+    requireRole([RoleEnum.HUNT_MANAGER, RoleEnum.CULTURAL_CENTER_MANAGER, RoleEnum.ADMIN]),
+    (req, res, next) => huntsController.getDashboardStats(req, res, next)
+);
+
+huntsRoutes.get(
     "/hunt/culturalcenter/:id",
     optionalAuthMiddleware,
     (req, res, next) => huntsController.getHuntByCulturalCenter(req, res, next)

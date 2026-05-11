@@ -14,6 +14,8 @@ import { paginateArray } from "../../common-lib/utils/pagination.js";
 import { LightUserDTO } from "../../common-lib/dto/users/LightUserDTO.js";
 import { AuthResponseDTO } from "../../common-lib/dto/auth/AuthResponseDTO.js";
 import { FullUserDTO } from "../../common-lib/dto/users/FullUserDTO.js";
+import { createTwoFactorChallengeToken, generateTwoFactorCode, generateTwoFactorExpiryDate, sendTwoFactorCodeEmail } from "../../common-lib/utils/twoFactor.js";
+import { NewUserResponseDTO } from "../../common-lib/dto/users/NewUserResponseDTO.js";
 import { LeaderboardUserDTO } from "../../common-lib/dto/users/LeaderboardUserDTO.js";
 
 export class UsersServiceImpl implements UsersService {
@@ -28,8 +30,9 @@ export class UsersServiceImpl implements UsersService {
     this.culturalCenterRepository = new CulturalCenterRepository();
   }
 
-  async createUserWeb(userData: NewUserRequestDTO) {
-    return prisma.$transaction(async (tx: any) => {
+  async createUserWeb(userData: NewUserRequestDTO): Promise<NewUserResponseDTO> {
+    let emailCode: number | undefined;
+    const result = await prisma.$transaction(async (tx: any) => {
       let userToCreate = { ...userData };
 
       if (userData.isNewCulturalCenter) {
@@ -74,30 +77,56 @@ export class UsersServiceImpl implements UsersService {
         };
       }
       const newUser = await this.userRepository.create(userToCreate, tx);
-      return userMapper.toDTONewUser(newUser);
-    }).catch((error: any) => {
-      if (error instanceof AppError) throw error;
+      const code = generateTwoFactorCode();
+      const twoFactorExpiresAt = generateTwoFactorExpiryDate();
+      emailCode = code;
+      const challengeToken = await createTwoFactorChallengeToken(newUser as any);
 
-      if (error.code === "P2002") {
-        let field = error.meta?.target?.[0];
+      await tx.security_code.create({
+        data: {
+          user_id: newUser.id,
+          code,
+          validity_period: twoFactorExpiresAt,
+        },
+      });
 
-        if (!field && typeof error.message === "string") {
-          const match = error.message.match(/\(`(.+)`\)/);
-          if (match) field = match[1];
-        }
+      return {
+        ...userMapper.toDTONewUser(newUser),
+        requiresTwoFactor: true,
+        challengeToken,
+        twoFactorExpiresAt: twoFactorExpiresAt.toISOString(),
+      };
+    });
 
-        field = field || "un champ unique";
-        console.log(error)
+    try {
+      if (typeof emailCode !== "number") {
         throw new AppError({
-          userMessage: `Conflit d'unicité sur: ${field}`,
-          statusCode: 409,
+          userMessage: "Code de double authentification introuvable",
+          statusCode: 500,
+        });
+      }
+
+      logger.info("Registration two-factor code sent", {
+        route: "/users/web",
+        email: userData.email,
+        userId: result.id,
+      });
+      await sendTwoFactorCodeEmail(userData.email, emailCode);
+      return result;
+    } catch (error: any) {
+      try {
+        await this.userRepository.deleteById(result.id);
+      } catch (deleteError) {
+        logger.error("Failed to rollback user after registration email error", {
+          userId: result.id,
+          errorMessage: deleteError instanceof Error ? deleteError.message : deleteError,
         });
       }
       throw new AppError({
-        userMessage: "Erreur lors de la création de l'utilisateur",
-        statusCode: 500,
+        userMessage: "Impossible d'envoyer le code de double authentification",
+        statusCode: 503,
       });
-    });
+    }
   }
 
   async createUserMobile(userData: NewUserRequestDTO) {
@@ -108,7 +137,37 @@ export class UsersServiceImpl implements UsersService {
           rights: [RoleEnum.USER]
         };
       const newUser = await this.userRepository.create(userToCreate);
-      return userMapper.toDTONewUser(newUser);
+      const code = generateTwoFactorCode();
+      const twoFactorExpiresAt = generateTwoFactorExpiryDate();
+      const challengeToken = await createTwoFactorChallengeToken(newUser as any);
+
+      await prisma.security_code.create({
+        data: {
+          user_id: newUser.id,
+          code,
+          validity_period: twoFactorExpiresAt,
+        },
+      });
+
+      try {
+        logger.info("Registration two-factor code sent", {
+          route: "/users/mobile",
+          email: newUser.email,
+          userId: newUser.id,
+          code: code
+        });
+        await sendTwoFactorCodeEmail(newUser.email, code);
+      } catch (emailError) {
+        await this.userRepository.deleteById(newUser.id);
+        throw emailError;
+      }
+
+      return {
+        ...userMapper.toDTONewUser(newUser),
+        requiresTwoFactor: true,
+        challengeToken,
+        twoFactorExpiresAt: twoFactorExpiresAt.toISOString(),
+      };
     } catch(error: any) {
       if (error instanceof AppError) throw error;
 
@@ -131,7 +190,7 @@ export class UsersServiceImpl implements UsersService {
         userMessage: "Erreur lors de la création de l'utilisateur",
         statusCode: 500,
       });
-    };
+    }
   }
 
   async getAllUsers(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>> {

@@ -92,9 +92,51 @@ export function useStepsData() {
   }, [selectedHuntId]);
 
   const refreshHunts = async () => {
+    if (!user?.id_cultural_center) {
+      setHunts([]);
+      return;
+    }
+
     const response = await getHuntsByCulturalCenter(user.id_cultural_center, { page: 1, limit: 200 });
     setHunts(Array.isArray(response?.data) ? response.data : []);
   };
+
+  // Champs des formulaires
+
+  const addStepFields = useMemo(() => [
+    { name: "title", label: "Titre", type: "text", required: true },
+    { name: "description", label: "Description", type: "text", required: true },
+    { name: "points", label: "Points", type: "number", required: true },
+    { name: "latitude", label: "Latitude", type: "number", required: false },
+    { name: "longitude", label: "Longitude", type: "number", required: false },
+    {
+      name: "hunt_id",
+      label: "Chasse",
+      type: "select",
+      required: true,
+      options: hunts.map(h => ({ label: h.title, value: h.id }))
+    },
+    {
+      name: "index_id",
+      label: "Index",
+      type: "select",
+      required: false,
+      options: (Array.isArray(indexesForHunt) ? indexesForHunt : [])
+        .filter((i: any) => i && i.name)
+        .map(i => ({ label: i.name, value: i.id }))
+    }
+  ], [hunts, indexesForHunt]);
+
+  const addIndexFields = useMemo(() => [
+    { name: "name", label: "Nom de l'index", type: "text", required: true },
+    {
+      name: "hunt_id",
+      label: "Chasse",
+      type: "select",
+      required: true,
+      options: hunts.map(h => ({ label: h.title, value: h.id }))
+    }
+  ], [hunts]);
 
   // Handlers
 

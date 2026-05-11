@@ -19,6 +19,7 @@ import HuntsCreation from "./pages/hunts/create";
 import StepsCreation from "./pages/steps/create";
 import HuntConsultation from "./pages/hunts/consult";
 import StepConsultation from "./pages/steps/consult";
+import DashboardPage from "./pages/dashboard";
 
 export default function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -48,7 +49,7 @@ export default function App() {
           <Route path="/home/hunts" element={<HuntsList />} />
           <Route path="/home/users" element={<Users />} />
           <Route path="/home/accounts" element={<Accounts />} />
-          <Route path="/home/dashboard" element={<div>Tableau de bord</div>} />
+          <Route path="/home/dashboard" element={<DashboardPage />} />
           <Route path="/home/steps" element={<StepsList />} />
           <Route path="/home/settings" element={<div>Paramètres</div>} />
           <Route path="/home/cultural-center" element={<CulturalCenters />} />

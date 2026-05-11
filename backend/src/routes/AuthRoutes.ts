@@ -32,6 +32,16 @@ authRoutes.post(
     (req, res, next) => authController.authentificateUser(req, res, next)
 );
 
+authRoutes.post(
+    '/auth/login/web/verify',
+    (req, res, next) => authController.verifyTwoFactorUser(req, res, next)
+);
+
+authRoutes.post(
+    '/auth/login/web/resend',
+    (req, res, next) => authController.resendTwoFactorCode(req, res, next)
+);
+
 /**
  * @swagger
  * /api/auth/me:

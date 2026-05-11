@@ -10,6 +10,8 @@ import { ReadOnlyField } from "../../../common/components/form_elements/ReadOnly
 import Table from "../../../common/components/table/Table";
 import MapPicker from "../../../common/components/map/map";
 import NotificationRibbon from "../../../common/components/notification_ribbon/NotificationRibbon";
+import HuntStatsPanel from "../../../common/components/hunt_stats/HuntStatsPanel";
+import { translateDifficultyName } from "../../../common/utils/translateDifficulty";
 import {
   EditDirtyTracker,
   EditHuntMapField,
@@ -51,9 +53,10 @@ export default function HuntConsultation() {
   const { id } = useParams();
   const isEditMode = location.pathname.endsWith("/edit");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [activeTabId, setActiveTabId] = useState("general");
   const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
 
-  const { hunt, difficulties, steps, stepsColumns, buildEditHuntSubmitHandler } = useHuntConsultData(id, location.pathname);
+  const { hunt, difficulties, steps, stepsColumns, buildEditHuntSubmitHandler, selectedStats, statsError } = useHuntConsultData(id, location.pathname);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -74,7 +77,7 @@ export default function HuntConsultation() {
       ) : null}
 
       <Ribbon
-        showSave={isEditMode}
+        showSave={isEditMode && activeTabId === "general"}
         formId={isEditMode ? "edit-hunt-form" : undefined}
         showEdit={!isEditMode}
         onEdit={() => {
@@ -88,8 +91,8 @@ export default function HuntConsultation() {
         title={hunt.title}
         entityName="Chasse"
         tabs={HUNTS_CONSULT_TABS}
-        activeTabId="general"
-        onTabChange={() => {}}
+        activeTabId={activeTabId}
+        onTabChange={setActiveTabId}
         creatorName={hunt.creator.username}
         creatorLabel="Créé par"
         creatorPlacement="right"
@@ -97,7 +100,15 @@ export default function HuntConsultation() {
       />
 
       <section className="hunts-consult-content">
-        {isEditMode && difficulties ? (
+        {activeTabId === "statistics" ? (
+          <HuntStatsPanel
+            stats={selectedStats}
+            eyebrow="Statistiques de la chasse"
+            title={selectedStats?.title ?? hunt.title}
+            subtitle="Tu es ici dans la vue détaillée de cette chasse précise."
+            emptyMessage={statsError ?? "Aucune statistique disponible pour cette chasse."}
+          />
+        ) : isEditMode && difficulties ? (
           <Form
             id="edit-hunt-form"
             onSubmit={buildEditHuntSubmitHandler(() => {
@@ -177,7 +188,7 @@ export default function HuntConsultation() {
                 <ReadOnlyField label="Longitude" value={String(hunt.longitude)} />
                 <ReadOnlyField label="Latitude" value={String(hunt.latitude)} />
                 <ReadOnlyField label="Description" value={hunt.description} />
-                <ReadOnlyField label="Difficulté" value={hunt.difficulty.name} />
+                <ReadOnlyField label="Difficulté" value={translateDifficultyName(hunt.difficulty.name)} />
                 <ReadOnlyField label="Centre culturel" value={hunt.culturalCenter.name} />
                 <Form
                   key={`hunt-status-${hunt.id}-${String(hunt.isActive)}`}

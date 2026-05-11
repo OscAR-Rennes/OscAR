@@ -407,6 +407,122 @@ async function main() {
         }
       }
     }
+
+    // =====================
+    // PLAYERS FOR THIS CENTER
+    // =====================
+    const players = [];
+    for (let p = 1; p <= SEED_CONFIG.playersPerCenter; p++) {
+      let player = await prisma.users.findUnique({
+        where: { email: `player_${c}_${p}@oscar.com` },
+      });
+      if (!player) {
+        player = await prisma.users.create({
+          data: {
+            username: `player_${c}_${p}`,
+            firstname: `Joueur`,
+            lastname: `${c}_${p}`,
+            email: `player_${c}_${p}@oscar.com`,
+            password: hashedPassword,
+            isActive: true,
+            id_cultural_center: center.id,
+            age: randomInt(18, 65),
+            points: 0,
+          },
+        });
+      }
+
+      const playerRight = await prisma.right_user.findUnique({
+        where: { user_id_right_id: { user_id: player.id, right_id: rights.USER.id } },
+      });
+      if (!playerRight) {
+        await prisma.right_user.create({
+          data: { user_id: player.id, right_id: rights.USER.id },
+        });
+      }
+
+      players.push(player);
+    }
+
+    // =====================
+    // PROGRESSIONS FOR PLAYERS
+    // =====================
+    // Get all hunts for this center
+    const centerHunts = await prisma.hunts.findMany({
+      where: { cultural_center_id: center.id },
+      include: {
+        index: {
+          include: {
+            steps: {
+              orderBy: { title: "asc" },
+            },
+          },
+          orderBy: { index: "asc" },
+        },
+      },
+    });
+
+    for (const hunt of centerHunts) {
+      // Get all steps for this hunt in order
+      const huntSteps = [];
+      for (const idx of hunt.index) {
+        huntSteps.push(...idx.steps);
+      }
+
+      for (const player of players) {
+        // Probability: 70% chance player attempts this hunt
+        if (Math.random() > 0.7) {
+          continue;
+        }
+
+        // Probability: 30% chance hunt is incomplete, 70% chance it's complete
+        const isComplete = Math.random() > 0.3;
+        const stepsToComplete = isComplete ? huntSteps.length : randomInt(1, Math.max(1, huntSteps.length - 1));
+
+        // Create a start date for this hunt
+        const huntStartDate = getRandomProgressionDate(60);
+        const progressionWindowMinutes = randomInt(Math.max(stepsToComplete * 2, 5), Math.max(stepsToComplete * 30, 10));
+        const minutesPerStep = Math.max(1, Math.floor(progressionWindowMinutes / Math.max(1, stepsToComplete - 1)));
+        let currentProgressionStart = new Date(huntStartDate);
+
+        // For each step the player completes
+        for (let stepIndex = 0; stepIndex < stepsToComplete; stepIndex++) {
+          const step = huntSteps[stepIndex];
+
+          // Check if progression already exists
+          const existingProgression = await prisma.progression.findFirst({
+            where: {
+              user_id: player.id,
+              hunt_id: hunt.id,
+              step_id: step.id,
+            },
+          });
+
+          if (!existingProgression) {
+            const stepCreatedAt = new Date(currentProgressionStart);
+            const stepUpdatedAt = new Date(stepCreatedAt);
+
+            if (isComplete || stepIndex < stepsToComplete - 1) {
+              stepUpdatedAt.setMinutes(stepUpdatedAt.getMinutes() + minutesPerStep);
+              stepUpdatedAt.setSeconds(stepUpdatedAt.getSeconds() + randomInt(10, 55));
+            }
+
+            await prisma.progression.create({
+              data: {
+                user_id: player.id,
+                hunt_id: hunt.id,
+                step_id: step.id,
+                created_at: stepCreatedAt,
+                updated_at: stepUpdatedAt,
+              },
+            });
+
+            currentProgressionStart = new Date(stepUpdatedAt);
+            currentProgressionStart.setMinutes(currentProgressionStart.getMinutes() + randomInt(1, 8));
+          }
+        }
+      }
+    }
   }
 
   const orderedHunts = seededHunts

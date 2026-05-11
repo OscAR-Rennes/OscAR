@@ -1,13 +1,16 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Table from "../../common/components/table/Table";
 import ConfirmModal from "../../common/components/confirmmodal/ConfirmModal";
 import { useUsersnData } from "./users.data";
 import { ReactComponent as PowerIcon } from "../../common/assets/icon/power-button.svg";
 import { ReactComponent as DeleteIcon } from "../../common/assets/icon/close.svg";
+import "./index.style.css";
 
 export default function Users() {
   const {
     isAdmin,
+    isCulturalCenterManager,
     users,
     pagination,
     handlePaginationChange,
@@ -27,6 +30,7 @@ export default function Users() {
           <Table
             data={users}
             columns={userColumns}
+            getRowLink={() => location.pathname}
             serverPagination={pagination}
             onServerPaginationChange={handlePaginationChange}
             onRowSelect={setSelectedUsersRows}
@@ -69,6 +73,46 @@ export default function Users() {
             showWarning={true}
           />
         </>
+      )}
+
+      {isCulturalCenterManager && !isAdmin && (
+        <>
+          <Table
+            data={users}
+            columns={userColumns}
+            getRowLink={() => location.pathname}
+            serverPagination={pagination}
+            onServerPaginationChange={handlePaginationChange}
+            onRowSelect={setSelectedUsersRows}
+            allItemsLabel="créateurs de chasses"
+            renderActionButton={() => (
+              <div className="table-action-buttons">
+                <button className="table-btn" disabled={!hasSelectedUsers} onClick={() => {
+                  setIsSwitchStatusModalOpen(true);
+                }}>
+                  <PowerIcon className="table-btn-icon-bigger" aria-hidden="true" focusable="false" />
+                  Désactiver / Réactiver
+                </button>
+              </div>
+            )}
+          />
+
+          <ConfirmModal
+            isOpen={isSwitchStatusModalOpen}
+            message="Êtes-vous sûr de vouloir désactiver/réactiver ces créateurs ?"
+            onCancel={() => setIsSwitchStatusModalOpen(false)}
+            onConfirm={() => {
+              executeActivateDeactivateUsers();
+              setIsSwitchStatusModalOpen(false);
+            }}
+          />
+        </>
+      )}
+
+      {!isAdmin && !isCulturalCenterManager && (
+        <div className="users-empty-state">
+          Cette page est réservée aux administrateurs.
+        </div>
       )}
     </>
   );

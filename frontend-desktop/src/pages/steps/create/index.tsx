@@ -73,8 +73,8 @@ export default function StepsCreation() {
 
   const indexOptions = useMemo(
     () =>
-      indexesForHunt
-        .filter((index: any) => index.name)
+      (Array.isArray(indexesForHunt) ? indexesForHunt : [])
+        .filter((index: any) => index && index.name)
         .map((index: any) => ({ label: index.name, value: index.id })),
     [indexesForHunt]
   );
