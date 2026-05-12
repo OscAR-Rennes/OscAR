@@ -3,7 +3,6 @@ import { EditStepResponseDTO } from "../common-lib/dto/step/EditStepResponseDTO.
 import { steps } from "@prisma/client";
 import { LightStepDTO } from "../common-lib/dto/step/LightStepDTO.js";
 import { FullStepDTO } from "../common-lib/dto/step/FullStepDTO.js";
-import { getMinioUrl } from "../common-lib/utils/getMinioUrl.js";
 
 export const stepMapper = {
 

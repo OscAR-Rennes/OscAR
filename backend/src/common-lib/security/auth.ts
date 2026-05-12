@@ -7,7 +7,7 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 export async function generateToken(user: AuthResponseDTO) {
   return await new SignJWT({
     id: user.id.toString(),
-    username: user.username, //to delete
+    username: user.username, 
     rights: user.rights,
     id_cultural_center: user.id_cultural_center,
   })

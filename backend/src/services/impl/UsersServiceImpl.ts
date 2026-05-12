@@ -122,6 +122,7 @@ export class UsersServiceImpl implements UsersService {
           errorMessage: deleteError instanceof Error ? deleteError.message : deleteError,
         });
       }
+      console.error(error)
       throw new AppError({
         userMessage: "Impossible d'envoyer le code de double authentification",
         statusCode: 503,

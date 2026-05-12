@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,12 +14,14 @@ import translationsFr from '../constants/language-fr.json';
 import { LightStepDTO } from '../common/dto/ILightStep';
 import { FullStepDTO } from '../common/dto/IStep';
 import { getIconUri } from './icon-mapping';
-import { downloadStepArFiles, downloadStepTarget, getStepByHunt } from '@/api/services/step.api'
-import { getProgressionByHunt } from '@/api/services/progression.api';
-import { getStepById } from '@/api/services/step.api'
-import { saveProgress } from '@/api/services/progression.api'
+import { getStepByHunt, getStepById } from '@/api/services/step.api';
+import { getProgressionByHunt, saveProgress } from '@/api/services/progression.api';
 import SuccessStepModal from '../components/success-step-modal';
 import { useAuth } from '@/context/AuthContext';
+import * as Network from 'expo-network';
+import { useLocalProgression } from '@/hooks/useLocalProgression';
+import { useOfflineQueue } from '@/hooks/useOfflineQueue';
+import { useHuntPreload } from '@/hooks/useHuntPreload';
 
 type ProgressionByHunt = {
     hunt_id: string;
@@ -27,10 +29,7 @@ type ProgressionByHunt = {
     current_index?: {
         id: string;
         index: number;
-        remaining_steps: {
-            id: string;
-            title: string;
-        }[];
+        remaining_steps: { id: string; title: string }[];
     };
 };
 
@@ -60,52 +59,103 @@ const HuntDetailsScreen: React.FC = () => {
         pointsEarned: string;
         stepsRemaining: string;
     };
-    const { isConnected } = useAuth();
+    const { isConnected: isLoggedIn } = useAuth();
 
-    // Handle cases where parameters might be undefined
     const huntId = Array.isArray(id) ? id[0] : id;
     const centerId = Array.isArray(culturalCenterId) ? culturalCenterId[0] : culturalCenterId;
     const fromScreen = Array.isArray(from) ? from[0] : from;
 
+    // Réseau
+    const [hasNetwork, setHasNetwork] = useState(true);
+
+    // Données
     const [steps, setSteps] = useState<LightStepDTO[]>([]);
     const [progression, setProgression] = useState<ProgressionByHunt | null>(null);
+
+    // AR
     const [showAR, setShowAR] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [scannedStep, setScannedStep] = useState<FullStepDTO | null>(null);
     const [totalPoints, setTotalPoints] = useState(0);
 
+    // Hooks offline
+    const localProgression = useLocalProgression();
+    const offlineQueue = useOfflineQueue();
+    const { isPreloading, preloadProgress, preloadError, preloadHunt, getCachedStep } = useHuntPreload();
+
+    // Surveille le réseau
+    useEffect(() => {
+        const interval = setInterval(async () => {
+        const state = await Network.getNetworkStateAsync();
+        const connected = Boolean(state.isConnected && state.isInternetReachable);
+        setHasNetwork(connected);
+
+        if (connected && isLoggedIn) {
+            offlineQueue.flushQueue({
+                saveProgress: async (payload) => {
+                    await saveProgress(payload);
+                    if (huntId) {
+                        const serverProgression = await getProgressionByHunt(huntId);
+                        if (serverProgression) setProgression(serverProgression);
+                    }
+                },
+            });
+        }
+    }, 5000);
+
+    return () => clearInterval(interval);
+    }, [isLoggedIn, huntId]);
+
+    // Charge les étapes et la progression
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getStepByHunt(huntId)
-            setSteps(Array.isArray(data) ? data : [])
+            if (!huntId) return;
 
-            if (isConnected && huntId) {
-                const progressionData = await getProgressionByHunt(huntId);
-                setProgression(progressionData ?? null);
+            const data = await getStepByHunt(huntId);
+            const loadedSteps = Array.isArray(data) ? data : [];
+            setSteps(loadedSteps);
+
+            // Progression : serveur si connecté et réseau, sinon local
+            if (isLoggedIn && hasNetwork) {
+                const serverProgression = await getProgressionByHunt(huntId);
+                setProgression(serverProgression ?? null);
+            } else if (!isLoggedIn) {
+                // Utilisateur non connecté → progression locale uniquement
+                const local = await localProgression.getProgression(huntId);
+                if (local) setProgression(localProgression.toServerFormat(local));
             } else {
-                setProgression(null);
+                // Connecté mais pas de réseau → progression locale en attendant le flush
+                const local = await localProgression.getProgression(huntId);
+                if (local) setProgression(localProgression.toServerFormat(local));
             }
-        }
-        if (huntId != null && huntId != "") {
-            fetchData()
-        }
-    }, [huntId, isConnected])
 
+            // Précharge les fichiers AR pour le mode offline
+            await preloadHunt(huntId, loadedSteps);
+        };
+
+        fetchData();
+    }, [huntId, isLoggedIn]);
+
+    // Calcul des étapes complétées
     const completedStepIds = useMemo(() => {
         const set = new Set<string>();
-        if (!steps || steps.length === 0) return set;
+        if (!steps.length) return set;
+
         if (progression?.isComplete) {
             steps.forEach((s) => set.add(s.id));
             return set;
         }
 
         if (progression?.current_index) {
-            const remainingIds = new Set((progression.current_index.remaining_steps ?? []).map((r) => r.id));
+            const remainingIds = new Set(
+                (progression.current_index.remaining_steps ?? []).map((r) => r.id)
+            );
             steps.forEach((step) => {
                 const stepIndex = step.index_number ?? 1;
-                if (stepIndex < (progression.current_index?.index ?? 1)) {
+                const currentIndex = progression.current_index?.index ?? 1;
+                if (stepIndex < currentIndex) {
                     set.add(step.id);
-                } else if (stepIndex === (progression.current_index?.index ?? 1) && !remainingIds.has(step.id)) {
+                } else if (stepIndex === currentIndex && !remainingIds.has(step.id)) {
                     set.add(step.id);
                 }
             });
@@ -115,9 +165,100 @@ const HuntDetailsScreen: React.FC = () => {
     }, [steps, progression]);
 
     useEffect(() => {
-        const pts = steps.filter((s) => completedStepIds.has(s.id)).reduce((sum, s) => sum + (s.points ?? 0), 0);
+        const pts = steps
+            .filter((s) => completedStepIds.has(s.id))
+            .reduce((sum, s) => sum + (s.points ?? 0), 0);
         setTotalPoints(pts);
     }, [steps, completedStepIds]);
+
+    const groupedSteps = useMemo(() =>
+        steps
+            .reduce((acc: GroupedSteps[], step) => {
+                const indexNumber = step.index_number ?? 1;
+                const existing = acc.find((g) => g.indexNumber === indexNumber);
+                if (existing) existing.steps.push(step);
+                else acc.push({ indexNumber, steps: [step] });
+                return acc;
+            }, [])
+            .sort((a, b) => a.indexNumber - b.indexNumber),
+        [steps]
+    );
+
+    const isPartUnlocked = useCallback((indexNumber: number) => {
+        if (!isLoggedIn) return indexNumber === 1;
+        if (!progression) return indexNumber === 1;
+        if (progression.isComplete) return true;
+        return indexNumber <= (progression.current_index?.index ?? 1);
+    }, [isLoggedIn, progression]);
+
+    const isStepCompleted = useCallback((step: LightStepDTO, indexNumber: number) => {
+        if (!isLoggedIn && !progression) return false;
+        if (progression?.isComplete) return true;
+
+        const currentIndex = progression?.current_index?.index ?? 1;
+        if (indexNumber < currentIndex) return true;
+        if (indexNumber > currentIndex) return false;
+
+        const remainingIds = new Set(
+            (progression?.current_index?.remaining_steps ?? []).map((r) => r.id)
+        );
+        return !remainingIds.has(step.id);
+    }, [isLoggedIn, progression]);
+
+    const getPartStatus = useCallback((group: GroupedSteps): PartStatus => {
+        const isCompleted = group.steps.every((step) => isStepCompleted(step, group.indexNumber));
+        if (isCompleted) return 'completed';
+        if (isPartUnlocked(group.indexNumber)) return 'available';
+        return 'locked';
+    }, [isStepCompleted, isPartUnlocked]);
+
+    const completedStepsCount = useMemo(() =>
+        groupedSteps
+            .flatMap((g) => g.steps.map((s) => ({ step: s, indexNumber: g.indexNumber })))
+            .filter(({ step, indexNumber }) => isStepCompleted(step, indexNumber)).length,
+        [groupedSteps, isStepCompleted]
+    );
+
+    const totalHuntPoints = useMemo(() =>
+        steps.reduce((sum, s) => sum + (s.points ?? 0), 0),
+        [steps]
+    );
+
+    const isHuntCompleted = isLoggedIn && Boolean(
+        progression?.isComplete || (steps.length > 0 && completedStepsCount >= steps.length)
+    );
+
+    // Scan d'une étape — utilise le cache si disponible
+    const handleScanPress = async (step: LightStepDTO) => {
+        const full = await getStepById(step.id);
+        setScannedStep(full);
+
+        // Utilise les fichiers cachés si disponibles
+        const cached = getCachedStep(step.id);
+        if (cached) {
+            setArFiles({
+                targetUri: cached.targetUri,
+                objUri: cached.objUri,
+                mtlUri: cached.mtlUri,
+                jpgUri: cached.jpgUri,
+            });
+        } else {
+            // Fallback : téléchargement à la volée (nécessite le réseau)
+            const { downloadStepArFiles, downloadStepTarget } = await import('@/api/services/step.api');
+            const [targetUri, arFiles] = await Promise.all([
+                downloadStepTarget(step.id),
+                downloadStepArFiles(step.id),
+            ]);
+            setArFiles({
+                targetUri,
+                objUri: arFiles.obj,
+                mtlUri: arFiles.mtl,
+                jpgUri: arFiles.jpg,
+            });
+        }
+
+        setShowAR(true);
+    };
 
     const [arFiles, setArFiles] = useState<{
         targetUri: string;
@@ -126,107 +267,6 @@ const HuntDetailsScreen: React.FC = () => {
         jpgUri: string;
     } | null>(null);
 
-    const groupedSteps = steps.reduce((acc: GroupedSteps[], step) => {
-        const indexNumber = step.index_number ?? 1;
-        const existingGroup = acc.find((group) => group.indexNumber === indexNumber);
-
-        if (existingGroup) {
-            existingGroup.steps.push(step);
-        } else {
-            acc.push({ indexNumber, steps: [step] });
-        }
-
-        return acc;
-    }, []).sort((a, b) => a.indexNumber - b.indexNumber);
-
-    const isPartUnlocked = (indexNumber: number) => {
-        if (!isConnected) {
-            return indexNumber === 1;
-        }
-
-        if (!progression) {
-            return indexNumber === 1;
-        }
-
-        if (progression.isComplete) {
-            return true;
-        }
-
-        return indexNumber <= (progression.current_index?.index ?? 1);
-    };
-
-    const isStepCompleted = (step: LightStepDTO, indexNumber: number) => {
-        if (!isConnected || !progression) {
-            return false;
-        }
-
-        if (progression.isComplete) {
-            return true;
-        }
-
-        const currentIndex = progression.current_index?.index ?? 1;
-
-        if (indexNumber < currentIndex) {
-            return true;
-        }
-
-        if (indexNumber > currentIndex) {
-            return false;
-        }
-
-        const remainingIds = new Set((progression.current_index?.remaining_steps ?? []).map((remaining) => remaining.id));
-        return !remainingIds.has(step.id);
-    };
-
-    const getPartStatus = (group: GroupedSteps): PartStatus => {
-        const isCompleted = group.steps.every((step) => isStepCompleted(step, group.indexNumber));
-
-        if (isCompleted) {
-            return 'completed';
-        }
-
-        if (isPartUnlocked(group.indexNumber)) {
-            return 'available';
-        }
-
-        return 'locked';
-    };
-
-    const firstUnlockedStep = groupedSteps
-        .find((group) => isPartUnlocked(group.indexNumber))
-        ?.steps?.[0];
-
-    const firstPendingStep = groupedSteps
-        .flatMap((group) => group.steps.map((step) => ({ step, indexNumber: group.indexNumber })))
-        .find(({ step, indexNumber }) => !isStepCompleted(step, indexNumber))
-        ?.step;
-
-    const completedStepsCount = groupedSteps
-        .flatMap((group) => group.steps.map((step) => ({ step, indexNumber: group.indexNumber })))
-        .filter(({ step, indexNumber }) => isStepCompleted(step, indexNumber)).length;
-
-    const hasProgression = isConnected && completedStepsCount > 0;
-    const targetStep = firstPendingStep ?? firstUnlockedStep;
-    const totalHuntPoints = steps.reduce((sum, step) => sum + (step.points ?? 0), 0);
-    const isHuntCompleted = isConnected && Boolean(progression?.isComplete || (steps.length > 0 && completedStepsCount >= steps.length));
-
-    const handleScanPress = async (step: LightStepDTO) => {
-        const full = await getStepById(step.id);
-        setScannedStep(full);
-        const [targetUri, arFiles] = await Promise.all([
-            downloadStepTarget(step.id),
-            downloadStepArFiles(step.id),
-        ]);
-
-        setArFiles({
-            targetUri,
-            objUri: arFiles.obj,
-            mtlUri: arFiles.mtl,
-            jpgUri: arFiles.jpg,
-        });
-        setShowAR(true);
-    };
-
     const handleARValidated = () => {
         setShowAR(false);
         setShowSuccessModal(true);
@@ -234,24 +274,64 @@ const HuntDetailsScreen: React.FC = () => {
 
     const handleCloseModal = async () => {
         setShowSuccessModal(false);
-        if (scannedStep) {
-            if (isConnected && huntId) {
-                console.log("Saving progression for step", scannedStep.id);
-                await saveProgress({ hunt_id: huntId, step_id: scannedStep.id });
-                console.log("Progression saved, fetching updated progression");
-                const progressionData = await getProgressionByHunt(huntId);
-                console.log("Updated progression data:", progressionData);
-                setProgression(progressionData ?? null);
-            }
+        if (!scannedStep || !huntId) return;
 
-            setTotalPoints((prev) => prev + (scannedStep.points ?? 0));
-            setScannedStep(null);
+        const payload = { hunt_id: huntId, step_id: scannedStep.id };
+
+        if (isLoggedIn && hasNetwork) {
+            // Cas 1 : connecté + réseau → sauvegarde directe
+            await saveProgress(payload);
+            const serverProgression = await getProgressionByHunt(huntId);
+            setProgression(serverProgression ?? null);
+        } else if (isLoggedIn && !hasNetwork) {
+            // Cas 2 : connecté mais pas de réseau → queue + progression locale temporaire
+            await offlineQueue.addToQueue({ type: 'saveProgress', payload });
+            const updated = await localProgression.saveStepLocally(huntId, scannedStep.id, steps);
+            setProgression(localProgression.toServerFormat(updated));
+        } else {
+            // Cas 3 : non connecté → progression locale uniquement
+            const updated = await localProgression.saveStepLocally(huntId, scannedStep.id, steps);
+            setProgression(localProgression.toServerFormat(updated));
         }
+
+        setTotalPoints((prev) => prev + (scannedStep.points ?? 0));
+        setScannedStep(null);
     };
+
+    // Loader de préchargement
+    if (isPreloading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={theme.COLORS.primary} />
+                <Text style={[globalStyles.text, { marginTop: 16, fontWeight: '600' }]}>
+                    Préparation de la chasse...
+                </Text>
+                <Text style={[globalStyles.text, { color: theme.COLORS.textSecondary, marginTop: 8 }]}>
+                    {Math.round(preloadProgress * 100)}%
+                </Text>
+                {preloadError && (
+                    <Text style={[globalStyles.text, { color: 'orange', marginTop: 8, textAlign: 'center', paddingHorizontal: 24 }]}>
+                        {preloadError}
+                    </Text>
+                )}
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.COLORS.background }}>
             <HeaderNavbar />
+
+            {/* Bandeau hors ligne */}
+            {!hasNetwork && (
+                <View style={{ backgroundColor: '#f59e0b', paddingVertical: 6, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Ionicons name="cloud-offline-outline" size={16} color="#fff" />
+                    <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>
+                        Mode hors ligne — progression sauvegardée localement
+                    </Text>
+                </View>
+            )}
+
             <ScrollView contentContainerStyle={{ paddingHorizontal: theme.SPACING.large, paddingTop: theme.SPACING.medium, paddingBottom: theme.SPACING.xLarge }}>
                 {/* Back Button */}
                 <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.small }}>
@@ -259,23 +339,17 @@ const HuntDetailsScreen: React.FC = () => {
                         style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]}
                         onPress={() => {
                             if (centerId) {
-                                router.replace({
-                                    pathname: '/cultural-center',
-                                    params: { id: centerId },
-                                });
+                                router.replace({ pathname: '/cultural-center', params: { id: centerId } });
                                 return;
                             }
-
-                            if (fromScreen === 'hunt') {
-                                router.replace('/hunt');
-                                return;
-                            }
-
+                            if (fromScreen === 'hunt') { router.replace('/hunt'); return; }
                             router.back();
                         }}
                     >
                         <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
-                        <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>{texts.backToCulturalCenter ?? texts.backToMenu ?? texts.backToMenu}</Text>
+                        <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>
+                            {texts.backToCulturalCenter ?? texts.backToMenu}
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
@@ -289,7 +363,7 @@ const HuntDetailsScreen: React.FC = () => {
                         <View style={{ height: '100%', backgroundColor: theme.COLORS.secondary, borderRadius: 4, width: `${steps.length > 0 ? (completedStepsCount / steps.length) * 100 : 0}%` }} />
                     </View>
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between',}}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flex: 1, marginRight: theme.SPACING.small, backgroundColor: '#f9f9f9', padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', borderWidth: 1, borderColor: '#e0e0e0' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginBottom: theme.SPACING.small }}>
                                 <Text style={[globalStyles.title, { color: theme.COLORS.secondary }]}>{totalPoints}</Text>
@@ -297,7 +371,6 @@ const HuntDetailsScreen: React.FC = () => {
                             </View>
                             <Text style={[globalStyles.text, { fontWeight: '400', color: theme.COLORS.textSecondary, fontSize: theme.FONT_SIZES.tinyText }]}>{texts.pointsEarned}</Text>
                         </View>
-
                         <View style={{ flex: 1, marginLeft: theme.SPACING.small, backgroundColor: '#f9f9f9', padding: theme.SPACING.medium, borderRadius: theme.SPACING.medium, alignItems: 'center', borderWidth: 1, borderColor: '#e0e0e0' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small, marginBottom: theme.SPACING.small }}>
                                 <Text style={[globalStyles.title, { color: theme.COLORS.tertiary }]}>{steps.length - completedStepsCount}</Text>
@@ -320,19 +393,11 @@ const HuntDetailsScreen: React.FC = () => {
                             const unlocked = partStatus !== 'locked';
 
                             const partContent = (
-                                <View
-                                    style={{
-                                        backgroundColor: theme.COLORS.background,
-                                        borderRadius: 5,
-                                        padding: theme.SPACING.small,
-                                        opacity: unlocked ? 1 : 0.85,
-                                    }}
-                                >
+                                <View style={{ backgroundColor: theme.COLORS.background, borderRadius: 5, padding: theme.SPACING.small, opacity: unlocked ? 1 : 0.85 }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: theme.SPACING.small, paddingVertical: theme.SPACING.small }}>
                                         <Text style={[globalStyles.text, { fontWeight: '700', fontSize: theme.FONT_SIZES.subtitle }]}>
                                             {texts.partLabel} {group.indexNumber}
                                         </Text>
-
                                         {partStatus === 'completed' ? (
                                             <View style={{ backgroundColor: '#2eb85c', borderRadius: 999, width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
                                                 <SvgUri uri={getIconUri('check.svg')} width={12} height={12} color={theme.COLORS.background} />
@@ -344,35 +409,18 @@ const HuntDetailsScreen: React.FC = () => {
 
                                     {group.steps.map((step, stepIndex) => {
                                         const stepCompleted = isStepCompleted(step, group.indexNumber);
-
                                         return (
-                                            <View
-                                                key={step.id}
-                                                style={{
-                                                    flexDirection: 'column',
-                                                    backgroundColor: unlocked ? theme.COLORS.background : '#f5f5f5',
-                                                    padding: theme.SPACING.medium,
-                                                    borderRadius: theme.SPACING.small,
-                                                    marginBottom: theme.SPACING.small,
-                                                    shadowColor: '#000',
-                                                    shadowOffset: { width: 0, height: 2 },
-                                                    shadowOpacity: unlocked ? 0.1 : 0,
-                                                    shadowRadius: 4,
-                                                    elevation: unlocked ? 2 : 0,
-                                                }}
-                                            >
+                                            <View key={step.id} style={{ flexDirection: 'column', backgroundColor: unlocked ? theme.COLORS.background : '#f5f5f5', padding: theme.SPACING.medium, borderRadius: theme.SPACING.small, marginBottom: theme.SPACING.small, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: unlocked ? 0.1 : 0, shadowRadius: 4, elevation: unlocked ? 2 : 0 }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: stepCompleted || !unlocked ? 0 : theme.SPACING.small }}>
                                                     <View style={{ backgroundColor: unlocked ? theme.COLORS.primary : '#9f9f9f', borderRadius: 500, width: 40, height: 40, justifyContent: 'center', alignItems: 'center', marginRight: theme.SPACING.small }}>
                                                         <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: theme.FONT_SIZES.text }}>{stepIndex + 1}</Text>
                                                     </View>
-
                                                     <View style={{ flex: 1 }}>
                                                         <Text style={[globalStyles.text, { fontWeight: 'bold', paddingRight: theme.SPACING.medium }]}>{step.title}</Text>
                                                         <Text style={[{ color: theme.COLORS.textSecondary, paddingRight: theme.SPACING.medium, fontSize: theme.FONT_SIZES.tinyText }]}>
                                                             {unlocked ? step.description : texts.lockedPartMessage}
                                                         </Text>
                                                     </View>
-
                                                     <View style={{ flexDirection: 'row', gap: theme.SPACING.small, alignItems: 'center' }}>
                                                         {stepCompleted ? (
                                                             <View style={{ backgroundColor: '#2eb85c', borderRadius: 999, width: 22, height: 22, alignItems: 'center', justifyContent: 'center' }}>
@@ -390,9 +438,20 @@ const HuntDetailsScreen: React.FC = () => {
                                                 </View>
 
                                                 {!stepCompleted && unlocked && (
-                                                    <TouchableOpacity onPress={() => handleScanPress(step)} style={{ width: '100%' }}>
-                                                        <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, paddingVertical: 10 }]}> 
-                                                            <Text style={{ color: theme.COLORS.background, fontWeight: '700' }}>Scanner</Text>
+                                                    <TouchableOpacity
+                                                        onPress={() => handleScanPress(step)}
+                                                        style={{ width: '100%' }}
+                                                        disabled={!hasNetwork && !getCachedStep(step.id)}
+                                                    >
+                                                        <LinearGradient
+                                                            colors={hasNetwork || getCachedStep(step.id) ? [theme.COLORS.primary, theme.COLORS.secondary] : ['#ccc', '#aaa']}
+                                                            start={{ x: 0, y: 0 }}
+                                                            end={{ x: 1, y: 0 }}
+                                                            style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, paddingVertical: 10 }]}
+                                                        >
+                                                            <Text style={{ color: theme.COLORS.background, fontWeight: '700' }}>
+                                                                {!hasNetwork && !getCachedStep(step.id) ? 'Non disponible hors ligne' : 'Scanner'}
+                                                            </Text>
                                                         </LinearGradient>
                                                     </TouchableOpacity>
                                                 )}
@@ -405,23 +464,11 @@ const HuntDetailsScreen: React.FC = () => {
                             return (
                                 <View key={`part-${group.indexNumber}`} style={{ marginBottom: theme.SPACING.medium }}>
                                     {unlocked ? (
-                                        <LinearGradient
-                                            colors={[theme.COLORS.primary, theme.COLORS.secondary]}
-                                            start={{ x: 0, y: 0 }}
-                                            end={{ x: 1, y: 0 }}
-                                            style={{ borderRadius: theme.SPACING.small, padding: 3 }}
-                                        >
+                                        <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ borderRadius: theme.SPACING.small, padding: 3 }}>
                                             {partContent}
                                         </LinearGradient>
                                     ) : (
-                                        <View
-                                            style={{
-                                                borderRadius: theme.SPACING.small,
-                                                borderWidth: 1,
-                                                borderColor: '#d9d9d9',
-                                                padding: 1,
-                                            }}
-                                        >
+                                        <View style={{ borderRadius: theme.SPACING.small, borderWidth: 1, borderColor: '#d9d9d9', padding: 1 }}>
                                             {partContent}
                                         </View>
                                     )}
@@ -434,18 +481,8 @@ const HuntDetailsScreen: React.FC = () => {
                 </View>
 
                 {isHuntCompleted && (
-                    <View
-                        style={{
-                            width: '100%',
-                            marginTop: theme.SPACING.medium,
-                            borderRadius: theme.SPACING.medium,
-                            borderWidth: 1,
-                            borderColor: `${theme.COLORS.secondary}55`,
-                            backgroundColor: `${theme.COLORS.secondary}22`,
-                            padding: theme.SPACING.medium,
-                        }}
-                    >
-                        <Text style={[globalStyles.text, { fontWeight: '700', marginBottom: theme.SPACING.small }]}> 
+                    <View style={{ width: '100%', marginTop: theme.SPACING.medium, borderRadius: theme.SPACING.medium, borderWidth: 1, borderColor: `${theme.COLORS.secondary}55`, backgroundColor: `${theme.COLORS.secondary}22`, padding: theme.SPACING.medium }}>
+                        <Text style={[globalStyles.text, { fontWeight: '700', marginBottom: theme.SPACING.small }]}>
                             {texts.completedHuntMessage}
                         </Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.SPACING.small }}>
@@ -455,8 +492,14 @@ const HuntDetailsScreen: React.FC = () => {
                     </View>
                 )}
             </ScrollView>
+
             {showSuccessModal && scannedStep && (
-                <SuccessStepModal onClose={handleCloseModal} points={scannedStep.points} isLastStep={false} totalPoints={totalPoints} />
+                <SuccessStepModal
+                    onClose={handleCloseModal}
+                    points={scannedStep.points}
+                    isLastStep={false}
+                    totalPoints={totalPoints}
+                />
             )}
 
             <BottomNavbar />
@@ -477,10 +520,9 @@ const HuntDetailsScreen: React.FC = () => {
     );
 };
 
-// Translations of static texts
 const STATIC_TEXTS = {
     en: translations.huntDetails,
-    fr: translationsFr.huntDetails
+    fr: translationsFr.huntDetails,
 };
 
 export default HuntDetailsScreen;

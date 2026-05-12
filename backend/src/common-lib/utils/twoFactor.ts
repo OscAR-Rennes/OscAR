@@ -13,14 +13,11 @@ const emailTransport = process.env.EMAIL_URL
         host: process.env.EMAIL_HOST,
         port: Number(process.env.EMAIL_PORT),
         secure: process.env.EMAIL_SECURE === "true",
-        auth:
-          process.env.EMAIL_USER && process.env.EMAIL_PASSWORD
-            ? {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD,
-              }
-            : undefined,
-      })
+        tls: { rejectUnauthorized: process.env.NODE_ENV === "production" },
+        auth: process.env.EMAIL_USER && process.env.EMAIL_PASSWORD
+          ? { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD }
+          : undefined,
+      } as nodemailer.TransportOptions)
     : null;
 
 const TWO_FACTOR_CODE_LENGTH = 6;
@@ -81,8 +78,8 @@ export async function sendTwoFactorCodeEmail(email: string, code: number) {
     email,
     code
   });
-
-  await emailTransport.sendMail({
+  console.log("Message sent:", from);
+  const info = await emailTransport.sendMail({
     from,
     to: email,
     subject: "Votre code de connexion Lootopia",
@@ -95,6 +92,8 @@ export async function sendTwoFactorCodeEmail(email: string, code: number) {
       </div>
     `,
   });
+
+  console.log("Message sent:", info.messageId);
 }
 
 export async function createTrustedDeviceToken(userId: string) {
