@@ -11,29 +11,9 @@ import { getTotalProgression } from '../../api/services/progression.api';
 import { getHuntById } from '../../api/services/hunt.api';
 import { useRouter } from 'expo-router';
 import { HuntSectionItem } from '../../common/dto/IHuntSectionProps';
+import { ProgressionItem } from '../../common/dto/IProgressionItem';
+import { HuntDetailsResponse } from '../../common/dto/IFullHunt';
 
-type ProgressionItem = {
-    hunt_id: string;
-    isComplete: boolean;
-    completed_steps?: number;
-    total_steps?: number;
-    completed_points?: number;
-    total_points?: number;
-    total_indexes?: number;
-    current_index?: {
-        index: number;
-    };
-};
-
-type HuntDetailsResponse = {
-    id: string;
-    title?: string;
-    points?: number;
-    steps?: Array<{ id: string; title: string }> | number;
-    culturalCenter?: {
-        name?: string;
-    };
-};
 
 export default function HuntScreen() {
     const { isConnected } = useAuth();

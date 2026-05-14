@@ -12,6 +12,12 @@ import { getIconUri } from '../icon-mapping';
 import { useAuth } from '@/context/AuthContext';
 import { getUserById } from '@/api/services/users.api'
 import { FullUserDTO } from '@/common/dto/IUser'
+import { getTotalProgression } from '@/api/services/progression.api';
+import { ProgressionItem } from '../../common/dto/IProgressionItem';
+import { HuntDetailsResponse } from '../../common/dto/IFullHunt';
+import { getHuntById } from '@/api/services/hunt.api';
+import { HuntSectionItem } from '@/common/dto/IHuntSectionProps';
+import { getFriendLeaderboard } from '@/api/services/friend.api';
 
 export default function ProfilScreen() {
     const router = useRouter();
@@ -21,11 +27,58 @@ export default function ProfilScreen() {
     const { userId, logout } = useAuth()
 
     const [user, setUser] = useState<FullUserDTO | null>(null)
+    const [completedHunts, setCompletedHunts] = useState<HuntSectionItem[]>([]);
+    const [friends, setFriends] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
             const data = await getUserById(userId);
             setUser(data)
+            const progression = await getTotalProgression();
+            const progressionItems: ProgressionItem[] = Array.isArray(progression) ? progression : [];
+            const huntsWithTitles = await Promise.all(
+                progressionItems.map(async (item) => {
+                    const hunt = await getHuntById(item.hunt_id) as HuntDetailsResponse;
+
+                    const totalSteps = Array.isArray(hunt?.steps)
+                        ? hunt.steps.length
+                        : typeof hunt?.steps === 'number'
+                            ? hunt.steps
+                            : 0;
+
+                    return {
+                        id: item.hunt_id,
+                        title: hunt?.title ?? item.hunt_id,
+                        completedPoints: typeof item.completed_points === 'number' ? item.completed_points : 0,
+                        totalPoints: typeof item.total_points === 'number' ? item.total_points : (typeof hunt?.points === 'number' ? hunt.points : 0),
+                        completedSteps: typeof item.completed_steps === 'number' ? item.completed_steps : 0,
+                        totalSteps: typeof item.total_steps === 'number' ? item.total_steps : totalSteps,
+                        totalIndexes: typeof item.total_indexes === 'number' ? item.total_indexes : undefined,
+                        culturalCenterName: hunt?.culturalCenter?.name,
+                        currentIndex: item.current_index?.index,
+                        isComplete: item.isComplete,
+                    };
+                })
+            );
+
+            setCompletedHunts(
+                huntsWithTitles
+                    .filter((hunt) => hunt.isComplete)
+                    .map(({ id, title, totalPoints, totalSteps, totalIndexes, culturalCenterName }) => ({
+                        id,
+                        title,
+                        completedPoints: totalPoints,
+                        totalPoints,
+                        completedSteps: totalSteps,
+                        totalSteps,
+                        totalIndexes,
+                        culturalCenterName,
+                    }))
+            );
+
+            const friends = await getFriendLeaderboard();
+            setFriends(friends.length - 1);
+
         };
         fetchData()
     }, [])
@@ -54,9 +107,9 @@ export default function ProfilScreen() {
 
                 {/* Stats Section */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: theme.SPACING.large, gap: theme.SPACING.medium }}>
-                    <StatsCard icon="target-larger.svg" value={0} label={texts.statsHuntLabel} backgroundColor="#fce4ec" iconColor={theme.COLORS.primary} width={30} height={30} />
+                    <StatsCard icon="target-larger.svg" value={completedHunts.length} label={texts.statsHuntLabel} backgroundColor="#fce4ec" iconColor={theme.COLORS.primary} width={30} height={30} />
                     {/* <StatsCard icon="pin.svg" value={0} label={texts.statsCulturalCenterLabel} backgroundColor="#fff9c4" iconColor={theme.COLORS.secondary} width={30} height={30} /> */}
-                    <StatsCard icon="group.svg" value={0} label={texts.statsFriendsLabel} backgroundColor="#e3f2fd" iconColor={theme.COLORS.tertiary} width={35} height={35} />
+                    <StatsCard icon="group.svg" value={friends} label={texts.statsFriendsLabel} backgroundColor="#e3f2fd" iconColor={theme.COLORS.tertiary} width={35} height={35} />
                 </View>
 
                 {/* Buttons */}
