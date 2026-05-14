@@ -6,8 +6,8 @@ import HeaderNavbar from '../../components/ui/header-navbar';
 import BottomNavbar from '../../components/ui/bottom-navbar';
 import { theme } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
+import { LogBox } from 'react-native';
 
-// Normalize routes to ignore the /(main) prefix
 function normalizeRoute(route: string): string {
     return route.replace('/(main)', '');
 }
@@ -17,29 +17,26 @@ export default function MainLayout() {
     const pathname = usePathname();
     const { isConnected } = useAuth();
 
-    // Redirect logic for the "connection" / "profil" page
     useEffect(() => {
         if (normalizeRoute(pathname) === '/connection' && isConnected) {
-            router.replace('/'); // Redirect to home if already logged in
+            router.replace('/'); 
         }
     }, [pathname, isConnected]);
 
-    // Check if the current route is "connection"
     const isConnectionPage = normalizeRoute(pathname) === '/connection';
 
-    // Use SafeAreaView only if not on the connection page
     const Container = isConnectionPage ? View : SafeAreaView;
+
+    LogBox.ignoreAllLogs();
 
     return (
         <Container style={[{flex: 1, backgroundColor: theme.COLORS.background }]}>
             
-            {/* Only show HeaderNavbar if not on the connection page */}
             {!isConnectionPage && <HeaderNavbar />}
             <View style={[{ flex: 1 }]}>
                 <Slot />
             </View>
             
-            {/* Only show BottomNavbar if not on the connection page */}
             {!isConnectionPage && <BottomNavbar currentRoute={pathname} />}
         </Container>
     );

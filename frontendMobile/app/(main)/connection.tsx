@@ -12,6 +12,7 @@ import { getIconUri } from '../icon-mapping';
 import { logUser } from '@/api/services/auth.api'
 import { useAuth } from '@/context/AuthContext';
 import * as SecureStore from "expo-secure-store";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ConnexionScreen() {
     const router = useRouter();
@@ -22,13 +23,30 @@ export default function ConnexionScreen() {
     
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
+    const [error, setError] = React.useState("");
 
     const handleLogin = async () => {
-        const credentials = { email, password };
-        const response = await logUser(credentials);
+        try {
+            setError("");
 
-        await SecureStore.setItemAsync("token", response.token);
-        login(response.id);
+            const credentials = { email, password };
+            const response = await logUser(credentials);
+
+            if (!response?.token) {
+                setError("Identifiants incorrects");
+                setEmail("");
+                setPassword("");
+                return;
+            }
+
+            await SecureStore.setItemAsync("token", response.token);
+            login(response.id);
+
+        } catch (err) {
+            setError("Une erreur est survenue");
+            setEmail("");
+            setPassword("");
+        }
     };
 
 
@@ -80,6 +98,21 @@ export default function ConnexionScreen() {
                         </TouchableOpacity> */}
                     </View>
 
+                    {error ? (
+                        <Text
+                            style={[
+                                globalStyles.smallText,
+                                {
+                                    color: "red",
+                                    textAlign: "center",
+                                    marginBottom: theme.SPACING.medium,
+                                },
+                            ]}
+                        >
+                            {error}
+                        </Text>
+                    ) : null}
+
                     {/* Button "Sign In" */}
                     <TouchableOpacity style={[theme.BUTTON_STYLES.default, { width: '100%' }]} onPress={handleLogin} >
                         <LinearGradient colors={[theme.COLORS.primary, theme.COLORS.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[theme.BUTTON_STYLES.default, { width: '100%' }]} >
@@ -88,6 +121,8 @@ export default function ConnexionScreen() {
                             </Text>
                         </LinearGradient>
                     </TouchableOpacity>
+
+                    
 
                     {/* Link "Sign Up" */}
                     <View style={{ marginTop: theme.SPACING.medium, marginBottom: theme.SPACING.large }}>
