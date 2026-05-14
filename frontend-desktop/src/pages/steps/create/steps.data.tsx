@@ -7,6 +7,7 @@ import { CreateStepDto } from "../../../api/models/steps/AddStepDto";
 import { useAuthStore } from "../../../common/store/authStore";
 import MapPicker from "../../../common/components/map/map";
 import { useFormContext } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 export const STEPS_CREATE_TABS = [
   { id: "general", label: "Général" },
@@ -66,6 +67,7 @@ export function StepsMapField() {
 }
 
 export function useStepsData() {
+  const navigate = useNavigate();
   const [hunts, setHunts] = useState([]);
   const [selectedHuntId, setSelectedHuntId] = useState(null);
   const [indexesForHunt, setIndexesForHunt] = useState([]);
@@ -153,11 +155,13 @@ export function useStepsData() {
 
       const step = await addStep(payload, data.model_file, data.image_file);
       console.log("Étape créée:", step);
+      navigate('/home/steps');
   };
   
   const handleAddIndex = async (data: CreateIndexDto) => {
     const index = await addIndex(data);
     console.log("Index créé:", index);
+    navigate('/home/steps');
   };
 
   return {

@@ -5,6 +5,8 @@ import { CreateHuntDto } from "../../../api/models/hunts/AddHuntDto";
 import TextInput from "../../../common/components/text_input/TextInput";
 import MapPicker from "../../../common/components/map/map";
 import { useFormContext } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
 
 export const HUNTS_CREATE_TABS = [{ id: "general", label: "Général" }];
 
@@ -40,6 +42,7 @@ export function MapCoordinatesField() {
 }
 
 export function useHomeData() {
+  const navigate = useNavigate();
   const [difficulties, setDifficulties] = useState([]);
   const [hunts, setHunts] = useState([]);
 
@@ -56,6 +59,7 @@ export function useHomeData() {
   const handleAddHunt = async (data: CreateHuntDto) => {
     const hunt =await addHunt(data);
     console.log("Chasse créée:", hunt);
+    navigate('/home/hunts');
   };
 
 

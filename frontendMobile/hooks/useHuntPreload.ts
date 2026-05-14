@@ -1,17 +1,16 @@
 import { useState, useCallback } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { LightStepDTO } from '../common/dto/ILightStep';
-
 import { downloadStepArFiles, downloadStepTarget } from '@/api/services/step.api';
+import { FullStepDTO } from '@/common/dto/IStep';
 
 export type CachedStepFiles = {
     stepId: string;
     targetUri: string;
-    objUri: string;
-    mtlUri: string;
-    jpgUri: string;
+    arDir: string;
+    stepData?: FullStepDTO;
 };
-
+    
 const getCacheDir = (huntId: string) =>
     `${FileSystem.cacheDirectory}hunt-${huntId}/`;
 
@@ -34,38 +33,35 @@ export const useHuntPreload = () => {
         }
     };
 
-    const cacheStep = async (
-        huntId: string,
-        step: LightStepDTO
-    ): Promise<CachedStepFiles | null> => {
+    const cacheStep = async (huntId: string, step: LightStepDTO, stepData?: FullStepDTO): Promise<CachedStepFiles | null> => {
         const dir = getStepCacheDir(huntId, step.id);
 
         try {
             await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
 
-            const [targetUri, arFiles] = await Promise.all([
+            const [targetUri, arDir] = await Promise.all([
                 downloadStepTarget(step.id),
                 downloadStepArFiles(step.id),
             ]);
 
             const targetDest = `${dir}target`;
-            const objDest = `${dir}model.obj`;
-            const mtlDest = `${dir}model.mtl`;
-            const jpgDest = `${dir}texture.jpg`;
+            await FileSystem.copyAsync({ from: targetUri, to: targetDest });
 
-            await Promise.all([
-                FileSystem.copyAsync({ from: targetUri, to: targetDest }),
-                FileSystem.copyAsync({ from: arFiles.obj, to: objDest }),
-                FileSystem.copyAsync({ from: arFiles.mtl, to: mtlDest }),
-                FileSystem.copyAsync({ from: arFiles.jpg, to: jpgDest }),
-            ]);
+            const arFiles = await FileSystem.readDirectoryAsync(arDir);
+            await Promise.all(
+                arFiles.map(filename =>
+                    FileSystem.copyAsync({
+                        from: arDir + filename,
+                        to: dir + filename,
+                    })
+                )
+            );
 
             return {
                 stepId: step.id,
                 targetUri: targetDest,
-                objUri: objDest,
-                mtlUri: mtlDest,
-                jpgUri: jpgDest,
+                arDir: dir,
+                stepData,
             };
         } catch (err) {
             console.warn(`[HuntPreload] Failed to cache step ${step.id}:`, err);
@@ -73,7 +69,11 @@ export const useHuntPreload = () => {
         }
     };
 
-    const preloadHunt = useCallback(async (huntId: string, steps: LightStepDTO[]) => {
+    const preloadHunt = useCallback(async (
+        huntId: string,
+        steps: LightStepDTO[],
+        fetchFullStep?: (id: string) => Promise<FullStepDTO>
+    ) => {
         if (steps.length === 0) return;
 
         setIsPreloading(true);
@@ -87,22 +87,20 @@ export const useHuntPreload = () => {
             const alreadyCached = await isStepCached(huntId, step.id);
             if (alreadyCached) {
                 const dir = getStepCacheDir(huntId, step.id);
+                const stepData = fetchFullStep ? await fetchFullStep(step.id) : undefined;
                 newCache.set(step.id, {
                     stepId: step.id,
                     targetUri: `${dir}target`,
-                    objUri: `${dir}model.obj`,
-                    mtlUri: `${dir}model.mtl`,
-                    jpgUri: `${dir}texture.jpg`,
+                    arDir: dir,
+                    stepData,
                 });
                 completed++;
                 setPreloadProgress(completed / steps.length);
                 continue;
             }
 
-            const cached = await cacheStep(huntId, step);
-            if (cached) {
-                newCache.set(step.id, cached);
-            }
+            const cached = await cacheStep(huntId, step, fetchFullStep ? await fetchFullStep(step.id) : undefined);
+            if (cached) newCache.set(step.id, cached);
 
             completed++;
             setPreloadProgress(completed / steps.length);
@@ -112,15 +110,12 @@ export const useHuntPreload = () => {
         setIsPreloading(false);
 
         if (newCache.size < steps.length) {
-            setPreloadError(
-                `${steps.length - newCache.size} étape(s) n'ont pas pu être téléchargées`
-            );
+            setPreloadError(`${steps.length - newCache.size} étape(s) n'ont pas pu être téléchargées`);
         }
     }, []);
 
-    const getCachedStep = (stepId: string): CachedStepFiles | null => {
-        return cachedFiles.get(stepId) ?? null;
-    };
+    const getCachedStep = (stepId: string): CachedStepFiles | null =>
+        cachedFiles.get(stepId) ?? null;
 
     const clearHuntCache = async (huntId: string) => {
         const dir = getCacheDir(huntId);

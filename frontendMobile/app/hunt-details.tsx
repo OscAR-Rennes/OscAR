@@ -14,7 +14,7 @@ import translationsFr from '../constants/language-fr.json';
 import { LightStepDTO } from '../common/dto/ILightStep';
 import { FullStepDTO } from '../common/dto/IStep';
 import { getIconUri } from './icon-mapping';
-import { getStepByHunt, getStepById } from '@/api/services/step.api';
+import { downloadStepArFiles, downloadStepTarget, getStepByHunt, getStepById } from '@/api/services/step.api';
 import { getProgressionByHunt, saveProgress } from '@/api/services/progression.api';
 import SuccessStepModal from '../components/success-step-modal';
 import { useAuth } from '@/context/AuthContext';
@@ -78,30 +78,28 @@ const HuntDetailsScreen: React.FC = () => {
     const [scannedStep, setScannedStep] = useState<FullStepDTO | null>(null);
     const [totalPoints, setTotalPoints] = useState(0);
 
-    // Hooks offline
     const localProgression = useLocalProgression();
     const offlineQueue = useOfflineQueue();
-    const { isPreloading, preloadProgress, preloadError, preloadHunt, getCachedStep } = useHuntPreload();
+    const { isPreloading, preloadProgress, preloadHunt, getCachedStep } = useHuntPreload();
 
-    // Surveille le réseau
     useEffect(() => {
         const interval = setInterval(async () => {
-        const state = await Network.getNetworkStateAsync();
-        const connected = Boolean(state.isConnected && state.isInternetReachable);
-        setHasNetwork(connected);
+            const state = await Network.getNetworkStateAsync();
+            const connected = Boolean(state.isConnected && state.isInternetReachable);
+            setHasNetwork(connected);
 
-        if (connected && isLoggedIn) {
-            offlineQueue.flushQueue({
-                saveProgress: async (payload) => {
-                    await saveProgress(payload);
-                    if (huntId) {
-                        const serverProgression = await getProgressionByHunt(huntId);
-                        if (serverProgression) setProgression(serverProgression);
-                    }
-                },
-            });
-        }
-    }, 5000);
+            if (connected && isLoggedIn) {
+                offlineQueue.flushQueue({
+                    saveProgress: async (payload) => {
+                        await saveProgress(payload);
+                        if (huntId) {
+                            const serverProgression = await getProgressionByHunt(huntId);
+                            if (serverProgression) setProgression(serverProgression);
+                        }
+                    },
+                });
+            }
+        }, 5000);
 
     return () => clearInterval(interval);
     }, [isLoggedIn, huntId]);
@@ -129,8 +127,8 @@ const HuntDetailsScreen: React.FC = () => {
                 if (local) setProgression(localProgression.toServerFormat(local));
             }
 
-            // Précharge les fichiers AR pour le mode offline
-            await preloadHunt(huntId, loadedSteps);
+            await preloadHunt(huntId, loadedSteps, getStepById);
+
         };
 
         fetchData();
@@ -230,46 +228,47 @@ const HuntDetailsScreen: React.FC = () => {
 
     // Scan d'une étape — utilise le cache si disponible
     const handleScanPress = async (step: LightStepDTO) => {
-        const full = await getStepById(step.id);
-        setScannedStep(full);
-
-        // Utilise les fichiers cachés si disponibles
         const cached = getCachedStep(step.id);
-        if (cached) {
-            setArFiles({
-                targetUri: cached.targetUri,
-                objUri: cached.objUri,
-                mtlUri: cached.mtlUri,
-                jpgUri: cached.jpgUri,
-            });
-        } else {
-            // Fallback : téléchargement à la volée (nécessite le réseau)
-            const { downloadStepArFiles, downloadStepTarget } = await import('@/api/services/step.api');
-            const [targetUri, arFiles] = await Promise.all([
-                downloadStepTarget(step.id),
-                downloadStepArFiles(step.id),
-            ]);
-            setArFiles({
-                targetUri,
-                objUri: arFiles.obj,
-                mtlUri: arFiles.mtl,
-                jpgUri: arFiles.jpg,
-            });
+
+        if (!hasNetwork) {
+            if (!cached) return;
+            // Mode offline : on construit un FullStepDTO minimal depuis le LightStepDTO si stepData absent
+            const fullStep: FullStepDTO = cached.stepData ?? {
+                id: step.id,
+                title: step.title,
+                description: step.description,
+                points: step.points ?? 0,
+                // complète avec les champs requis par FullStepDTO
+            } as FullStepDTO;
+
+            setScannedStep(fullStep);
+            setArFiles({ targetUri: cached.targetUri, arDir: cached.arDir });
+            setShowAR(true);
+            return;
         }
 
+        // Mode online
+        const [full, targetUri, arDir] = await Promise.all([
+            getStepById(step.id),
+            cached ? Promise.resolve(cached.targetUri) : downloadStepTarget(step.id),
+            cached ? Promise.resolve(cached.arDir) : downloadStepArFiles(step.id),
+        ]);
+
+        setScannedStep(full);
+        setArFiles({ targetUri, arDir });
         setShowAR(true);
     };
 
     const [arFiles, setArFiles] = useState<{
         targetUri: string;
-        objUri: string;
-        mtlUri: string;
-        jpgUri: string;
+        arDir: string;
     } | null>(null);
 
     const handleARValidated = () => {
         setShowAR(false);
-        setShowSuccessModal(true);
+        if (scannedStep) {
+            setShowSuccessModal(true);
+        }
     };
 
     const handleCloseModal = async () => {
@@ -278,18 +277,18 @@ const HuntDetailsScreen: React.FC = () => {
 
         const payload = { hunt_id: huntId, step_id: scannedStep.id };
 
-        if (isLoggedIn && hasNetwork) {
-            // Cas 1 : connecté + réseau → sauvegarde directe
+        const networkState = await Network.getNetworkStateAsync();
+        const isNetworkAvailable = Boolean(networkState.isConnected && networkState.isInternetReachable);
+
+        if (isLoggedIn && isNetworkAvailable) {
             await saveProgress(payload);
             const serverProgression = await getProgressionByHunt(huntId);
             setProgression(serverProgression ?? null);
-        } else if (isLoggedIn && !hasNetwork) {
-            // Cas 2 : connecté mais pas de réseau → queue + progression locale temporaire
+        } else if (isLoggedIn && !isNetworkAvailable) {
             await offlineQueue.addToQueue({ type: 'saveProgress', payload });
             const updated = await localProgression.saveStepLocally(huntId, scannedStep.id, steps);
             setProgression(localProgression.toServerFormat(updated));
         } else {
-            // Cas 3 : non connecté → progression locale uniquement
             const updated = await localProgression.saveStepLocally(huntId, scannedStep.id, steps);
             setProgression(localProgression.toServerFormat(updated));
         }
@@ -309,11 +308,6 @@ const HuntDetailsScreen: React.FC = () => {
                 <Text style={[globalStyles.text, { color: theme.COLORS.textSecondary, marginTop: 8 }]}>
                     {Math.round(preloadProgress * 100)}%
                 </Text>
-                {preloadError && (
-                    <Text style={[globalStyles.text, { color: 'orange', marginTop: 8, textAlign: 'center', paddingHorizontal: 24 }]}>
-                        {preloadError}
-                    </Text>
-                )}
             </SafeAreaView>
         );
     }
@@ -504,15 +498,13 @@ const HuntDetailsScreen: React.FC = () => {
 
             <BottomNavbar />
 
-            {showAR && scannedStep && arFiles && (
+            {showAR && arFiles && (
                 <React.Suspense fallback={<View><Text>Chargement AR...</Text></View>}>
                     <ARScreen
                         onClose={() => setShowAR(false)}
                         onValidated={handleARValidated}
                         targetUri={arFiles.targetUri}
-                        objUri={arFiles.objUri}
-                        mtlUri={arFiles.mtlUri}
-                        jpgUri={arFiles.jpgUri}
+                        arDir={arFiles.arDir}
                     />
                 </React.Suspense>
             )}

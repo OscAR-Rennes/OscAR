@@ -31,6 +31,7 @@ export default function CulturalCenters() {
             onServerPaginationChange={handlePaginationChange}
             onRowSelect={(rows) => setSelectedCulturalCenterssRows(rows)}
             allItemsLabel="centres culturels"
+            onFirstClick={false}
             renderActionButton={() => (
               <div className="table-action-buttons">
                 <button className="table-btn" disabled={!hasSelectedCulturalCenters} onClick={() => {
@@ -38,12 +39,6 @@ export default function CulturalCenters() {
                 }}>
                   <PowerIcon className="table-btn-icon-bigger" aria-hidden="true" focusable="false" />
                   Désactiver / Réactiver
-                </button>
-                <button className="table-btn" disabled={!hasSelectedCulturalCenters} onClick={() => {
-                  setIsDeleteModalOpen(true);
-                }}>
-                  <DeleteIcon className="table-btn-icon" aria-hidden="true" focusable="false" />
-                  <span>Supprimer</span>
                 </button>
               </div>
             )}

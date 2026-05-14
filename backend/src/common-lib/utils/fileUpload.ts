@@ -1,6 +1,5 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
-import unzipper from "unzipper";
 import path from "path";
 import { MINIO_BUCKET, minioClient } from "../config/minIo.js";
 import { Multer } from 'multer';
@@ -21,37 +20,17 @@ export class FileUploadUtil {
         return key;
     }
 
-    async uploadObjectZip(file: Express.Multer.File): Promise<{ obj: string, mtl: string, jpg: string }> {
-        const paths = { obj: '', mtl: '', jpg: '' };
+    async uploadObjectZip(file: Express.Multer.File): Promise<string> {
+        const key = `AR/obj/${Date.now()}_${file.originalname}`;
 
-        const directory = await unzipper.Open.buffer(file.buffer);
+        await minioClient.send(new PutObjectCommand({
+            Bucket: MINIO_BUCKET,
+            Key: key,
+            Body: file.buffer,
+            ContentType: "application/zip",
+        }));
 
-        for (const entry of directory.files) {
-            const ext = path.extname(entry.path).toLowerCase();
-            let folder = '';
-
-            if (ext === '.obj') folder = 'AR/obj';
-            else if (ext === '.mtl') folder = 'AR/mtl';
-            else if (ext === '.jpg' || ext === '.jpeg' || ext === '.png') folder = 'AR/jpg';
-            else continue;
-
-            const buffer = await entry.buffer();
-            const filename = path.basename(entry.path);
-            const key = `${folder}/${Date.now()}_${filename}`;
-
-            await minioClient.send(new PutObjectCommand({
-                Bucket: MINIO_BUCKET,
-                Key: key,
-                Body: buffer,
-                ContentType: this.getContentType(ext),
-            }));
-
-            if (ext === '.obj') paths.obj = key;
-            else if (ext === '.mtl') paths.mtl = key;
-            else paths.jpg = key;
-        }
-
-        return paths;
+        return key;
     }
 
     private getContentType(ext: string): string {

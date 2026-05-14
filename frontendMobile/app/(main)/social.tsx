@@ -98,14 +98,31 @@ export default function SocialScreen() {
                         <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textSecondary }}>{texts.friendRequestsListMessage}</Text>
                     ) : (
                         pendingRequests.map((req) => (
-                            <View key={req.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: theme.SPACING.small }}>
-                                <Text style={{ fontWeight: '600', color: theme.COLORS.textPrimary }}>{req.applicant?.username}</Text>
+                            <View
+                                style={{
+                                    borderRadius: theme.SPACING.small,
+                                    paddingHorizontal: theme.SPACING.medium,
+                                    paddingVertical: theme.SPACING.medium,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    backgroundColor: theme.COLORS.background,
+                                    borderWidth: 1,
+                                    borderColor: theme.COLORS.border,
+                                }}
+                                key={req.applicant.id}
+                            >
+                                <Text style={{ fontSize: theme.FONT_SIZES.text, color: theme.COLORS.textPrimary, fontWeight: '700', marginLeft: theme.SPACING.medium }}>{req.applicant?.username}</Text>
                                 <View style={{ flexDirection: 'row', gap: theme.SPACING.small }}>
                                     <TouchableOpacity onPress={() => handleAccept(req.id)} style={{ backgroundColor: '#2eb85c', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
-                                        <Text style={{ color: '#fff', fontWeight: '700' }}>✓</Text>
+                                        <Text style={{ color: '#fff', fontWeight: '700' }}>
+                                            <SvgUri uri={getIconUri("plus.svg")} width={20} height={20} color={theme.COLORS.background} />
+                                        </Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleRefuse(req.id)} style={{ backgroundColor: '#e74c3c', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
-                                        <Text style={{ color: '#fff', fontWeight: '700' }}>✕</Text>
+                                        <Text style={{ color: '#fff', fontWeight: '700' }}>
+                                            <SvgUri uri={getIconUri("close.svg")} width={20} height={20} color={theme.COLORS.background} />
+                                        </Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>

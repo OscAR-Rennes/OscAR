@@ -80,6 +80,12 @@ export function useAuthentificationData() {
             showIf: (values: any) => values.isNewCulturalCenter,
         },
         {
+            name: "newCulturalCenter.map",
+            type: "map",
+            group: "new-cultural-center",
+            showIf: (values: any) => values.isNewCulturalCenter,
+        },
+        {
             name: "newCulturalCenter.address.latitude",
             label: "Latitude",
             type: "number",
@@ -145,7 +151,6 @@ export function useAuthentificationData() {
         },
         };
 
-        // on peut supprimer les champs plats pour ne pas polluer
         delete payload["newCulturalCenter.name"];
         delete payload["newCulturalCenter.description"];
         delete payload["newCulturalCenter.address.zip"];

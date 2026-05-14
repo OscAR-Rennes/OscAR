@@ -26,10 +26,10 @@ type MapBounds = {
 
 const BOUNDS_MARGIN_FACTOR = 0.25;
 const FETCH_DEBOUNCE_MS = 800;
-const ZOOM_THRESHOLD_FACTOR = 0.3; // Invalidate cache if zoom changes by >30%
-const API_LIMIT = 150; // Reduced limit for better performance with optimized minimal DTOs
-const MAX_CENTERS_IN_MEMORY = 600; // Reduce memory pressure to avoid native map crashes
-const ENABLE_CLUSTERING = true; // Re-enabled clustering
+const ZOOM_THRESHOLD_FACTOR = 0.3;
+const API_LIMIT = 150; 
+const MAX_CENTERS_IN_MEMORY = 600; 
+const ENABLE_CLUSTERING = true;
 
 export default function MapsScreen() {
     const { language, setLanguage } = useLanguage();
@@ -51,7 +51,7 @@ export default function MapsScreen() {
     const loadedBoundsRef = useRef<Set<string>>(new Set());
     const coveredBoundsRef = useRef<MapBounds[]>([]);
     const inFlightRef = useRef<boolean>(false);
-    const lastZoomLevelRef = useRef<number | null>(null); // Track zoom level for cache invalidation
+    const lastZoomLevelRef = useRef<number | null>(null); 
     const [mapRegion, setMapRegion] = useState<Region>(mapInitialValues.initialRegion as Region);
 
     const logMapError = (scope: string, error: unknown, context?: Record<string, unknown>) => {
@@ -115,8 +115,6 @@ export default function MapsScreen() {
             return false;
         }
 
-        // Calculate zoom change ratio: if zoom changes by >120%, invalidate cache
-        // This prevents losing pins when scrolling or slightly zooming
         const zoomRatio = currentZoomLevel / lastZoomLevelRef.current;
         const shouldInvalidate = zoomRatio < (1 - ZOOM_THRESHOLD_FACTOR) || zoomRatio > (1 + ZOOM_THRESHOLD_FACTOR);
 
@@ -143,13 +141,11 @@ export default function MapsScreen() {
             return centers;
         }
 
-        // Only cleanup if significantly over limit - don't delete too aggressively
         const threshold = MAX_CENTERS_IN_MEMORY * 1.2; // Allow 20% overflow before cleaning
         if (centers.length <= threshold) {
             return centers;
         }
 
-        // Calculate distance for each center from map center
         const centersWithDistance = centers.map((center) => {
             const lat = center.latitude ?? center.address?.latitude ?? 0;
             const lng = center.longitude ?? center.address?.longitude ?? 0;
@@ -157,7 +153,6 @@ export default function MapsScreen() {
             return { center, distance };
         });
 
-        // Keep only closest centers, but keep 20% more than limit to avoid constant re-cleaning
         return centersWithDistance
             .sort((a, b) => a.distance - b.distance)
             .slice(0, Math.ceil(MAX_CENTERS_IN_MEMORY * 1.2))
@@ -170,7 +165,6 @@ export default function MapsScreen() {
             merged.set(center.id, center);
         });
         const merged_array = Array.from(merged.values());
-        // Only cleanup if we have a LOT of centers - avoid losing pins on zoom
         if (merged_array.length > MAX_CENTERS_IN_MEMORY * 1.5) {
             return cleanupDistantCenters(merged_array, mapCenter);
         }
@@ -183,7 +177,6 @@ export default function MapsScreen() {
                 return;
             }
 
-            // Check if zoom level changed dramatically
             const currentZoomLevel = Math.max(bounds.maxLat - bounds.minLat, bounds.maxLng - bounds.minLng);
             shouldInvalidateCache(currentZoomLevel);
 
@@ -211,7 +204,6 @@ export default function MapsScreen() {
                     return isValidCoordinate(latitude, longitude);
                 });
 
-                // Use the current bounds for cleanup, not the stored mapRegion
                 const regionFromBounds: Region = {
                     latitude: (expandedBounds.minLat + expandedBounds.maxLat) / 2,
                     longitude: (expandedBounds.minLng + expandedBounds.maxLng) / 2,
@@ -262,7 +254,6 @@ export default function MapsScreen() {
     const getCenterCoordinates = (center: CulturalCenterLight) => {
         const latitude = center.latitude ?? center.address?.latitude;
         const longitude = center.longitude ?? center.address?.longitude;
-        // Return null if coordinates are invalid
         if (!isValidCoordinate(latitude, longitude)) {
             return null;
         }
@@ -274,17 +265,13 @@ export default function MapsScreen() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // First try to get user location
                 const userRegion = await centerMapOnUserLocation();
                 const regionsToUse = userRegion || (mapInitialValues.initialRegion as Region);
                 
-                // Set the map region with either user location or default
                 setMapRegion(regionsToUse);
                 
-                // Load pins immediately with this region
                 await loadCentersInBounds(buildBoundsFromRegion(regionsToUse));
                 
-                // Animate to region if we got user location
                 if (userRegion) {
                     mapRef.current?.animateToRegion(userRegion, 500);
                 }
@@ -321,7 +308,6 @@ export default function MapsScreen() {
         }
     };
 
-    // Handle search input changes
     const handleSearch = (query: string) => {
         setSearchQuery(query);
         if (query.trim().length < 2) {
@@ -336,7 +322,6 @@ export default function MapsScreen() {
         setFlatListVisible(true);
     };
 
-    // Handle cultural center selection from the list
     const handleCenterSelect = (center: CulturalCenterLight) => {
         try {
             if (mapRef.current) {
@@ -362,7 +347,6 @@ export default function MapsScreen() {
         }
     };
 
-    // Handle language change using DeepL API (simulated here)
     const handleDeepLTranslation = async (lang: 'fr' | 'en') => {
         try {
             setLanguage(lang);
@@ -371,7 +355,6 @@ export default function MapsScreen() {
         }
     };
 
-    // Dismiss FlatList when tapping outside
     const dismissFlatList = () => {
         setFlatListVisible(false);
     };

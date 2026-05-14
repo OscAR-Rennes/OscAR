@@ -78,9 +78,6 @@ const CulturalCenterModal: React.FC<CulturalCenterModalProps> = ({ visible, cult
                         <Text numberOfLines={1} style={{ ...globalStyles.subtitle, width: '100%', textAlignVertical: 'center', marginBottom: theme.SPACING.xsmall, }} > 
                             {culturalCenterName} 
                         </Text>
-                        <Text numberOfLines={2} style={{ ...globalStyles.text, width: '100%', textAlignVertical: 'center', color: theme.COLORS.textSecondary, marginBottom: theme.SPACING.small }} >
-                            {culturalCenterDescription ?? texts.description}
-                        </Text>
                     </View>
                     <View style={{ flexDirection: 'column', width: '100%', alignItems: 'center' }}>
                         <TouchableOpacity style={{ width: '100%' }} onPress={navigateToCulturalCenter}>

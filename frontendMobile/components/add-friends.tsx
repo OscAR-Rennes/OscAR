@@ -23,7 +23,7 @@ export default function AddFriends() {
             await sendFriendRequest(username.trim());
             setIsVisible(false);
             setUsername('');
-            Alert.alert('✓', 'Demande envoyée !');
+            Alert.alert('Demande envoyée !');
         } catch (err) {
             Alert.alert('Erreur', 'Impossible d\'envoyer la demande.');
         } finally {

@@ -153,15 +153,6 @@ export default function Authentification() {
         </div>
       </section>
 
-      {/* <section aria-label="Auth actions">
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={!isAuthenticated}
-        >
-          Se déconnecter
-        </button>
-      </section> */}
     </Modal>
   );
 }

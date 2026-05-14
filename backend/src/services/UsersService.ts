@@ -8,9 +8,9 @@ import { FullUserDTO } from "../common-lib/dto/users/FullUserDTO.js";
 import { LeaderboardUserDTO } from "../common-lib/dto/users/LeaderboardUserDTO.js";
 
 export interface UsersService {
-  getAllUsers(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>>;
   createUserWeb(userData: NewUserRequestDTO): Promise<NewUserResponseDTO>;
-  getAllUsersByCulturalCenter(culturalcenter_id: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>>;
+  getAllUsers(pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightUserDTO>>
+  getAllUsersByCulturalCenter(culturalcenter_id: string, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightUserDTO>>
   switchUsersStatus(ids: string[]): Promise<boolean>;
   getById(id: string, user:AuthResponseDTO) : Promise<FullUserDTO>;
   getGlobalLeaderboard(limit: number): Promise<LeaderboardUserDTO[]>;
