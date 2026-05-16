@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, BackHandler } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import HeaderNavbar from '@/components/ui/header-navbar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,10 +18,10 @@ import { downloadStepArFiles, downloadStepTarget, getStepByHunt, getStepById } f
 import { getProgressionByHunt, saveProgress } from '@/api/services/progression.api';
 import SuccessStepModal from '../components/success-step-modal';
 import { useAuth } from '@/context/AuthContext';
-import * as Network from 'expo-network';
 import { useLocalProgression } from '@/hooks/useLocalProgression';
 import { useOfflineQueue } from '@/hooks/useOfflineQueue';
 import { useHuntPreload } from '@/hooks/useHuntPreload';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 type ProgressionByHunt = {
     hunt_id: string;
@@ -40,7 +40,7 @@ type GroupedSteps = {
 
 type PartStatus = 'locked' | 'available' | 'completed';
 
-const ARScreen = React.lazy(() => import('@/components/ARScreen'));
+import ARScreen from '@/components/ARScreen';
 
 const HuntDetailsScreen: React.FC = () => {
     const router = useRouter();
@@ -60,13 +60,11 @@ const HuntDetailsScreen: React.FC = () => {
         stepsRemaining: string;
     };
     const { isConnected: isLoggedIn } = useAuth();
+    const { hasNetwork } = useNetworkStatus();
 
     const huntId = Array.isArray(id) ? id[0] : id;
     const centerId = Array.isArray(culturalCenterId) ? culturalCenterId[0] : culturalCenterId;
     const fromScreen = Array.isArray(from) ? from[0] : from;
-
-    // Réseau
-    const [hasNetwork, setHasNetwork] = useState(true);
 
     // Données
     const [steps, setSteps] = useState<LightStepDTO[]>([]);
@@ -77,18 +75,25 @@ const HuntDetailsScreen: React.FC = () => {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [scannedStep, setScannedStep] = useState<FullStepDTO | null>(null);
     const [totalPoints, setTotalPoints] = useState(0);
+    const [arFiles, setArFiles] = useState<{ targetUri: string; arDir: string } | null>(null);
 
+    // Hooks offline
     const localProgression = useLocalProgression();
     const offlineQueue = useOfflineQueue();
     const { isPreloading, preloadProgress, preloadHunt, getCachedStep } = useHuntPreload();
 
+    // Bloquer la navigation Android si hors ligne et hunt chargée
+    useEffect(() => {
+        if (!hasNetwork && steps.length > 0) {
+            const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
+            return () => sub.remove();
+        }
+    }, [hasNetwork, steps.length]);
+
+    // Flush de la queue offline quand le réseau revient
     useEffect(() => {
         const interval = setInterval(async () => {
-            const state = await Network.getNetworkStateAsync();
-            const connected = Boolean(state.isConnected && state.isInternetReachable);
-            setHasNetwork(connected);
-
-            if (connected && isLoggedIn) {
+            if (hasNetwork && isLoggedIn) {
                 offlineQueue.flushQueue({
                     saveProgress: async (payload) => {
                         await saveProgress(payload);
@@ -100,9 +105,8 @@ const HuntDetailsScreen: React.FC = () => {
                 });
             }
         }, 5000);
-
-    return () => clearInterval(interval);
-    }, [isLoggedIn, huntId]);
+        return () => clearInterval(interval);
+    }, [isLoggedIn, huntId, hasNetwork]);
 
     // Charge les étapes et la progression
     useEffect(() => {
@@ -113,22 +117,18 @@ const HuntDetailsScreen: React.FC = () => {
             const loadedSteps = Array.isArray(data) ? data : [];
             setSteps(loadedSteps);
 
-            // Progression : serveur si connecté et réseau, sinon local
             if (isLoggedIn && hasNetwork) {
                 const serverProgression = await getProgressionByHunt(huntId);
                 setProgression(serverProgression ?? null);
             } else if (!isLoggedIn) {
-                // Utilisateur non connecté → progression locale uniquement
                 const local = await localProgression.getProgression(huntId);
                 if (local) setProgression(localProgression.toServerFormat(local));
             } else {
-                // Connecté mais pas de réseau → progression locale en attendant le flush
                 const local = await localProgression.getProgression(huntId);
                 if (local) setProgression(localProgression.toServerFormat(local));
             }
 
             await preloadHunt(huntId, loadedSteps, getStepById);
-
         };
 
         fetchData();
@@ -226,19 +226,17 @@ const HuntDetailsScreen: React.FC = () => {
         progression?.isComplete || (steps.length > 0 && completedStepsCount >= steps.length)
     );
 
-    // Scan d'une étape — utilise le cache si disponible
+    // Scan d'une étape
     const handleScanPress = async (step: LightStepDTO) => {
         const cached = getCachedStep(step.id);
 
         if (!hasNetwork) {
             if (!cached) return;
-            // Mode offline : on construit un FullStepDTO minimal depuis le LightStepDTO si stepData absent
             const fullStep: FullStepDTO = cached.stepData ?? {
                 id: step.id,
                 title: step.title,
                 description: step.description,
                 points: step.points ?? 0,
-                // complète avec les champs requis par FullStepDTO
             } as FullStepDTO;
 
             setScannedStep(fullStep);
@@ -247,7 +245,6 @@ const HuntDetailsScreen: React.FC = () => {
             return;
         }
 
-        // Mode online
         const [full, targetUri, arDir] = await Promise.all([
             getStepById(step.id),
             cached ? Promise.resolve(cached.targetUri) : downloadStepTarget(step.id),
@@ -258,11 +255,6 @@ const HuntDetailsScreen: React.FC = () => {
         setArFiles({ targetUri, arDir });
         setShowAR(true);
     };
-
-    const [arFiles, setArFiles] = useState<{
-        targetUri: string;
-        arDir: string;
-    } | null>(null);
 
     const handleARValidated = () => {
         setShowAR(false);
@@ -277,14 +269,19 @@ const HuntDetailsScreen: React.FC = () => {
 
         const payload = { hunt_id: huntId, step_id: scannedStep.id };
 
-        const networkState = await Network.getNetworkStateAsync();
-        const isNetworkAvailable = Boolean(networkState.isConnected && networkState.isInternetReachable);
+        const { hasNetwork: freshNetwork } = await import('@/hooks/useNetworkStatus').then(
+            async () => {
+                const { default: Network } = await import('expo-network');
+                const state = await Network.getNetworkStateAsync();
+                return { hasNetwork: Boolean(state.isConnected && state.isInternetReachable) };
+            }
+        );
 
-        if (isLoggedIn && isNetworkAvailable) {
+        if (isLoggedIn && freshNetwork) {
             await saveProgress(payload);
             const serverProgression = await getProgressionByHunt(huntId);
             setProgression(serverProgression ?? null);
-        } else if (isLoggedIn && !isNetworkAvailable) {
+        } else if (isLoggedIn && !freshNetwork) {
             await offlineQueue.addToQueue({ type: 'saveProgress', payload });
             const updated = await localProgression.saveStepLocally(huntId, scannedStep.id, steps);
             setProgression(localProgression.toServerFormat(updated));
@@ -295,6 +292,18 @@ const HuntDetailsScreen: React.FC = () => {
 
         setTotalPoints((prev) => prev + (scannedStep.points ?? 0));
         setScannedStep(null);
+    };
+
+    const isNavBlocked = !hasNetwork && steps.length > 0;
+
+    const handleBack = () => {
+        if (isNavBlocked) return;
+        if (centerId) {
+            router.replace({ pathname: '/cultural-center', params: { id: centerId } });
+            return;
+        }
+        if (fromScreen === 'hunt') { router.replace('/hunt'); return; }
+        router.back();
     };
 
     // Loader de préchargement
@@ -321,24 +330,23 @@ const HuntDetailsScreen: React.FC = () => {
                 <View style={{ backgroundColor: '#f59e0b', paddingVertical: 6, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                     <Ionicons name="cloud-offline-outline" size={16} color="#fff" />
                     <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>
-                        Mode hors ligne — progression sauvegardée localement
+                          Mode hors ligne — navigation désactivée
                     </Text>
                 </View>
             )}
 
             <ScrollView contentContainerStyle={{ paddingHorizontal: theme.SPACING.large, paddingTop: theme.SPACING.medium, paddingBottom: theme.SPACING.xLarge }}>
+
                 {/* Back Button */}
                 <View style={{ alignItems: 'flex-start', marginBottom: theme.SPACING.small }}>
                     <TouchableOpacity
-                        style={[theme.BUTTON_STYLES.default, { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' }]}
-                        onPress={() => {
-                            if (centerId) {
-                                router.replace({ pathname: '/cultural-center', params: { id: centerId } });
-                                return;
-                            }
-                            if (fromScreen === 'hunt') { router.replace('/hunt'); return; }
-                            router.back();
-                        }}
+                        style={[
+                            theme.BUTTON_STYLES.default,
+                            { flexDirection: 'row', gap: theme.SPACING.medium, justifyContent: 'flex-start' },
+                            isNavBlocked && { opacity: 0.4 },
+                        ]}
+                        onPress={handleBack}
+                        disabled={isNavBlocked}
                     >
                         <Ionicons name="arrow-back" size={24} color={theme.COLORS.icon} />
                         <Text style={[globalStyles.text, { color: theme.COLORS.icon, fontWeight: '500', fontSize: 20 }]}>
@@ -403,6 +411,9 @@ const HuntDetailsScreen: React.FC = () => {
 
                                     {group.steps.map((step, stepIndex) => {
                                         const stepCompleted = isStepCompleted(step, group.indexNumber);
+                                        const isCached = !!getCachedStep(step.id);
+                                        const canScan = hasNetwork || isCached;
+
                                         return (
                                             <View key={step.id} style={{ flexDirection: 'column', backgroundColor: unlocked ? theme.COLORS.background : '#f5f5f5', padding: theme.SPACING.medium, borderRadius: theme.SPACING.small, marginBottom: theme.SPACING.small, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: unlocked ? 0.1 : 0, shadowRadius: 4, elevation: unlocked ? 2 : 0 }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: stepCompleted || !unlocked ? 0 : theme.SPACING.small }}>
@@ -435,16 +446,16 @@ const HuntDetailsScreen: React.FC = () => {
                                                     <TouchableOpacity
                                                         onPress={() => handleScanPress(step)}
                                                         style={{ width: '100%' }}
-                                                        disabled={!hasNetwork && !getCachedStep(step.id)}
+                                                        disabled={!canScan}
                                                     >
                                                         <LinearGradient
-                                                            colors={hasNetwork || getCachedStep(step.id) ? [theme.COLORS.primary, theme.COLORS.secondary] : ['#ccc', '#aaa']}
+                                                            colors={canScan ? [theme.COLORS.primary, theme.COLORS.secondary] : ['#ccc', '#aaa']}
                                                             start={{ x: 0, y: 0 }}
                                                             end={{ x: 1, y: 0 }}
                                                             style={[theme.BUTTON_STYLES.default, { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: theme.SPACING.small, paddingVertical: 10 }]}
                                                         >
                                                             <Text style={{ color: theme.COLORS.background, fontWeight: '700' }}>
-                                                                {!hasNetwork && !getCachedStep(step.id) ? 'Non disponible hors ligne' : 'Scanner'}
+                                                                Scanner
                                                             </Text>
                                                         </LinearGradient>
                                                     </TouchableOpacity>
@@ -496,17 +507,15 @@ const HuntDetailsScreen: React.FC = () => {
                 />
             )}
 
-            <BottomNavbar />
+            <BottomNavbar disabled={!hasNetwork} />
 
             {showAR && arFiles && (
-                <React.Suspense fallback={<View><Text>Chargement AR...</Text></View>}>
-                    <ARScreen
-                        onClose={() => setShowAR(false)}
-                        onValidated={handleARValidated}
-                        targetUri={arFiles.targetUri}
-                        arDir={arFiles.arDir}
-                    />
-                </React.Suspense>
+                <ARScreen
+                    onClose={() => setShowAR(false)}
+                    onValidated={handleARValidated}
+                    targetUri={arFiles.targetUri}
+                    arDir={arFiles.arDir}
+                />
             )}
         </SafeAreaView>
     );

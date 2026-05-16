@@ -18,7 +18,7 @@ function resolveApiUrl() {
   return "http://localhost:5000/api"; 
 }
 
-const API_URL = "http://192.168.1.119:5000/api" //resolveApiUrl();
+const API_URL = "http://192.168.1.25:5000/api" //resolveApiUrl();
 console.log("API URL:", API_URL);
 
 export async function apiClient(

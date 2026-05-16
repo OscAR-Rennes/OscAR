@@ -26,7 +26,7 @@ export async function downloadStepTarget(stepId){
     const destPath = `${FileSystem.cacheDirectory}target_${stepId}.jpg`;
     
     const result = await FileSystem.downloadAsync(
-        `http://192.168.1.119:5000/api/step/downloadTarget/${stepId}`,
+        `http://192.168.1.25:5000/api/step/downloadTarget/${stepId}`,
         destPath,
         { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -50,7 +50,7 @@ export async function downloadStepArFiles(stepId) {
     } catch {}
 
     await FileSystem.downloadAsync(
-        `http://192.168.1.119:5000/api/step/downloadAr/${stepId}`,
+        `http://192.168.1.25:5000/api/step/downloadAr/${stepId}`,
         zipPath,
         {
             headers: {
