@@ -28,7 +28,7 @@ const authController = new AuthController();
  */
 
 authRoutes.post(
-    '/auth/login/web', 
+    '/auth/login', 
     (req, res, next) => authController.authentificateUser(req, res, next)
 );
 

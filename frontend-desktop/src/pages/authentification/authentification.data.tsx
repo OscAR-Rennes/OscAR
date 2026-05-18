@@ -44,11 +44,10 @@ export function useAuthentificationData() {
             label: "Centre culturel existant",
             type: "select",
             options: culturalCenters.map((c) => ({ label: c.name, value: c.id })),
-            required: (values: any) => !values.isNewCulturalCenter, // obligatoire si pas de nouveau centre
-            showIf: (values: any) => !values.isNewCulturalCenter, // caché si isNewCulturalCenter
+            required: (values: any) => !values.isNewCulturalCenter, 
+            showIf: (values: any) => !values.isNewCulturalCenter, 
         },
 
-        // Champs du nouveau centre
         {
             name: "newCulturalCenter.name",
             label: "Nom du nouveau centre",
