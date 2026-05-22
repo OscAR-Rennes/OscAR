@@ -26,7 +26,7 @@ export async function downloadStepTarget(stepId){
     const destPath = `${FileSystem.cacheDirectory}target_${stepId}.jpg`;
     
     const result = await FileSystem.downloadAsync(
-        `http://192.168.1.25:5000/api/step/downloadTarget/${stepId}`,
+        `http://192.168.1.11:5000/api/step/downloadTarget/${stepId}`,
         destPath,
         { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -50,7 +50,7 @@ export async function downloadStepArFiles(stepId) {
     } catch {}
 
     await FileSystem.downloadAsync(
-        `http://192.168.1.25:5000/api/step/downloadAr/${stepId}`,
+        `http://192.168.1.11:5000/api/step/downloadAr/${stepId}`,
         zipPath,
         {
             headers: {
@@ -71,44 +71,25 @@ export async function downloadStepArFiles(stepId) {
     });
 
     for (const [filename, data] of Object.entries(unzipped)) {
+    if (!data || filename.endsWith('/')) continue;
 
-        if (!data || filename.endsWith('/')) continue;
+    const normalizedFilename = normalizeFilename(filename);
+    const filePath = extractPath + normalizedFilename;
 
-        const normalizedFilename = normalizeFilename(filename);
-
-        const filePath = extractPath + normalizedFilename;
-
-        const dirPath = filePath.substring(
-            0,
-            filePath.lastIndexOf('/')
-        );
-
-        await FileSystem.makeDirectoryAsync(dirPath, {
-            intermediates: true,
+    if (isMtlFile(normalizedFilename)) {
+        const raw = Buffer.from(data).toString('utf-8');
+        const content = normalizeMtl(raw);
+        await FileSystem.writeAsStringAsync(filePath, content, {
+            encoding: FileSystem.EncodingType.UTF8,
         });
-
-        if (isMtlFile(normalizedFilename)) {
-
-            const raw = Buffer.from(data).toString('utf-8');
-            const content = normalizeMtl(raw);
-
-            await FileSystem.writeAsStringAsync(
-                filePath,
-                content,
-                {
-                    encoding: FileSystem.EncodingType.UTF8,
-                }
-            );
-
-        } else {
-
-            await FileSystem.writeAsStringAsync(
-                filePath,
-                Buffer.from(data).toString('base64'),
-                {encoding: FileSystem.EncodingType.Base64}
-            );
-        }
+    } else {
+        await FileSystem.writeAsStringAsync(
+            filePath,
+            Buffer.from(data).toString('base64'),
+            { encoding: FileSystem.EncodingType.Base64 }
+        );
     }
+}
 
     return extractPath;
 }

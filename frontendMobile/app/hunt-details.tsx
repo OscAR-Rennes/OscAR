@@ -269,19 +269,12 @@ const HuntDetailsScreen: React.FC = () => {
 
         const payload = { hunt_id: huntId, step_id: scannedStep.id };
 
-        const { hasNetwork: freshNetwork } = await import('@/hooks/useNetworkStatus').then(
-            async () => {
-                const { default: Network } = await import('expo-network');
-                const state = await Network.getNetworkStateAsync();
-                return { hasNetwork: Boolean(state.isConnected && state.isInternetReachable) };
-            }
-        );
-
-        if (isLoggedIn && freshNetwork) {
+        // Use the existing hasNetwork from useNetworkStatus instead of dynamic import
+        if (isLoggedIn && hasNetwork) {
             await saveProgress(payload);
             const serverProgression = await getProgressionByHunt(huntId);
             setProgression(serverProgression ?? null);
-        } else if (isLoggedIn && !freshNetwork) {
+        } else if (isLoggedIn && !hasNetwork) {
             await offlineQueue.addToQueue({ type: 'saveProgress', payload });
             const updated = await localProgression.saveStepLocally(huntId, scannedStep.id, steps);
             setProgression(localProgression.toServerFormat(updated));

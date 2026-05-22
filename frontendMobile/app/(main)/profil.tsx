@@ -77,7 +77,7 @@ export default function ProfilScreen() {
             );
 
             const friends = await getFriendLeaderboard();
-            setFriends(friends.length - 1);
+            setFriends(friends.length > 0 ? friends.length - 1 : 0);
 
         };
         fetchData()

@@ -59,9 +59,9 @@ export default function DashboardPage() {
         <div>
           <p className="dashboard-eyebrow">Dashboard</p>
           <h1>Vue d'ensemble</h1>
-          <p className="dashboard-description">
+          {/* <p className="dashboard-description">
             Consulte d’abord les stats globales, puis sélectionne une chasse pour voir son détail.
-          </p>
+          </p> */}
         </div>
 
         <button className="dashboard-link-button" onClick={() => navigate("/home/hunts")}>Voir les chasses</button>
@@ -69,7 +69,7 @@ export default function DashboardPage() {
 
       {dashboardStats ? (
         <>
-          <section className="dashboard-scope-card">
+          {/* <section className="dashboard-scope-card">
             <div>
               <p className="dashboard-scope-label">Global</p>
               <h2 className="dashboard-scope-title">Chasses visibles</h2>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
             <SummaryCard label="Temps moyen de complétion" value={formatDuration(dashboardStats.summary.averageCompletionTimeMs)} />
             <SummaryCard label="Durée moyenne d'une step" value={formatDuration(dashboardStats.summary.averageStepDurationMs)} />
             <SummaryCard label="Taux moyen de complétion" value={dashboardStats.summary.averageCompletionRate === null ? "—" : `${dashboardStats.summary.averageCompletionRate}%`} />
-          </section>
+          </section> */}
 
           <section className="dashboard-hunt-selector-card">
             <div className="dashboard-selector-row">
@@ -114,7 +114,7 @@ export default function DashboardPage() {
             stats={selectedHunt}
             eyebrow="Détail"
             title={selectedHunt?.title ?? "Chasse sélectionnée"}
-            subtitle="Les indicateurs ci-dessous suivent la chasse choisie."
+            subtitle=""
             emptyMessage="Sélectionne une chasse pour voir ses statistiques."
           />
         </>
