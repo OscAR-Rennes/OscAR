@@ -8,6 +8,7 @@ const SEED_CONFIG = {
   indexesPerHunt: 3,
   stepsPerIndex: 3,
   lambdaPlayers: 12,
+  playersPerCenter: 3,
 } as const;
 
 type SeedHuntStep = {
@@ -149,6 +150,14 @@ function buildLambdaProgressionPlan(hunts: SeedHunt[]) {
     { suffix: "steady", firstName: "Tom", lastName: "Régulier", right: "USER", plans: [{ hunt: getHunt(9), completedSteps: partialSteps(getHunt(9), 0.5) }] },
     { suffix: "all-around", firstName: "Chloé", lastName: "Panorama", right: "USER", plans: [{ hunt: getHunt(10), completedSteps: partialSteps(getHunt(10), 0.2) }, { hunt: getHunt(11), completedSteps: partialSteps(getHunt(11), 0.9) }] },
   ].filter((player) => player.plans.length > 0 && player.plans.every((plan) => Boolean(plan.hunt)));
+}
+
+function getRandomProgressionDate(maxDaysAgo: number): Date {
+  const now = new Date();
+  const daysAgo = randomInt(0, maxDaysAgo);
+  now.setDate(now.getDate() - daysAgo);
+  now.setHours(randomInt(8, 20), randomInt(0, 59), randomInt(0, 59));
+  return now;
 }
 
 async function main() {

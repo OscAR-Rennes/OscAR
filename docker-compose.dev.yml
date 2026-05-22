@@ -21,7 +21,6 @@ services:
   backend:
     depends_on:
       - postgres
-      - mailpit
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
@@ -36,20 +35,16 @@ services:
       DATABASE_URL: "postgresql://oscAR:oscARpassword@postgres:5432/oscARdb"
       NODE_ENV: development
       FRONT_URL: "http://localhost:3000"
-      EMAIL_HOST: mailpit
-      EMAIL_PORT: 1025
-      EMAIL_SECURE: "false"
-      EMAIL_FROM: "Lootopia <no-reply@oscar.local>"
     dns:
       - 8.8.8.8
       - 1.1.1.1
 
-  mailpit:
-    image: axllent/mailpit:latest
-    restart: always
-    ports:
-      - "1025:1025"
-      - "8025:8025"
+  # mailpit:
+  #   image: axllent/mailpit:latest
+  #   restart: always
+  #   ports:
+  #     - "1025:1025"
+  #     - "8025:8025"
 
   postgres:
     image: postgres:15

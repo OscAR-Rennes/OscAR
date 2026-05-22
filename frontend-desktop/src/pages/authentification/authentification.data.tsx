@@ -44,11 +44,10 @@ export function useAuthentificationData() {
             label: "Centre culturel existant",
             type: "select",
             options: culturalCenters.map((c) => ({ label: c.name, value: c.id })),
-            required: (values: any) => !values.isNewCulturalCenter, // obligatoire si pas de nouveau centre
-            showIf: (values: any) => !values.isNewCulturalCenter, // caché si isNewCulturalCenter
+            required: (values: any) => !values.isNewCulturalCenter, 
+            showIf: (values: any) => !values.isNewCulturalCenter, 
         },
 
-        // Champs du nouveau centre
         {
             name: "newCulturalCenter.name",
             label: "Nom du nouveau centre",
@@ -76,6 +75,12 @@ export function useAuthentificationData() {
             name: "newCulturalCenter.address.city",
             label: "Ville",
             type: "text",
+            group: "new-cultural-center",
+            showIf: (values: any) => values.isNewCulturalCenter,
+        },
+        {
+            name: "newCulturalCenter.map",
+            type: "map",
             group: "new-cultural-center",
             showIf: (values: any) => values.isNewCulturalCenter,
         },
@@ -145,7 +150,6 @@ export function useAuthentificationData() {
         },
         };
 
-        // on peut supprimer les champs plats pour ne pas polluer
         delete payload["newCulturalCenter.name"];
         delete payload["newCulturalCenter.description"];
         delete payload["newCulturalCenter.address.zip"];

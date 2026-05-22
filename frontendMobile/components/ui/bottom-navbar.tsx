@@ -23,17 +23,17 @@ function normalizeRoute(route: string): string {
     return route.replace('/(main)', '');
 }
 
-// Bottom navigation bar component
 interface BottomNavbarProps {
     currentRoute?: string;
     onNavigate?: (route: string) => void;
+    disabled?: boolean; 
 }
 
-export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarProps) {
+export default function BottomNavbar({ currentRoute, onNavigate, disabled }: BottomNavbarProps) {
     const router = useRouter();
     const pathname = currentRoute || usePathname();
     const { isConnected } = useAuth();
-    const { language } = useLanguage(); // Retrieve current language
+    const { language } = useLanguage(); 
 
     // Define tab labels based on the current language
     const labels = STATIC_TEXTS[language];
@@ -73,12 +73,10 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
                 const itemColor = isActive ? theme.COLORS.active : theme.COLORS.inactive;
                 const iconUri = getIconUri(tab.icon);
                 
-                // Custom icon sizes for visual consistency (compensating for SVG stroke/design differences)
                 let iconWidth = 28;
                 let iconHeight = 28;
                 
                 if (tab.key === 'social') {
-                    // Social icon (loyalty-points) needs to be larger due to thinner design
                     iconWidth = 30;
                     iconHeight = 30;
                 }
@@ -93,8 +91,12 @@ export default function BottomNavbar({ currentRoute, onNavigate }: BottomNavbarP
                             paddingVertical: theme.SPACING.small,
                             gap: theme.SPACING.small,
                         }}
-                        onPress={() => onNavigate ? onNavigate(tab.route) : router.push(tab.route as any)}
+                        onPress={() => {
+                            if (disabled) return; 
+                            onNavigate ? onNavigate(tab.route) : router.push(tab.route as any)
+                        }}
                         activeOpacity={0.7}
+                        disabled={disabled}
                     >
                         {iconUri && (
                             <SvgUri

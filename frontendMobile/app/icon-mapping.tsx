@@ -24,6 +24,7 @@ export const ICONS = {
     "map.svg": require('../assets/icon/map.svg'),
     "send.svg": require('../assets/icon/send.svg'),
     "lock-larger.svg": require('../assets/icon/lock-larger.svg'),
+    "close.svg": require('../assets/icon/close.svg'),
 } as const;
 
 // Define the type for the keys of ICONS

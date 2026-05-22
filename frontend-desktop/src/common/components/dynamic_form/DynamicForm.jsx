@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import MapPicker from "../../../common/components/map/map";
 import "./DynamicForm.style.css";
 
 export default function DynamicForm({
@@ -43,25 +44,44 @@ export default function DynamicForm({
     });
   }, [externalValues]);
 
-  const handleChange = (name, type, value) => {
+  const handleChange = useCallback((name, type, value) => {
     const parsed = type === "number" ? (value === "" ? "" : Number(value)) : value;
-
-    setValues((prev) => {
-      const newValues = { ...prev, [name]: parsed };
-      return newValues;
-    });
-
-    if (onFieldChange) {
-      onFieldChange(name, parsed);
-    }
-  };
+    setValues((prev) => ({ ...prev, [name]: parsed }));
+    if (onFieldChange) onFieldChange(name, parsed);
+  }, [onFieldChange]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(values);
   };
 
+  const CulturalCenterMapField = useCallback(({ values, onChange }) => {
+    const latitude = values["newCulturalCenter.address.latitude"];
+    const longitude = values["newCulturalCenter.address.longitude"];
+
+    const markerValue =
+      latitude != null && latitude !== "" && longitude != null && longitude !== ""
+        ? { lat: Number(latitude), lng: Number(longitude) }
+        : null;
+
+    return (
+      <div className="steps-create-map-panel">
+        <MapPicker
+          value={markerValue}
+          onChange={(coords) => {
+            onChange("newCulturalCenter.address.latitude", "number", coords.lat);
+            onChange("newCulturalCenter.address.longitude", "number", coords.lng);
+          }}
+        />
+      </div>
+    );
+  }, []);
+
   const renderField = (field) => {
+
+    if (field.type === "map") {
+      return <CulturalCenterMapField key={field.name} values={values} onChange={handleChange} />;
+    }
     if (field.type === "select") {
       return (
         <select

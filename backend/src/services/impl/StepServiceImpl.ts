@@ -1,5 +1,4 @@
 import { StepService } from "../StepService.js";
-import { CreateStepRequestDTO } from "../../common-lib/dto/step/CreateStepRequestDTO.js";
 import { StepRepository } from "../../common-lib/repositories/StepRepository.js";
 import { stepMapper } from "../../mapper/StepMapper.js";
 import { CreateStepResponseDTO } from "../../common-lib/dto/step/CreateStepResponseDTO.js";
@@ -34,14 +33,14 @@ export class StepServiceImpl implements StepService {
             const fileUploadUtil = new FileUploadUtil();
 
             let targetPath: string | undefined;
-            let objectPaths: { obj: string, mtl: string, jpg: string } | undefined;
+            let objectPath: string | undefined;
 
             if (imageFile) {
                 targetPath = await fileUploadUtil.uploadTarget(imageFile);
             }
 
             if (modelFile) {
-                objectPaths = await fileUploadUtil.uploadObjectZip(modelFile);
+                objectPath = await fileUploadUtil.uploadObjectZip(modelFile);
             }
 
             const indexRepository = new IndexRepository();
@@ -62,9 +61,9 @@ export class StepServiceImpl implements StepService {
             const stepArData = {
                 step_id: createdStep.id,
                 file_path_target: targetPath,
-                file_path_object: objectPaths?.obj,
-                file_path_mtl: objectPaths?.mtl,
-                file_path_jpg: objectPaths?.jpg,
+                file_path_object: objectPath,
+                file_path_mtl: undefined,
+                file_path_jpg: undefined,
             }
 
             await stepArRepository.create(stepArData);
@@ -271,39 +270,7 @@ export class StepServiceImpl implements StepService {
         const stepAr = await stepArRepository.findFirst(stepId);
         if (!stepAr) throw new Error("StepAR not found");
 
-        const objBuffer = await downloadFromMinio(stepAr.file_path_object);
-        const mtlBuffer = stepAr.file_path_mtl ? await downloadFromMinio(stepAr.file_path_mtl) : null;
-        const jpgBuffer = stepAr.file_path_jpg ? await downloadFromMinio(stepAr.file_path_jpg) : null;
-
-        let patchedMtlBuffer = mtlBuffer;
-        if (mtlBuffer) {
-            const mtlContent = mtlBuffer.toString('utf-8');
-            const patched = mtlContent
-                .replace(/map_\w+\s+.+/gi, (match) => {
-                    const mapType = match.split(/\s+/)[0];
-                    return `${mapType} texture.jpg`;
-                })
-                .replace(/^(bump|disp|decal)\s+.+/gim, (match) => {
-                    const mapType = match.split(/\s+/)[0];
-                    return `${mapType} texture.jpg`;
-                });
-            patchedMtlBuffer = Buffer.from(patched, 'utf-8');
-        }
-
-        const archive = archiver("zip");
-
-        const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
-            const chunks: Buffer[] = [];
-            archive.on("data", (chunk) => chunks.push(chunk));
-            archive.on("end", () => resolve(Buffer.concat(chunks)));
-            archive.on("error", reject);
-
-            archive.append(objBuffer, { name: "model.obj" });
-            if (patchedMtlBuffer) archive.append(patchedMtlBuffer, { name: "model.mtl" });
-            if (jpgBuffer) archive.append(jpgBuffer, { name: "texture.jpg" });
-
-            archive.finalize();
-        });
+        const fileBuffer = await downloadFromMinio(stepAr.file_path_object);
 
         return {
             fileBuffer,

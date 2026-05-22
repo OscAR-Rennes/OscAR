@@ -176,19 +176,45 @@ export default function StepConsultation() {
               <p className="steps-consult-section-title">Documents de l'étape</p>
 
               <FormFile
-                name="model_file"
-                label="Modèle 3D (.obj)"
-                accept=".obj"
-                required={true}
-              />
+                  name="model_file_readonly"
+                  label="Modèle 3D (.zip)"
+                  accept=".zip"
+                  readOnly={true}
+                  readOnlyValue= {step.step_ar.file_path_object ? "Fichier chargé" : "Fichier introuvable"}
+                />
 
-              <FormFile
-                name="image_file"
-                label="Image (.png, .jpg)"
-                accept=".png,.jpg,.jpeg"
-                required={true}
-              />
-            </div>
+                {
+                  step.step_ar.file_path_object && (
+                    <button
+                      onClick={async () => {
+                        await dowloadStepAr(step.id);
+                      }}
+                    >
+                      Télécharger
+                    </button>
+                  )
+                }
+
+                <FormFile
+                  name="image_file_readonly"
+                  label="Image (.png, .jpg)"
+                  accept=".png,.jpg,.jpeg"
+                  readOnly={true}
+                  readOnlyValue= {step.step_ar.file_path_target ? "Fichier chargé" : "Fichier introuvable"}
+                />
+
+                {
+                  step.step_ar.file_path_target && (
+                    <button
+                    onClick={async () => {
+                      await dowloadStepTarget(step.id)
+                    }}
+                    >
+                      Télécharger
+                    </button>
+                  )
+                }
+              </div>
           </Form>
         ) : (
           <>
@@ -227,11 +253,11 @@ export default function StepConsultation() {
                   label="Modèle 3D (.zip)"
                   accept=".zip"
                   readOnly={true}
-                  readOnlyValue= {step.step_ar.file_path_object && step.step_ar.file_path_mtl && step.step_ar.file_path_jpg ? "Fichier chargé" : "Fichier introuvable"}
+                  readOnlyValue= {step.step_ar.file_path_object ? "Fichier chargé" : "Fichier introuvable"}
                 />
 
                 {
-                  step.step_ar.file_path_object && step.step_ar.file_path_mtl && step.step_ar.file_path_jpg && (
+                  step.step_ar.file_path_object && (
                     <button
                       onClick={async () => {
                         await dowloadStepAr(step.id);

@@ -122,6 +122,7 @@ export class UsersServiceImpl implements UsersService {
           errorMessage: deleteError instanceof Error ? deleteError.message : deleteError,
         });
       }
+      console.error(error)
       throw new AppError({
         userMessage: "Impossible d'envoyer le code de double authentification",
         statusCode: 503,
@@ -193,10 +194,25 @@ export class UsersServiceImpl implements UsersService {
     }
   }
 
-  async getAllUsers(pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>> {
+  async getAllUsers(pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightUserDTO>> {
     try {
       const users = await this.userRepository.findAll();
-      return paginateArray(users.map(userMapper.toLightDTO), pagination);
+      let items = users.map(userMapper.toLightDTO);
+
+      if (search) {
+          items = items.filter(u =>
+              u.username?.toLowerCase().includes(search.toLowerCase()) ||
+              u.email?.toLowerCase().includes(search.toLowerCase())
+          );
+      }
+
+      items = items.sort((a, b) =>
+          sort === "desc"
+              ? b.username.localeCompare(a.username)
+              : a.username.localeCompare(b.username)
+      );
+
+      return paginateArray(items, pagination);
     } catch (error:any) {
       if (error instanceof AppError) {
         throw error;
@@ -208,10 +224,25 @@ export class UsersServiceImpl implements UsersService {
     }
   }
 
-  async getAllUsersByCulturalCenter(culturalcenter_id: string, pagination: PaginationParamsDTO): Promise<PaginatedResponseDTO<LightUserDTO>> {
+  async getAllUsersByCulturalCenter(culturalcenter_id: string, pagination: PaginationParamsDTO, search: string, sort: string): Promise<PaginatedResponseDTO<LightUserDTO>> {
     try {
       const users = await this.userRepository.findAllByCulturalCenter(culturalcenter_id);
-      return paginateArray(users.map(userMapper.toLightDTO), pagination);
+      let items = users.map(userMapper.toLightDTO);
+
+      if (search) {
+          items = items.filter(u =>
+              u.username?.toLowerCase().includes(search.toLowerCase()) ||
+              u.email?.toLowerCase().includes(search.toLowerCase())
+          );
+      }
+
+      items = items.sort((a, b) =>
+          sort === "desc"
+              ? b.username.localeCompare(a.username)
+              : a.username.localeCompare(b.username)
+      );
+
+      return paginateArray(items, pagination);
     } catch (error: any) {
       if (error instanceof AppError) {
         throw error;

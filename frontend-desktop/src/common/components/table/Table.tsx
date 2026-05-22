@@ -36,6 +36,7 @@ type TableProps<T extends { id: string | number }> = {
     total: number;
     totalPages?: number;
   };
+  onFirstClick?: boolean;
   onServerPaginationChange?: (pagination: {
     page: number;
     limit: number;
@@ -65,6 +66,7 @@ export default function Table<T extends { id: string | number }>({
   externalSearch = false,
   onSearchChange,
   onSortChange,
+  onFirstClick = true,
 }: TableProps<T>) {
   const location = useLocation();
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -208,7 +210,6 @@ export default function Table<T extends { id: string | number }>({
     setSortKey(newKey);
     setSortDirection(newDirection);
 
-    // Notifie le parent si server-side sort
     onSortChange?.(String(newKey), newDirection);
   };
 
@@ -267,7 +268,7 @@ export default function Table<T extends { id: string | number }>({
       rawValue as React.ReactNode
     );
 
-    if (columnIndex === 0) {
+    if (columnIndex === 0 && onFirstClick) {
       const rowLink = getRowLink
         ? getRowLink(row, location.pathname)
         : `${location.pathname}/${row.id}`;

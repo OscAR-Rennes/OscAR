@@ -20,6 +20,9 @@ export function useUsersnData() {
     const isAdmin = checkRights(RoleEnum.ADMIN)
     const isCulturalCenterManager = checkRights(RoleEnum.CULTURAL_CENTER_MANAGER)
 
+    const [search, setSearch] = useState("");
+    const [sort, setSort] = useState("asc");
+
     const user = useAuthStore((state) => state.user);
     
     // Fetch data
@@ -29,8 +32,9 @@ export function useUsersnData() {
         const fetchData = async () => {
             const response = await (
             isAdmin
-                ? getAllUsers({ page: pagination.page, limit: pagination.limit })
-                : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit })
+            ? getAllUsers({ page: pagination.page, limit: pagination.limit, search, sort })
+            : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit, search, sort })
+
             );
 
             const rawUsers = Array.isArray(response?.data) ? response.data : [];
@@ -62,14 +66,14 @@ export function useUsersnData() {
         }
 
         fetchData()
-    }, [user, isAdmin, pagination.page, pagination.limit])
+    }, [user, isAdmin, pagination.page, pagination.limit, search, sort]);
 
     // Refresh data
     const refreshUsers = async () => {
         const response = await (
         isAdmin
-            ? getAllUsers({ page: pagination.page, limit: pagination.limit })
-            : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit })
+            ? getAllUsers({ page: pagination.page, limit: pagination.limit, search, sort })
+            : getUsersByCulturalCenter({ page: pagination.page, limit: pagination.limit, search, sort })
         );
         const rawUsers = Array.isArray(response?.data) ? response.data : [];
         const filtered = isCulturalCenterManager
@@ -114,6 +118,16 @@ export function useUsersnData() {
         refreshUsers()
     };
 
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+    };
+
+    const handleSortChange = (value: string) => {
+        setSort(value);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+    };
+
     return {
         isAdmin,
         isCulturalCenterManager,
@@ -123,6 +137,8 @@ export function useUsersnData() {
         handlePaginationChange,
 
         setSelectedUsersRows,
+        handleSearchChange,
+        handleSortChange,
 
         userColumns,
 

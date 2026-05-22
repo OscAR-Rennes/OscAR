@@ -14,8 +14,8 @@ export class UsersController  {
 
   async getAll(req: Request, res: Response, next: any) {
     try {
-      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
-      const users = await this.usersService.getAllUsers(pagination);
+      const { page, limit, search, sort } = parsePaginationQuery(req.query as Record<string, unknown>);
+      const users = await this.usersService.getAllUsers({ page, limit }, search, sort);
       logger.debug("All users retrieved", { route: req.originalUrl, userId: req.user?.id, count: users.data.length, page: users.pagination.page, limit: users.pagination.limit, total: users.pagination.total });
       res.status(200).json(users);
     } catch (err) {
@@ -50,19 +50,19 @@ export class UsersController  {
 
   async getByCenterCultural(req: Request, res: Response, next:any) {
     try {
-      const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+      const { page, limit, search, sort } = parsePaginationQuery(req.query as Record<string, unknown>);
       const culturalcenter_id = req.user?.id_cultural_center;
       if (!culturalcenter_id && !req.user?.rights.includes(RoleEnum.ADMIN)) {
         logger.warn("User's cultural center ID missing", { route: req.originalUrl, userId: req.user?.id });
         throw new Error("Centre culturel de l'utilisateur introuvable");
       }
       if (culturalcenter_id) {
-        const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id, pagination)
+        const users = await this.usersService.getAllUsersByCulturalCenter(culturalcenter_id, { page, limit }, search, sort);
         logger.debug("Users retrieved by cultural center", { route: req.originalUrl, userId: req.user?.id, count: users.data.length, page: users.pagination.page, limit: users.pagination.limit, total: users.pagination.total });
         res.status(200).json(users)
       }
       if (req.user?.rights.includes(RoleEnum.ADMIN)) {
-        const users = await this.usersService.getAllUsers(pagination);
+        const users = await this.usersService.getAllUsers({ page, limit }, search, sort);
         logger.debug("All users retrieved for admin", { route: req.originalUrl, userId: req.user?.id, count: users.data.length, page: users.pagination.page, limit: users.pagination.limit, total: users.pagination.total });
         res.status(200).json(users)
       }

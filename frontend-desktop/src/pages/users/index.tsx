@@ -18,6 +18,8 @@ export default function Users() {
     userColumns,
     hasSelectedUsers,
     executeActivateDeactivateUsers,
+    handleSearchChange,
+    handleSortChange,
   } = useUsersnData();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -35,6 +37,10 @@ export default function Users() {
             onServerPaginationChange={handlePaginationChange}
             onRowSelect={setSelectedUsersRows}
             allItemsLabel="utilisateurs"
+            onFirstClick={false}
+            externalSearch={true}
+            onSearchChange={handleSearchChange}
+            onSortChange={(key, direction) => handleSortChange(direction)}
             renderActionButton={() => (
               <div className="table-action-buttons">
                 <button className="table-btn" disabled={!hasSelectedUsers} onClick={() => {
@@ -42,12 +48,6 @@ export default function Users() {
                 }}>
                   <PowerIcon className="table-btn-icon-bigger" aria-hidden="true" focusable="false" />
                   Désactiver / Réactiver
-                </button>
-                <button className="table-btn" disabled={!hasSelectedUsers} onClick={() => {
-                  setIsDeleteModalOpen(true);
-                }}>
-                  <DeleteIcon className="table-btn-icon" aria-hidden="true" focusable="false" />
-                  <span>Supprimer</span>
                 </button>
               </div>
             )}
@@ -85,6 +85,10 @@ export default function Users() {
             onServerPaginationChange={handlePaginationChange}
             onRowSelect={setSelectedUsersRows}
             allItemsLabel="créateurs de chasses"
+            onFirstClick={false}
+            externalSearch={true}
+            onSearchChange={handleSearchChange}
+            onSortChange={(key, direction) => handleSortChange(direction)}
             renderActionButton={() => (
               <div className="table-action-buttons">
                 <button className="table-btn" disabled={!hasSelectedUsers} onClick={() => {

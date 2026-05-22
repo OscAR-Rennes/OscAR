@@ -27,11 +27,11 @@ const stepColumns: Column<StepRow>[] = [
     key: "indexLabel",
     label: "Index",
   },
-  {
-    key: "averageDurationMs",
-    label: "Durée moyenne",
-    render: (row) => formatDuration(row.averageDurationMs),
-  },
+  // {
+  //   key: "averageDurationMs",
+  //   label: "Durée moyenne",
+  //   render: (row) => formatDuration(row.averageDurationMs),
+  // },
   {
     key: "completionsCount",
     label: "Complétions",
@@ -94,12 +94,12 @@ export default function HuntStatsPanel({
       </div>
 
       <div className="hunt-stats-summary-grid">
-        <StatCard label="Étapes" value={String(stats.totalSteps)} />
+        {/* <StatCard label="Étapes" value={String(stats.totalSteps)} /> */}
         <StatCard label="Participants" value={String(stats.participantsCount)} />
         <StatCard label="Complétions" value={String(stats.completedAttemptsCount)} />
         <StatCard label="Taux de complétion" value={`${stats.completionRate}%`} />
-        <StatCard label="Temps moyen de complétion" value={formatDuration(stats.averageCompletionTimeMs)} />
-        <StatCard label="Durée moyenne d'une step" value={formatDuration(stats.averageStepDurationMs)} />
+        {/* <StatCard label="Temps moyen de complétion" value={formatDuration(stats.averageCompletionTimeMs)} />
+        <StatCard label="Durée moyenne d'une step" value={formatDuration(stats.averageStepDurationMs)} /> */}
       </div>
 
       <div className="hunt-stats-steps">

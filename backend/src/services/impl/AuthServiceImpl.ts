@@ -191,7 +191,7 @@ export class AuthServiceImpl implements AuthService {
         errorStack: error instanceof Error ? error.stack : undefined,
       });
       throw new AppError({
-        userMessage: "Impossible d'envoyer le code de double authentification",
+        userMessage: "Failed to send two-factor code",
         statusCode: 503,
       });
     }
