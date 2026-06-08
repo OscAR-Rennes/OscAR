@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import { randomInt } from "node:crypto";
 import nodemailer from "nodemailer";
 import AppError from "../errors/AppError.js";
 import { UserEntity } from "../entity/UsersEntity.js";
@@ -35,7 +36,7 @@ export function requiresTwoFactor(user: UserEntity) {
 }
 
 export function generateTwoFactorCode() {
-  return Math.floor(100000 + Math.random() * 900000);
+  return randomInt(100000, 1000000);
 }
 
 export async function createTwoFactorChallengeToken(user: UserEntity) {
