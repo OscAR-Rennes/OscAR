@@ -43,10 +43,7 @@ type StatsProgressionRecord = {
 };
 
 function average(values: number[]): number | null {
-    if (values.length === 0) {
-        return null;
-    }
-
+    if (values.length === 0) return null;
     return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
 }
 
@@ -76,57 +73,29 @@ function getAccessibleHuntsWhere(user: AuthResponseDTO) {
 }
 
 function buildHuntStats(hunt: Awaited<ReturnType<typeof huntRepository.getStatsHunts>>[number], progressions: StatsProgressionRecord[]): HuntStatsDTO {
-    const orderedSteps = [...hunt.steps].sort((first, second) => first.index.index - second.index.index);
-    const huntStepIds = new Set(orderedSteps.map((step) => step.id));
+    const orderedSteps = [...hunt.steps].sort((a, b) => a.index.index - b.index.index);
+    const huntStepIds = new Set(orderedSteps.map((s) => s.id));
     const perUserProgressions = new Map<string, StatsProgressionRecord[]>();
 
-    for (const progression of progressions) {
-        if (!perUserProgressions.has(progression.user_id)) {
-            perUserProgressions.set(progression.user_id, []);
-        }
-
-        perUserProgressions.get(progression.user_id)!.push(progression);
+    for (const p of progressions) {
+        if (!perUserProgressions.has(p.user_id)) perUserProgressions.set(p.user_id, []);
+        perUserProgressions.get(p.user_id)!.push(p);
     }
 
     const participantsCount = perUserProgressions.size;
-    const completionDurations: number[] = [];
-    const stepDurationValues = new Map<string, number[]>();
     const stepCompletionCounts = new Map<string, Set<string>>();
+    for (const step of orderedSteps) stepCompletionCounts.set(step.id, new Set());
 
-    for (const step of orderedSteps) {
-        stepDurationValues.set(step.id, []);
-        stepCompletionCounts.set(step.id, new Set());
-    }
+    let completedAttemptsCount = 0;
 
     for (const [userId, userProgressions] of perUserProgressions.entries()) {
-        const orderedUserProgressions = [...userProgressions].sort(
-            (first, second) => first.created_at.getTime() - second.created_at.getTime()
-        );
-
-        const uniqueStepIds = new Set(orderedUserProgressions.map((progression) => progression.step_id));
+        const uniqueStepIds = new Set(userProgressions.map((pg) => pg.step_id));
         const isCompleted = orderedSteps.every((step) => uniqueStepIds.has(step.id));
+        if (isCompleted) completedAttemptsCount++;
 
-        for (const progression of orderedUserProgressions) {
-            if (huntStepIds.has(progression.step_id)) {
-                stepCompletionCounts.get(progression.step_id)?.add(userId);
-            }
-        }
-
-        if (isCompleted && orderedUserProgressions.length > 0) {
-            const firstProgression = orderedUserProgressions[0];
-            const lastProgression = orderedUserProgressions[orderedUserProgressions.length - 1];
-            const completionDuration = lastProgression.updated_at.getTime() - firstProgression.created_at.getTime();
-
-            if (completionDuration > 0) {
-                completionDurations.push(completionDuration);
-            }
-        }
-
-        for (const progression of orderedUserProgressions) {
-            const duration = progression.updated_at.getTime() - progression.created_at.getTime();
-
-            if (duration > 0 && stepDurationValues.has(progression.step_id)) {
-                stepDurationValues.get(progression.step_id)!.push(duration);
+        for (const pg of userProgressions) {
+            if (huntStepIds.has(pg.step_id)) {
+                stepCompletionCounts.get(pg.step_id)?.add(userId);
             }
         }
     }
@@ -134,36 +103,19 @@ function buildHuntStats(hunt: Awaited<ReturnType<typeof huntRepository.getStatsH
     const stepStats = orderedSteps.map((step) => ({
         id: step.id,
         title: step.title,
-        index: step.index,
-        averageDurationMs: average(stepDurationValues.get(step.id) ?? []),
+        index: { index: step.index.index, name: step.index.name },
         completionsCount: stepCompletionCounts.get(step.id)?.size ?? 0,
     }));
-
-    const completedAttemptsCount = completionDurations.length;
-    const averageCompletionTimeMs = average(completionDurations);
-    const averageStepDurationMs = average(stepStats.flatMap((step) => (step.averageDurationMs === null ? [] : [step.averageDurationMs])));
 
     return {
         id: hunt.id,
         title: hunt.title,
-        creator: {
-            id: hunt.users.id,
-            username: hunt.users.username,
-        },
-        culturalCenter: {
-            id: hunt.cultural_centers.id,
-            name: hunt.cultural_centers.name,
-        },
-        difficulty: {
-            id: hunt.difficulty.id,
-            name: hunt.difficulty.name,
-        },
-        totalSteps: hunt._count.steps,
+        creator: { username: hunt.users.username },
+        culturalCenter: { name: hunt.cultural_centers.name },
+        difficulty: { name: hunt.difficulty.name },
         participantsCount,
         completedAttemptsCount,
         completionRate: participantsCount === 0 ? 0 : Math.round((completedAttemptsCount / participantsCount) * 100),
-        averageCompletionTimeMs,
-        averageStepDurationMs,
         stepStats,
     };
 }
@@ -305,22 +257,12 @@ export class HuntServiceImpl implements HuntService {
 
             const huntStats = hunts.map((hunt) => buildHuntStats(hunt, groupedProgressions.get(hunt.id) ?? []));
 
-            const summaryCompletionDurations = huntStats
-                .map((huntStat) => huntStat.averageCompletionTimeMs)
-                .filter((value): value is number => typeof value === "number");
-
-            const summaryStepDurations = huntStats
-                .map((huntStat) => huntStat.averageStepDurationMs)
-                .filter((value): value is number => typeof value === "number");
-
             return {
                 scope: access.role,
                 summary: {
                     huntsCount: huntStats.length,
                     participantsCount: huntStats.reduce((sum, huntStat) => sum + huntStat.participantsCount, 0),
                     completedAttemptsCount: huntStats.reduce((sum, huntStat) => sum + huntStat.completedAttemptsCount, 0),
-                    averageCompletionTimeMs: average(summaryCompletionDurations),
-                    averageStepDurationMs: average(summaryStepDurations),
                     averageCompletionRate: average(huntStats.map((huntStat) => huntStat.completionRate)),
                 },
                 hunts: huntStats,
