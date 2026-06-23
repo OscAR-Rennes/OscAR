@@ -26,15 +26,15 @@ jobs:
           cd frontend-desktop
           npm install
 
+      - name: Install latest Vercel CLI
+        run: |
+          cd frontend-desktop
+          npm install -D vercel@latest
+
       - name: Build project
         run: |
           cd frontend-desktop
           npm run build
-
-      - name: Install Vercel CLI
-        run: |
-          cd frontend-desktop
-          npm install -D vercel
 
       - name: Create prebuilt output and deploy
         env:
@@ -43,7 +43,11 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           cd frontend-desktop
-          DEPLOYMENT_URL=$(npx vercel deploy --prod --yes --token=$VERCEL_TOKEN | tail -n 1)
+          DEPLOYMENT_URL=$(npx vercel deploy --prod --yes --token=$VERCEL_TOKEN --json | node -e "const fs=require('fs'); const input=fs.readFileSync(0,'utf8').trim(); const output=JSON.parse(input); process.stdout.write(output.url || '')")
+          if [ -z "$DEPLOYMENT_URL" ]; then
+            echo "Failed to resolve deployment URL"
+            exit 1
+          fi
           echo "Deployment URL: $DEPLOYMENT_URL"
           npx vercel alias --token=$VERCEL_TOKEN "$DEPLOYMENT_URL" oscar-deploiement.vercel.app
 
