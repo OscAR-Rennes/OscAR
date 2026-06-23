@@ -1,42 +1,46 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, LogBox } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Slot, useRouter, usePathname } from 'expo-router';
 import HeaderNavbar from '../../components/ui/header-navbar';
 import BottomNavbar from '../../components/ui/bottom-navbar';
+import { theme } from '../../constants/theme';
+import { useAuth } from '../../context/AuthContext';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import NetworkModal from '@/components/network-modal';
 
-// Main layout component wrapping all screens with header and bottom navigation
+LogBox.ignoreAllLogs();
+
+function normalizeRoute(route: string): string {
+    return route.replace('/(main)', '');
+}
 
 export default function MainLayout() {
     const router = useRouter();
     const pathname = usePathname();
+    const { isConnected } = useAuth();
+    const { hasNetwork } = useNetworkStatus();
 
-    // Define the correct routing behavior based on user session or not (connected or not)
-    const handleNavigate = (route: any) => {
-        if (route === '/connexion' || route === '/profil') {
-        router.push(route);
-        } else {
-        router.replace(route);}
-    };
+    useEffect(() => {
+        if (normalizeRoute(pathname) === '/connection' && isConnected) {
+            router.replace('/');
+        }
+    }, [pathname, isConnected]);
 
-    // Render the layout with header, content slot, and bottom navigation
+    const isConnectionPage = normalizeRoute(pathname) === '/connection';
+    const isHuntDetailsPage = pathname.includes('hunt-details');
+
+    const Container = isConnectionPage ? View : SafeAreaView;
+
     return (
-        <SafeAreaView style={styles.container}>
-        <HeaderNavbar />
-            <View style={styles.content}>
+        <Container style={[{ flex: 1, backgroundColor: theme.COLORS.background }]}>
+            {!isConnectionPage && <HeaderNavbar />}
+            <View style={[{ flex: 1 }]}>
                 <Slot />
             </View>
-        <BottomNavbar currentRoute={pathname} onNavigate={handleNavigate} />
-        </SafeAreaView>
+            {!isConnectionPage && <BottomNavbar currentRoute={pathname} disabled={!hasNetwork}/>}
+
+            <NetworkModal visible={!hasNetwork && !isHuntDetailsPage} />
+        </Container>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FEFEFE',
-    },
-    content: {
-        flex: 1,
-    },
-});

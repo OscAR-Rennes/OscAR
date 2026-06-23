@@ -1,0 +1,138 @@
+.auth-card {
+  width: 70%;
+  height: 48rem;
+  min-height: 48rem;
+  max-height: 48rem;
+  display: flex;
+  background: #ffffff;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.20);
+}
+
+.auth-visual {
+  flex: 1 1 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ececec;
+}
+
+.auth-visual-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.auth-panel {
+  flex: 1 1 50%;
+  padding: 2.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-subtitle {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.auth-title {
+  font-size: 2.1rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 0.05rem;
+  color: #1f2937;
+}
+.auth-footer {
+  margin-top: 1rem;
+  font-size: 0.98rem;
+}
+.auth-link {
+  color: #4953d3;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  display: inline-block;
+  font-size: 0.98rem;
+}
+.auth-link.secondary {
+  color: #4953d3;
+  font-weight: bold;
+}
+
+.auth-panel .dynamic-form-container {
+  max-width: 100%;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.auth-panel .dynamic-form-container button[type="submit"] {
+  margin-top: 0.8rem;
+}
+
+.auth-pending-panel {
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+}
+
+.auth-pending-panel h2 {
+  margin-top: 0;
+  color: #1f2937;
+}
+
+.auth-pending-panel p {
+  color: #4b5563;
+}
+
+.auth-twofactor-footer {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.auth-link-btn {
+  border: none;
+  background: none;
+  color: #4953d3;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+
+.auth-link-btn.secondary {
+  color: #1f2937;
+}
+
+@media (max-width: 56.25rem) {
+  .auth-card {
+    flex-direction: column;
+    height: auto;
+    max-height: calc(100vh - 3rem);
+  }
+
+  .auth-visual {
+    height: 13.75rem;
+    flex: none;
+  }
+
+  .auth-panel {
+    padding: 1.4rem 1.2rem;
+  }
+
+  .auth-title {
+    font-size: 1.8rem;
+  }
+}

@@ -1,0 +1,89 @@
+import { Request, Response } from "express";
+import { IndexServiceImpl } from "../services/impl/IndexServiceImpl.js";
+import logger from "../common-lib/utils/logger.js";
+import { parsePaginationQuery } from "../common-lib/utils/pagination.js";
+import { EditIndexBodyRequestDTO } from "../common-lib/dto/index/EditIndexBodyRequestDTO.js";
+
+export class IndexController  {
+
+  private indexService: IndexServiceImpl;
+
+  constructor() {
+    this.indexService = new IndexServiceImpl();
+  }
+
+  async createIndex(req: Request, res: Response, next: any) {
+    try {
+      const indexData = req.body;
+      const newIndex = await this.indexService.createIndex(indexData);
+      logger.info("Index created successfully", { route: req.originalUrl, indexId: newIndex.id, createdBy: req.user?.id });
+      res.status(201).json(newIndex);
+    } catch (err) {
+      logger.error("Error creating index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async getIndexByHunt(req: Request, res: Response, next: any) {
+    try {
+        const { huntId } = req.params;
+        const pagination = parsePaginationQuery(req.query as Record<string, unknown>);
+        const index = await this.indexService.getIndexByHunt(huntId, pagination);
+        logger.info("Index retrieved by hunt", { route: req.originalUrl, huntId });
+        res.status(200).json(index)
+    } catch (err) {
+      logger.error("Error getting index by hunt", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async editIndex(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const indexId = req.params.id;
+
+      if (!user || !indexId) {
+        logger.warn("Missing user information for index edition", { route: req.originalUrl });
+        throw new Error("User information missing");
+      }
+
+      const indexBody: EditIndexBodyRequestDTO = req.body;
+      const indexData = {
+        id: indexId,
+        ...indexBody,
+      };
+
+      const editedIndex = await this.indexService.editIndex(indexData, user);
+      logger.info("Index edited successfully", { route: req.originalUrl, indexId: editedIndex.id, editedBy: user.id });
+      res.status(200).json(editedIndex);
+    } catch (err) {
+      logger.error("Error editing index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+  async deleteIndex(req: Request, res: Response, next: any) {
+    try {
+      const user = req.user;
+      const ids = req.body?.ids;
+
+      if (!user) {
+        logger.warn("User missing in request for deleting index", { route: req.originalUrl });
+        throw new Error("User not found in request");
+      }
+
+      if (!Array.isArray(ids) || ids.length === 0 || ids.some((id) => typeof id !== "string" || !id.trim())) {
+        logger.warn("Invalid ids payload for deleting index", { route: req.originalUrl });
+        throw new Error("Invalid ids payload");
+      }
+
+      await this.indexService.deleteIndex(user, ids);
+      logger.info("Indexes deleted successfully", { route: req.originalUrl, deletedBy: user.id, deletedCount: ids.length });
+      res.status(204).send();
+    } catch (err) {
+      logger.error("Error deleting index", { route: req.originalUrl, errorMessage: err instanceof Error ? err.message : err, errorStack: err instanceof Error ? err.stack : undefined });
+      next(err);
+    }
+  }
+
+};

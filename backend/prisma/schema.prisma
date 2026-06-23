@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model address {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  zip              String?            @db.VarChar
+  city             String?            @db.VarChar
+  longitude        Float
+  latitude         Float
+  street           String?            @db.VarChar
+  street_number    String?            @db.VarChar
+  created_at       DateTime           @default(now()) @db.Timestamp(6)
+  updated_at       DateTime           @default(now()) @db.Timestamp(6)
+  cultural_centers cultural_centers[]
+}
+
+model cultural_centers {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String   @unique @db.VarChar
+  description  String   @db.VarChar
+  isActive     Boolean  @default(false)
+  address_id   String   @db.Uuid
+  picture_path String?  @db.VarChar
+  created_at   DateTime @default(now()) @db.Timestamp(6)
+  updated_at   DateTime @default(now()) @db.Timestamp(6)
+  address      address  @relation(fields: [address_id], references: [id], onUpdate: NoAction, map: "fk_cultural_centers_address")
+  hunts        hunts[]
+  users        users[]
+}
+
+model difficulty {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String   @unique @db.VarChar
+  multiplicator Float
+  created_at    DateTime @default(now()) @db.Timestamp(6)
+  updated_at    DateTime @default(now()) @db.Timestamp(6)
+  hunts         hunts[]
+}
+
+model hunts {
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title              String           @db.VarChar
+  description        String
+  difficulty_id      String           @db.Uuid
+  isactive           Boolean          @default(false)
+  points             Int
+  latitude           Float
+  longitude          Float
+  picture_path       String?          @db.VarChar
+  created_at         DateTime         @default(now()) @db.Timestamp(6)
+  updated_at         DateTime         @default(now()) @db.Timestamp(6)
+  creator_id         String           @db.Uuid
+  cultural_center_id String           @db.Uuid
+  cultural_centers   cultural_centers @relation(fields: [cultural_center_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "constraint_1")
+  users              users            @relation(fields: [creator_id], references: [id], onDelete: Cascade, map: "fk_hunts_creator")
+  difficulty         difficulty       @relation(fields: [difficulty_id], references: [id], onUpdate: NoAction, map: "fk_hunts_difficulty")
+  hunts_period       hunts_period[]
+  index              index[]
+  likes              likes[]
+  progression        progression[]
+  steps              steps[]
+
+  @@unique([title, cultural_center_id], name: "title_cultural_center_id")
+}
+
+model security_code {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code            Int
+  user_id         String   @db.Uuid
+  validity_period DateTime @db.Timestamp(6)
+  created_at      DateTime @default(now()) @db.Timestamp(6)
+  updated_at      DateTime @default(now()) @db.Timestamp(6)
+  users           users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_security_code_user")
+}
+
+model hunts_period {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  beginning  DateTime @db.Date
+  ending     DateTime @db.Date
+  hunt_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  hunts      hunts    @relation(fields: [hunt_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_hunts_period_hunt")
+}
+
+model index {
+  id         String   @id(map: "index_step_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?  @db.VarChar
+  index      Int
+  hunt_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  hunts      hunts    @relation(fields: [hunt_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_index_step_hunt")
+  steps      steps[]
+
+  @@unique([name, hunt_id], name: "name_hunt_id")
+}
+
+model likes {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  hunt_id    String   @db.Uuid
+  user_id    String   @db.Uuid
+  rating     Int
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  hunts      hunts    @relation(fields: [hunt_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_like_hunt")
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_like_user")
+}
+
+model progression {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String   @db.Uuid
+  hunt_id    String   @db.Uuid
+  step_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  hunts      hunts    @relation(fields: [hunt_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_progression_hunt")
+  steps      steps    @relation(fields: [step_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_progression_step")
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_progression_user")
+}
+
+model right_user {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  right_id   String    @db.Uuid
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  rights     rights    @relation(fields: [right_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, right_id], map: "idx_right_user_unique")
+  @@index([right_id], map: "idx_right_user_right_id")
+  @@index([user_id], map: "idx_right_user_user_id")
+}
+
+model rights {
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String       @unique @db.VarChar(255)
+  created_at DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at DateTime?    @default(now()) @db.Timestamp(6)
+  right_user right_user[]
+}
+
+model step_ar {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  step_id          String   @db.Uuid
+  file_path_object String   @db.VarChar
+  file_path_target String   @db.VarChar
+  file_path_mtl    String?  @db.VarChar
+  file_path_jpg    String?  @db.VarChar
+  created_at       DateTime @default(now()) @db.Timestamp(6)
+  updated_at       DateTime @default(now()) @db.Timestamp(6)
+  steps            steps    @relation(fields: [step_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_step_ar_step")
+}
+
+model steps {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String        @db.VarChar
+  description String
+  points      Int
+  hunt_id     String        @db.Uuid
+  latitude    Float?
+  longitude   Float?
+  index_id    String        @db.Uuid
+  created_at  DateTime      @default(now()) @db.Timestamp(6)
+  updated_at  DateTime      @default(now()) @db.Timestamp(6)
+  progression progression[]
+  step_ar     step_ar[]
+  hunts       hunts         @relation(fields: [hunt_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_steps_hunt")
+  index       index         @relation(fields: [index_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_steps_index_step")
+
+  @@unique([title, index_id], name: "title_index_id")
+}
+
+model users {
+  id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username           String            @db.VarChar
+  firstname          String?           @db.VarChar
+  lastname           String?           @db.VarChar
+  password           String            @db.VarChar
+  email              String            @unique @db.VarChar
+  age                Int?
+  id_cultural_center String?           @db.Uuid
+  isActive           Boolean           @default(false)
+  isSecure           Boolean           @default(false)
+  points             Int               @default(0)
+  picture_path       String?           @db.VarChar
+  created_at         DateTime          @default(now()) @db.Timestamp(6)
+  updated_at         DateTime          @default(now()) @db.Timestamp(6)
+  hunts              hunts[]
+  likes              likes[]
+  progression        progression[]
+  right_user         right_user[]
+  security_code      security_code[]
+  cultural_centers   cultural_centers? @relation(fields: [id_cultural_center], references: [id], onUpdate: NoAction, map: "fk_users_cultural_center")
+  friends_applicant  friends[] @relation("applicant")
+  friends_recipient  friends[] @relation("recipient")
+}
+
+model friends {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  isRefused    Boolean  @default(false)
+  isPending    Boolean  @default(true)
+  applicant_id String   @db.Uuid
+  recipient_id String   @db.Uuid
+  created_at   DateTime @default(now()) @db.Timestamp(6)
+  updated_at   DateTime @default(now()) @db.Timestamp(6)
+
+  applicant    users    @relation("applicant", fields: [applicant_id], references: [id], onDelete: Cascade)
+  recipient    users    @relation("recipient", fields: [recipient_id], references: [id], onDelete: Cascade)
+
+  @@unique([applicant_id, recipient_id])
+}

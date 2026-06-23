@@ -1,0 +1,206 @@
+import { NewUserRequestDTO } from "../dto/users/NewUserRequestDTO.js";
+import bcrypt from "bcrypt";
+import { RoleEnum } from "../enum/roleEnum.js";
+import { Prisma, PrismaClient, users } from "@prisma/client";
+import { prisma } from "../config/prismaClient.js";
+import { UserEntity } from "../entity/UsersEntity.js";
+import AppError from "../errors/AppError.js";
+
+export class UserRepository  {
+  
+  async findAll(): Promise<users[]> {
+    const users = await prisma.users.findMany();
+    return users;
+  }
+
+  async getById(id: string): Promise<users> {
+    const userRecord = await prisma.users.findUnique({
+      where: { id },
+    });
+    if (!userRecord) {
+      throw new AppError ({
+        userMessage: "User not found",
+        statusCode: 404
+      })
+    }
+
+    return userRecord
+  }
+
+  async create(
+    userData: NewUserRequestDTO,
+    prismaClient?: PrismaClient
+  ): Promise<users> {
+    const client = prismaClient || prisma;
+
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const requiresTwoFactor = userData.isSecure
+      || userData.rights.includes(RoleEnum.ADMIN)
+      || userData.rights.includes(RoleEnum.HUNT_MANAGER)
+      || userData.rights.includes(RoleEnum.CULTURAL_CENTER_MANAGER);
+
+    const userRecord = await client.users.create({
+      data: {
+        email: userData.email,
+        username: userData.username,
+        password: hashedPassword,
+        id_cultural_center: userData.id_cultural_center ?? null,
+        isSecure: requiresTwoFactor,
+      },
+    });
+
+    await Promise.all(
+      userData.rights.map(async name => {
+        const right = await client.rights.findUnique({ where: { name } });
+        if (!right) throw new Error(`Right ${name} not found`);
+        await client.right_user.create({
+          data: {
+            user_id: userRecord.id,
+            right_id: right.id,
+          },
+        });
+      })
+    );
+    return userRecord;
+  }
+
+  async deleteById(userId: string, prismaClient?: PrismaClient) {
+    const client = prismaClient || prisma;
+    await client.users.delete({
+      where: { id: userId },
+    });
+  }
+
+  async setActive(userId: string, isActive: boolean, prismaClient?: PrismaClient) {
+    const client = prismaClient || prisma;
+    await client.users.update({
+      where: { id: userId },
+      data: { isActive },
+    });
+  }
+
+  async findAllByCulturalCenter(culturalcenter_id: string): Promise<users[]> {
+    const users = await prisma.users.findMany({
+      where: {
+        id_cultural_center: culturalcenter_id,
+      },
+      include: {
+        right_user: {
+          include: { rights: true },
+        },
+      },
+    });
+    return users;
+  }
+
+  async findGlobalLeaderboard(limit: number): Promise<Pick<users, "id" | "username" | "points">[]> {
+    return prisma.users.findMany({
+      where: {
+        right_user: {
+          some: {
+            rights: {
+              name: RoleEnum.USER,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        points: true,
+      },
+      orderBy: [
+        { points: "desc" },
+        { username: "asc" },
+      ],
+      take: limit,
+    });
+  }
+
+  async findByCredentials(email: string): Promise<UserEntity | null> {
+    const user = await prisma.users.findUnique({
+      where: { email },
+      include: {
+        right_user: {
+          include: { rights: true },
+        },
+      },
+    });
+
+    if (!user) return null;
+
+    const rights = user.right_user.map((ru: { rights: { name: any; }; }) => ru.rights.name);
+
+    return new UserEntity({ ...user, rights });
+  }
+  
+  async findById(userId: string): Promise<UserEntity | null> {
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      include: {
+        right_user: { include: { rights: true } },
+      },
+    });
+
+    if (!user) return null;
+
+    const rights = user.right_user.map((ru: { rights: { name: any; }; }) => ru.rights.name);
+
+    return new UserEntity({ ...user, rights });
+  }
+
+  async switchUsersStatus(ids: string[]): Promise<{ id: string; isActive: boolean }[]> {
+    if (ids.length === 0) return [];
+    const updatedUsers = await prisma.$queryRaw<
+      { id: string; isActive: boolean }[]
+    >`
+      UPDATE "users"
+      SET "isActive" = NOT "isActive"
+      WHERE id = ANY(${ids})
+      RETURNING id, "isActive";
+    `;
+    return updatedUsers;
+  }
+
+  async deactivateUsersByCenter(centerId: string) {
+    await prisma.users.updateMany({
+      where: { id_cultural_center: centerId },
+      data: { isActive: false },
+    });
+  }
+
+  async activateManagersByCenter(centerId: string) {
+    await prisma.$executeRaw`
+      UPDATE "users" u
+      SET "isActive" = TRUE
+      FROM "right_user" ru
+      JOIN "rights" r ON r.id = ru.right_id
+      WHERE u.id = ru.user_id
+        AND u.id_cultural_center = ${centerId}
+        AND r.name = ${RoleEnum.CULTURAL_CENTER_MANAGER};
+    `;
+  }
+
+  async unassignUsersByCenter(centerId: string, tx?: Prisma.TransactionClient): Promise<void> {
+    await (tx ?? prisma).users.updateMany({
+      where: { id_cultural_center: centerId },
+      data: {
+        id_cultural_center: null,
+        isActive: false,
+      },
+    });
+  }
+
+  async incrementUserPoints(user_id: string, points: number) {
+    await prisma.users.update({
+        where: { id: user_id },
+        data: { points: { increment: points } }
+    });
+  }
+
+  async findByUsername(username: string) {
+    return prisma.users.findFirst({
+        where: { username }
+    });
+  }
+}

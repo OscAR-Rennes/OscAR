@@ -1,25 +1,71 @@
 services:
+
   frontend-desktop:
     build:
       context: ./frontend-desktop
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend-desktop:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - FAST_REFRESH=true
+      - REACT_APP_API_URL=http://localhost:5000/api
+    depends_on:
+      - backend
 
   backend:
+    depends_on:
+      - postgres
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
     ports:
       - "5000:5000"
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - /app/node_modules
     environment:
-      - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true
+      DATABASE_URL: "postgresql://oscAR:oscARpassword@postgres:5432/oscARdb"
+      NODE_ENV: development
+      FRONT_URL: "http://localhost:3000"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  # mailpit:
+  #   image: axllent/mailpit:latest
+  #   restart: always
+  #   ports:
+  #     - "1025:1025"
+  #     - "8025:8025"
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: oscAR
+      POSTGRES_PASSWORD: oscARpassword
+      POSTGRES_DB: oscARdb
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+
+volumes:
+  backend_node_modules:

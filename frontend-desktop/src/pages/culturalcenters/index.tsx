@@ -1,0 +1,70 @@
+import { useState } from "react";
+import Table from "../../common/components/table/Table";
+import ConfirmModal from "../../common/components/confirmmodal/ConfirmModal";
+import { useUsersnData } from "./culturalcenter.data";
+import { ReactComponent as PowerIcon } from "../../common/assets/icon/power-button.svg";
+import { ReactComponent as DeleteIcon } from "../../common/assets/icon/close.svg";
+
+export default function CulturalCenters() {
+  const {
+    isAdmin,
+    culturalCenters,
+    pagination,
+    handlePaginationChange,
+    setSelectedCulturalCenterssRows,
+    culturalCentersColumns,
+    hasSelectedCulturalCenters,
+    executeActivateDeactivateCulturalCenters,
+  } = useUsersnData();
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSwitchStatusModalOpen, setIsSwitchStatusModalOpen] = useState(false);
+
+  return (
+    <>
+      {isAdmin && (
+        <>
+          <Table
+            data={culturalCenters}
+            columns={culturalCentersColumns}
+            serverPagination={pagination}
+            onServerPaginationChange={handlePaginationChange}
+            onRowSelect={(rows) => setSelectedCulturalCenterssRows(rows)}
+            allItemsLabel="centres culturels"
+            onFirstClick={false}
+            renderActionButton={() => (
+              <div className="table-action-buttons">
+                <button className="table-btn" disabled={!hasSelectedCulturalCenters} onClick={() => {
+                  setIsSwitchStatusModalOpen(true);
+                }}>
+                  <PowerIcon className="table-btn-icon-bigger" aria-hidden="true" focusable="false" />
+                  Désactiver / Réactiver
+                </button>
+              </div>
+            )}
+          />
+
+          <ConfirmModal
+            isOpen={isSwitchStatusModalOpen}
+            message="Êtes-vous sûr de vouloir désactiver/réactiver ces centres culturels ?"
+            onCancel={() => setIsSwitchStatusModalOpen(false)}
+            onConfirm={() => {
+              executeActivateDeactivateCulturalCenters();
+              setIsSwitchStatusModalOpen(false);
+            }}
+          />
+
+          <ConfirmModal
+            isOpen={isDeleteModalOpen}
+            message="Êtes-vous sûr de vouloir supprimer ces centres culturels ?"
+            onCancel={() => setIsDeleteModalOpen(false)}
+            onConfirm={() => {
+              setIsDeleteModalOpen(false);
+            }}
+            showWarning={true}
+          />
+        </>
+      )}
+    </>
+  );
+}

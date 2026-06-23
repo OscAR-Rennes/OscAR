@@ -1,0 +1,104 @@
+.header-form-container {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.18);
+  margin: 0;
+}
+
+.header-form-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem 1.5rem 0.75rem;
+}
+
+.header-form-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header-form-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-form-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.header-form-status {
+  display: inline-flex;
+  align-items: flex-end;
+  align-self: flex-end;
+  padding-bottom: 0.3rem;
+  line-height: 1;
+  color: #6b7280;
+  font-size: 1.15rem;
+}
+
+.header-form-status.saved {
+  color: #6b7280;
+}
+
+.header-form-status.unsaved {
+  color: #6b7280;
+}
+
+.header-form-entity {
+  margin: 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.header-form-creator-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.header-form-creator-group.left {
+  align-items: flex-start;
+}
+
+.header-form-creator-group.right {
+  align-items: flex-end;
+}
+
+.header-form-creator-name {
+  color: #4156C0;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.header-form-creator-label {
+  color: #4b5563;
+  font-size: 0.85rem;
+}
+
+.header-form-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem 0.30rem;
+}
+
+.header-form-tab {
+  border: none;
+  background: transparent;
+  color: #909090;
+  font-size: 1rem;
+  padding: 0.5rem 0.25rem;
+  font-weight: 600;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.header-form-tab.active {
+  color: #000000;
+  border-bottom: 3px solid #4156C0;
+}

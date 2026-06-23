@@ -1,53 +1,114 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
-import { Platform } from 'react-native';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+const COLORS = {
+    primary: '#F72C25',
+    secondary: '#F7B32B',
+    tertiary: '#4156C0',
+    background: '#FEFEFE',
+    textPrimary: '#1f1f1f',
+    textSecondary: '#666',
+    textTertiary: '#A9A9A9',
+    placeholder: '#A9A9A9',
+    border: '#E0E0E0',
+    icon: '#393939',
+    active: '#F7B32B',
+    inactive: '#393939',
+    success: '#4BB543',
+    error: '#F72C25',
+    easy: '#4BB543',
+    medium: '#F7B32B',
+    hard: '#F72C25',
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
+const FONT_SIZES = {
+    title: 32,
+    subtitle: 22,
+    label: 20,
+    text: 16,
+    smallText: 15,
+    tinyText: 14,
+};
+
+const SPACING = {
+    xsmall: 4,
+    small: 8,
+    medium: 16,
+    large: 24,
+    xLarge: 36,
+};
+
+const CONTAINER_STYLES: { [key: string]: ViewStyle } = {
+    center: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    padded: {
+        paddingHorizontal: SPACING.medium,
+        paddingVertical: SPACING.large,
+    },
+};
+
+const BUTTON_STYLES: { [key: string]: ViewStyle } = {
+    default: {
+        height: 50,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+};
+
+const INPUT_STYLES = {
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 8,
+        paddingHorizontal: SPACING.medium,
+        backgroundColor: COLORS.background,
+    } as ViewStyle,
+    text: {
+        flex: 1,
+        fontSize: FONT_SIZES.text,
+        color: COLORS.textPrimary,
+    } as TextStyle,
+};
+
+export const theme = {
+    COLORS,
+    FONT_SIZES,
+    SPACING,
+    CONTAINER_STYLES,
+    BUTTON_STYLES,
+    INPUT_STYLES,
+};
+
+export const globalStyles = StyleSheet.create({
+    title: {
+        fontSize: FONT_SIZES.title,
+        fontWeight: '900',
+        color: COLORS.textPrimary,
+    } as TextStyle,
+    subtitle: {
+        fontSize: FONT_SIZES.subtitle,
+        fontWeight: '700',
+        color: COLORS.textPrimary,
+    } as TextStyle,
+    label: {
+        fontSize: FONT_SIZES.label,
+        color: COLORS.textPrimary,
+    } as TextStyle,
+    text: {
+        fontSize: FONT_SIZES.text,
+        color: COLORS.textPrimary,
+    } as TextStyle,
+    smallText: {
+        fontSize: FONT_SIZES.smallText,
+        color: COLORS.textSecondary,
+    } as TextStyle,
+    tinyText: {
+        fontSize: FONT_SIZES.tinyText,
+        color: COLORS.textSecondary,
+    } as TextStyle,
 });
